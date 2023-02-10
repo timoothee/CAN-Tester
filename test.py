@@ -1,7 +1,14 @@
+import tkinter  as tk 
+from tkinter import *
 
-def return_42():
-    return 42  # An explicit return statement
+root = Tk("")
 
+def callback(x):
+    print(x)
 
-return_42()  # The caller code gets 42
-efefe
+y= 77
+
+button = Button(root, text="Press", command=callback(y))
+button.grid()
+
+root.mainloop()

@@ -1,12 +1,12 @@
 # Working on it
 
-class Can():
-    def __init__(self, frame_id: int, ext_flag: bool = True, fd_flag: int = 100, payload_size: int = 1, payload: int = 1, delay: int = 0):
+class CanFrame():
+    def __init__(self, frame_id: int, extented_id_status: bool = True, fd_flag: int = 100, payload_size: int = 1, payload: int = 1, delay: int = 0):
         self.frame_id = frame_id
-        self.ext_flag = ext_flag
+        self.extented_id_status = extented_id_status
         self.fd_flag = fd_flag
         self.payload_size = payload_size
-        self.payload = payload
+        self.payload = payload 
         self.delay = delay
 
     # id
@@ -27,10 +27,10 @@ class Can():
 
 
     # ext flag
-    def set_extflag(self, new_flag):
-        self.ext_flag = new_flag
+    def set_extflag(self, new_extented_id_status):
+        self.extented_id_status = new_extented_id_status
 
     def get_extflag(self):
-        print(self.ext_flag)
-        return self.ext_flag
+        print(self.extented_id_status)
+        return self.extented_id_status
 
