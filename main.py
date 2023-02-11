@@ -16,7 +16,7 @@ if __name__ == "__main__":
     fdbox = interface.fd_box.get()
     extbox = interface.ext_box.get()
     frameid = interface.id_text.get()
-    payloadsize = interface.payload_size_text.get()
-    payload = interface.payload_text.get()
+    payloadsize = interface.payload_size_entry.get()
+    payload = interface.payload_entry.get()
 
     x = CanFrame(frameid, extbox, fdbox, payloadsize, payload)

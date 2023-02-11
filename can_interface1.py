@@ -15,35 +15,41 @@ class CANInterface():
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
-        self.id_text.trace("w", self.callback)
+        self.id_text.trace("w", self.frame_uncompleted)
         self.payload_size_entry = StringVar()
-        self.payload_size_entry.trace("w", self.callback)
+        self.payload_size_entry.trace("w", self.frame_uncompleted)
         self.payload_entry = StringVar()
-        self.payload_entry.trace("w", self.callback)
+        self.payload_entry.trace("w", self.frame_uncompleted)
+        self.payload_entry.trace("w", self.data_format)
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
+        self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
         self.drop_down_id_baudrate_var = IntVar()
         self.drop_down_id_baudrate_var.set("Select")
+        self.drop_down_id_baudrate_var.trace("w", self.id_baudrate_option_changed)
         self.drop_down_data_baudrate_var = IntVar()
         self.drop_down_data_baudrate_var.set("Select")
+        self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
         self.position = 0
         self.can_interface_list = ('CAN0', 'CAN1')
         self.baudrate_list = ('1M','2M','5M','8M')
         self.data_baudrate_list = ('1M','2M','5M','8M')
 
+    def data_format(self, *args):
+        self.string = self.payload_entry.get() + "."
+        self.payload_entry = self.string
+        print(self.string)
 
-
-    def callback(self, *args):
+    def id_baudrate_option_changed(self, *args):
+        self.id_baudrate_changed = True
         self.frame_uncompleted()
 
-        if self.retVal == 0:
-            self.add_to_q.config(state= "normal")
-        else:
-            self.add_to_q.config(state= "disabled")
+    def data_baudrate_option_changed(self, *args):
+        self.data_baudrate_changed = True
+        self.frame_uncompleted()
 
-        print("retvval", self.retVal)
-        print(self.id_text.get())
-
+    def can_frame_option_changed(self, *args):
+        self.cand_frame_changed = True
 
     def build(self):
         
@@ -132,7 +138,7 @@ class CANInterface():
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to q", command=self.clear_text, state="disabled", fg='red')
+        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.clear_text, state="disabled", fg='red')
         self.add_to_q.grid(row = 1, column=6)
 
         self.listbox1.grid(row=0, column=0, padx=20, pady=(20,10))
@@ -140,19 +146,19 @@ class CANInterface():
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
-        self.save_button = Button(self.can_frame4, text="Save", command = self.import_messagges)
-        self.save_button.grid(row=0, column=1, padx=10)
+        self.save_button_input = Button(self.can_frame4, text="Save", command = self.import_messagges)
+        self.save_button_input.grid(row=0, column=1, padx=10)
 
-        self.clear_button = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
-        self.clear_button.grid(row=0, column=2)
+        self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
+        self.clear_button_input.grid(row=0, column=2)
 
         self.listbox2.grid(row=0, column=0, padx=20, pady=(40,10))
 
-        self.save_button = Button(self.can_frame6, text="Save", command = self.import_messagges)
-        self.save_button.grid(row=0, column=1, padx=(20,10))
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.check_all_fields())
+        self.save_button_output.grid(row=0, column=1, padx=(20,10))
 
-        self.clear_button1 = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.listbox2))
-        self.clear_button1.grid(row=0, column=2)
+        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.listbox2))
+        self.clear_button_output.grid(row=0, column=2)
 
         self.Error_label = Label(self.root, text = "")
         self.Error_label.grid(row = 1, column= 3)
@@ -165,14 +171,32 @@ class CANInterface():
     def import_messagges(self):
         pass
 
-    def frame_uncompleted(self):
-        self.retVal = 0
-        if len(self.frame_id_entry.get()) < 4 or self.frame_id_entry.get()[0] != "0" or self.frame_id_entry.get()[1] != "x":
-            self.retVal = 1
-        if len(self.payload_size_entry.get()) < 1:
-            self.retVal = 1
-        if len(self.payload_Entry.get()) < 3 or self.payload_Entry.get()[2] != ".":
-            self.retVal = 1
+    def frame_uncompleted(self, *args):
+        self.frame_uncompleted_retVal = 0
+        
+        if self.fd_box.get() == 1:
+            if self.id_baudrate_changed == True and self.data_baudrate_changed == True:
+                pass
+            else:
+                self.frame_uncompleted_retVal = 1
+        if self.ext_box.get() == 1:
+            if len(self.payload_size_Entry.get()) != 0:
+                pass
+            else:
+                self.frame_uncompleted_retVal = 1
+        if len(self.frame_id_entry.get()) != 0 and len(self.payload_Entry.get()) != 0:
+            pass
+        else:
+            self.frame_uncompleted_retVal = 1
+        
+        if self.frame_uncompleted_retVal == 0:
+            self.add_to_q.config(state= "normal")
+        else:
+            self.add_to_q.config(state= "disabled")
+
+        print("retvval", self.frame_uncompleted_retVal)
+        print(self.id_text.get())
+
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -185,6 +209,9 @@ class CANInterface():
     
     def fd_box_checked(self):
         self.fd_box_checked_retVal = False
+        self.id_baudrate_changed = False
+        self.data_baudrate_changed = False
+
         if self.fd_box.get() == 1:
             self.drop_down_id_baudrate.config(state="normal")
             self.drop_down_data_baudrate.config(state="normal")
@@ -194,6 +221,8 @@ class CANInterface():
             self.drop_down_id_baudrate_var.set("Select")
             self.drop_down_data_baudrate.config(state="disabled")
             self.drop_down_data_baudrate_var.set("Select")
+
+        self.frame_uncompleted()
             
 
     def extended_box_checked(self):
@@ -207,18 +236,19 @@ class CANInterface():
             self.payload_size_Label.config(state="disabled")
             self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
 
+        self.frame_uncompleted()
+
 
     def check_all_fields(self):
         self.box_retVal = False
         if self.ext_box.get() == 1:
             if int(self.frame_id_entry.get(), 16) < 2047:
                 self.box_retVal = True
-            if len(self.frame_id_entry.get()) < 6:
-                self.box_retVal = True
+            
         else:
-            if len(self.frame_id_entry.get()) > 4:
+            if int(self.frame_id_entry.get(), 16) > 2047:
                 self.box_retVal = True
- 
+
 
     def clear_text(self):
         self.check_all_fields()
