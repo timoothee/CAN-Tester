@@ -2,7 +2,10 @@ from tkinter import *
 from tkinter.ttk import Progressbar
 import time
 from tkinter import ttk
-
+import ast
+import os
+from tkinter import messagebox
+import sys
 
 class CANInterface():
 
@@ -20,7 +23,6 @@ class CANInterface():
         self.payload_size_entry.trace("w", self.frame_uncompleted)
         self.payload_entry = StringVar()
         self.payload_entry.trace("w", self.frame_uncompleted)
-        self.payload_entry.trace("w", self.data_format)
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
@@ -146,7 +148,7 @@ class CANInterface():
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
-        self.save_button_input = Button(self.can_frame4, text="Save", command = self.import_messagges)
+        self.save_button_input = Button(self.can_frame4, text="Save", command = self.save)
         self.save_button_input.grid(row=0, column=1, padx=10)
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
@@ -169,7 +171,10 @@ class CANInterface():
 
 
     def import_messagges(self):
-        pass
+        self.ask_directory()
+        self.textfile = os.path.join(r"", self.path)
+        self.ast()
+
 
     def frame_uncompleted(self, *args):
         self.frame_uncompleted_retVal = 0
@@ -197,6 +202,20 @@ class CANInterface():
         print("retvval", self.frame_uncompleted_retVal)
         print(self.id_text.get())
 
+    def ask_directory(self):
+        import tkinter.filedialog as fd
+        self.ask_textfile = Tk()
+        self.ask_textfile.withdraw()
+
+        self.currdir = os.getcwd()
+        self.path = fd.askopenfilename(parent= self.ask_textfile, initialdir= self.currdir, title= "Please select a file")
+        if not self.path:
+            messagebox.showerror("Status", "Folder not selected!")
+            sys.exit("File not selected!")
+        return self.path
+        self.ask_textfile.mainloop()
+        
+
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -206,8 +225,15 @@ class CANInterface():
         self.string = self.current_time + "  " + self.frame_id_entry.get() + self.payload_entry.get()
         print(self.string)
         self.position += 1
-    
+        
+    def ast(self):
+        with open(self.textfile) as f:
+            self.lines = f.readlines()
+        print(self.lines)
+
     def fd_box_checked(self):
+        self.ast()
+        self.ask_directory()
         self.fd_box_checked_retVal = False
         self.id_baudrate_changed = False
         self.data_baudrate_changed = False
@@ -237,7 +263,11 @@ class CANInterface():
             self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
 
         self.frame_uncompleted()
-
+    
+    def save(self):
+        with open("Messages_input.txt","w") as f:
+            for i in self.listbox1.get(0,END):
+                f.write(i+"\n")
 
     def check_all_fields(self):
         self.box_retVal = False
@@ -249,6 +279,20 @@ class CANInterface():
             if int(self.frame_id_entry.get(), 16) > 2047:
                 self.box_retVal = True
 
+    def initial_interface_state(self):
+        self.Error_label.config(text="")   
+        self.frame_id_entry.delete(0, 'end')
+        self.payload_size_Entry.delete(0, 'end')
+        self.payload_size_Label.config(state="disabled")
+        self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
+        self.drop_down_id_baudrate.config(state="disabled")
+        self.drop_down_id_baudrate_var.set("Select")
+        self.drop_down_data_baudrate.config(state="disabled")
+        self.drop_down_data_baudrate_var.set("Select")
+        self.payload_Entry.delete(0, 'end')
+        self.fd_box.set(0)
+        self.ext_box.set(0)
+
 
     def clear_text(self):
         self.check_all_fields()
@@ -256,14 +300,9 @@ class CANInterface():
             self.Error_label.config(text="Error", fg='red')
         else:
             self.refresh_time()
-            self.Error_label.config(text="")
             self.get_frame_data()
-            self.frame_id_entry.delete(0, 'end')
-            self.payload_size_Entry.delete(0, 'end')
-            self.payload_Entry.delete(0, 'end')
-            self.fd_box.set(0)
-            self.ext_box.set(0)
             self.listbox1.insert(self.position, self.string)
+            self.initial_interface_state()
 
 
     def progress_bar(self):
