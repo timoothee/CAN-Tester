@@ -1,34 +1,19 @@
-import tkinter as tk
+from tkinter import *
 
-def change_dropdown(*args):
-    print("Selected option: ", var.get())
+def set_text(text):
+    e.delete(0,END)
+    e.insert(0,text)
+    return
 
-root = tk.Tk()
-root.geometry("500x500")
+win = Tk()
 
-var = tk.StringVar(root)
-var.set("Select an option")
+e = Entry(win,width=10)
+e.pack()
 
-frame = tk.Frame(root)
-frame.grid(row= 0, column = 0, sticky="nsew")
-frame1 = tk.Frame(root)
-frame1.grid(row= 1, column = 1, sticky="nsew")
+b1 = Button(win,text="animal",command=lambda:set_text("animal"))
+b1.pack()
 
-options = [
-    "Option 1",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 5"
-]
+b2 = Button(win,text="plant",command=lambda:set_text("plant"))
+b2.pack()
 
-dropdown1 = tk.OptionMenu(frame, var, *options, command=change_dropdown)
-dropdown1.grid(row = 0, column=0,padx=20)
-
-var2 = tk.StringVar(root)
-var2.set("Select an option")
-
-dropdown2 = tk.OptionMenu(frame1, var2, *options, command=change_dropdown)
-dropdown2.grid(row = 0, column =0,padx=20)
-
-root.mainloop()
+win.mainloop()

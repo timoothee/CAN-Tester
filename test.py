@@ -1,14 +1,23 @@
-import tkinter  as tk 
+# Importing Tkinter module
 from tkinter import *
+from tkinter.ttk import *
 
-root = Tk("")
+# Creating master Tkinter window
+master = Tk()
 
-def callback(x):
-    print(x)
+# Creating object of photoimage class
+# Image should be in the same folder
+# in which script is saved
+p1 = PhotoImage(file = 'Raspberry.gif')
 
-y= 77
+# Setting icon of master window
+master.iconphoto(False, p1)
 
-button = Button(root, text="Press", command=callback(y))
-button.grid()
+# Creating button
+b = Button(master, text = 'Click me !')
+b.pack(side = TOP)
 
-root.mainloop()
+# Infinite loop can be terminated by
+# keyboard or mouse interrupt
+# or by any predefined function (destroy())
+mainloop()

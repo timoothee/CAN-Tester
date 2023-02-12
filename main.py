@@ -1,7 +1,5 @@
-#import can_interface
 from can_frame import CanFrame
-#from can_interface import CANInterface
-from can_interface1 import *
+from can_interface import *
 from can_module import CanModule
 from tkinter import ttk
 
