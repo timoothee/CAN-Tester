@@ -118,7 +118,7 @@ class CANInterface():
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5, pady=(2,0))
 
-        self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="disabled")
+        self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
         self.send_button.grid(row = 1, column=3, padx=(110,0))
 
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
@@ -139,7 +139,6 @@ class CANInterface():
         self.clear_button_input.grid(row=0, column=2)
 
         self.listbox2.grid(row=0, column=0, padx=20, pady=(40,10))
-
         self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.check_all_fields())
         self.save_button_output.grid(row=0, column=1, padx=(20,10))
 
@@ -148,11 +147,53 @@ class CANInterface():
 
         self.Error_label = Label(self.root, text = "")
         self.Error_label.grid(row = 1, column= 3)
+
+        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
+        self.Edit_button.grid(row=0, column=3, padx=(30,10))
+
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
+        self.ok_button.grid(row=0, column=4)
+
+    def ok_command(self):
+        self.check_all_fields()
+        if self.box_retVal:
+            self.Error_label.config(text="Error", fg='red')
+        else:
+            self.refresh_time()
+            self.get_frame_data()
+            
+            self.listbox1.delete(self.our_item)
+            self.listbox1.insert(self.our_item, self.string_max)
+            self.listbox1.itemconfig(self.our_item, {'fg': 'green'})
+            self.initial_interface_state()
+        
+
+    def edit_button(self):
+        self.initial_interface_state()
+        self.our_item = self.listbox1.curselection()
+        self.ok_button.config(state="normal")
+        self.index_element = 0
+        self.value = self.listbox1.get(self.listbox1.curselection())
+        print("1", self.value)
+        self.value = self.value[10:]
+        print("2", self.value)
+        for element in self.value:
+            if element == " ":
+                break
+            self.index_element += 1
+        print("element", self.index_element)
+        self.frame_id_entry.insert(0,self.value[0:self.index_element])
+        self.payload_Entry.insert(0, self.value[self.index_element+1:])
+        if int(self.frame_id_entry.get(), 16) > 2047:
+            self.ext_flag_CkBt.select()
+            self.extended_box_checked()
+
+        
         
     def data_format(self, *args):
-        self.string = self.payload_entry.get() + "."
-        self.payload_entry = self.string
-        print(self.string)
+        self.string_data_format = self.payload_entry.get() + "."
+        self.payload_entry = self.string_data_format
+        print(self.string_data_format)
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -184,6 +225,11 @@ class CANInterface():
             self.lines = f.readlines()
         print(self.lines)
 
+        self.refresh_time()
+        
+        for item in self.lines:
+            self.string_import = self.current_time + "  " + item
+            self.listbox1.insert(0, self.string_import)
 
 
     def frame_uncompleted(self, *args):
@@ -218,8 +264,8 @@ class CANInterface():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-        self.string = self.current_time + "  " + self.frame_id_entry.get() + self.payload_entry.get()
-        print(self.string)
+        self.string_max = self.current_time + "  " + self.frame_id_entry.get() + " " + self.payload_entry.get()
+        print(self.string_max)
         self.position += 1
         
 
@@ -282,7 +328,7 @@ class CANInterface():
         self.payload_Entry.delete(0, 'end')
         self.fd_box.set(0)
         self.ext_box.set(0)
-
+        self.ok_button.config(state="disable")
 
     def clear_text(self):
         self.check_all_fields()
@@ -291,15 +337,10 @@ class CANInterface():
         else:
             self.refresh_time()
             self.get_frame_data()
-            self.listbox1.insert(self.position, self.string)
+            self.listbox1.insert(self.position, self.string_max)
             self.initial_interface_state()
 
 
     def progress_bar(self):
-        for i in range(100):
-            self.root.update_idletasks()
-            self.pb['value'] += 1
-            time.sleep(0.001)
-        time.sleep(2)
-        self.pb['value'] = 0
-    
+        self.Final_list = list(self.listbox1.get(0, END))
+        print (self.Final_list)

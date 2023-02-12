@@ -8,7 +8,6 @@ interface = CANInterface()
 
 if __name__ == "__main__":
     interface.build()
-
     interface.root.mainloop()
 
     fdbox = interface.fd_box.get()
