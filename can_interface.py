@@ -38,7 +38,6 @@ class CANInterface():
         self.data_baudrate_list = ('1M','2M','5M','8M')
 
     def build(self):
-        
         self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
@@ -93,7 +92,7 @@ class CANInterface():
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
         self.ext_flag_Label.grid(row =0 ,column=2, pady=(50,0))
 
-        self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box, command= lambda: self.extended_box_checked())
+        self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=2, padx= 10, pady=(2,0))
 
 
@@ -132,14 +131,15 @@ class CANInterface():
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
-        self.save_button_input = Button(self.can_frame4, text="Save", command = self.save)
+        self.save_button_input = Button(self.can_frame4, text="Save", command = self.save_messages_sent)
         self.save_button_input.grid(row=0, column=1, padx=10)
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
         self.clear_button_input.grid(row=0, column=2)
 
         self.listbox2.grid(row=0, column=0, padx=20, pady=(40,10))
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.check_all_fields())
+
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
         self.save_button_output.grid(row=0, column=1, padx=(20,10))
 
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.listbox2))
@@ -169,24 +169,28 @@ class CANInterface():
         
 
     def edit_button(self):
-        self.initial_interface_state()
-        self.our_item = self.listbox1.curselection()
-        self.ok_button.config(state="normal")
-        self.index_element = 0
-        self.value = self.listbox1.get(self.listbox1.curselection())
-        print("1", self.value)
-        self.value = self.value[10:]
-        print("2", self.value)
-        for element in self.value:
-            if element == " ":
-                break
-            self.index_element += 1
-        print("element", self.index_element)
-        self.frame_id_entry.insert(0,self.value[0:self.index_element])
-        self.payload_Entry.insert(0, self.value[self.index_element+1:])
-        if int(self.frame_id_entry.get(), 16) > 2047:
-            self.ext_flag_CkBt.select()
-            self.extended_box_checked()
+        if self.listbox1.size() != 0 and len(self.listbox1.curselection()) != 0:
+            self.initial_interface_state()
+            self.our_item = self.listbox1.curselection()
+            self.ok_button.config(state="normal")
+            self.index_element = 0
+            self.value = self.listbox1.get(self.listbox1.curselection())
+            print("1", self.value)
+            self.value = self.value[10:]
+            print("2", self.value)
+            for element in self.value:
+                if element == " ":
+                    break
+                self.index_element += 1
+            print("element", self.index_element)
+            self.frame_id_entry.insert(0,self.value[0:self.index_element])
+            self.payload_Entry.insert(0, self.value[self.index_element+1:])
+            if int(self.frame_id_entry.get(), 16) > 2047:
+                self.ext_flag_CkBt.select()
+                
+        else:
+            messagebox.showerror("Status", "Listbox empty")
+
 
         
         
@@ -219,7 +223,6 @@ class CANInterface():
         self.path = fd.askopenfilename(parent= self.ask_textfile_tk, initialdir= self.currdir, title= "Please select a file")
         if not self.path:
             messagebox.showerror("Status", "Folder not selected!")
-            sys.exit("File not selected!")
         self.textfile = os.path.join(r"", self.path)
         with open(self.textfile) as f:
             self.lines = f.readlines()
@@ -277,31 +280,27 @@ class CANInterface():
         if self.fd_box.get() == 1:
             self.drop_down_id_baudrate.config(state="normal")
             self.drop_down_data_baudrate.config(state="normal")
+            self.payload_size_Label.config(state="normal")
+            self.payload_size_Entry.config(state="normal")
             self.fd_box_checked_retVal = True
         else:
             self.drop_down_id_baudrate.config(state="disabled")
             self.drop_down_id_baudrate_var.set("Select")
             self.drop_down_data_baudrate.config(state="disabled")
             self.drop_down_data_baudrate_var.set("Select")
-
-        self.frame_uncompleted()
-            
-
-    def extended_box_checked(self):
-        self.extended_box_checked_retVal = False
-        if self.ext_box.get() == 1:
-            self.payload_size_Label.config(state="normal")
-            self.payload_size_Entry.config(state="normal")
-            self.extended_box_checked_retVal = True
-        else:
             self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
-            self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
+            self.payload_size_Entry.config(state="disabled")
 
         self.frame_uncompleted()
     
-    def save(self):
-        with open("MessagesOUT.txt","w") as f:
+    def save_messages_sent(self):
+        with open("Messages_sent.txt","w") as f:
+            for i in self.listbox1.get(0,END):
+                f.write(i+"\n")
+
+    def save_messages_received(self):
+        with open("Messages_received.txt","w") as f:
             for i in self.listbox1.get(0,END):
                 f.write(i+"\n")
 
