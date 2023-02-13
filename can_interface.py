@@ -18,6 +18,7 @@ class CANInterface():
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
+        self.baudrate_dict = {"1M":1,"2M":2,"5M":5,"8M":8}
         self.id_text.trace("w", self.frame_uncompleted)
         self.payload_size_entry = StringVar()
         self.payload_size_entry.trace("w", self.frame_uncompleted)
@@ -26,10 +27,10 @@ class CANInterface():
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
-        self.drop_down_id_baudrate_var = IntVar()
+        self.drop_down_id_baudrate_var = StringVar()
         self.drop_down_id_baudrate_var.set("Select")
         self.drop_down_id_baudrate_var.trace("w", self.id_baudrate_option_changed)
-        self.drop_down_data_baudrate_var = IntVar()
+        self.drop_down_data_baudrate_var = StringVar()
         self.drop_down_data_baudrate_var.set("Select")
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
         self.position = 0
@@ -123,7 +124,7 @@ class CANInterface():
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.clear_text, state="disabled", fg='red')
+        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, state="disabled", fg='red')
         self.add_to_q.grid(row = 1, column=6)
 
         self.listbox1.grid(row=0, column=0, padx=20, pady=(20,10))
@@ -156,7 +157,7 @@ class CANInterface():
 
     def ok_command(self):
         self.check_all_fields()
-        if self.box_retVal:
+        if self.fd_box_retVal:
             self.Error_label.config(text="Error", fg='red')
         else:
             self.refresh_time()
@@ -169,24 +170,56 @@ class CANInterface():
         
 
     def edit_button(self):
-        if self.listbox1.size() != 0 and len(self.listbox1.curselection()) != 0:
-            self.initial_interface_state()
-            self.our_item = self.listbox1.curselection()
-            self.ok_button.config(state="normal")
-            self.index_element = 0
-            self.value = self.listbox1.get(self.listbox1.curselection())
-            print("1", self.value)
-            self.value = self.value[10:]
-            print("2", self.value)
-            for element in self.value:
-                if element == " ":
-                    break
-                self.index_element += 1
-            print("element", self.index_element)
-            self.frame_id_entry.insert(0,self.value[0:self.index_element])
-            self.payload_Entry.insert(0, self.value[self.index_element+1:])
-            if int(self.frame_id_entry.get(), 16) > 2047:
-                self.ext_flag_CkBt.select()
+        if self.listbox1.size() != 0:
+            if len(self.listbox1.curselection()) != 0:
+                self.initial_interface_state()
+                self.our_item = self.listbox1.curselection()
+                self.ok_button.config(state="normal")
+                self.index_element = 0
+                self.index_bd_first = 0
+                self.index_bd_second = 0
+                self.index_bd = 0
+                self.value = self.listbox1.get(self.listbox1.curselection())
+                print("1", self.value)
+                self.value = self.value[10:]
+                print("2", self.value)
+                for element in self.value:
+                    if element == "#":
+                        print("here", type(element))
+                        if self.value[self.value.index(element)+1] == "#":
+                            self.index_element += 1
+                        break
+                    self.index_element += 1
+                if self.value.count('/') == 2:
+                    self.index_bd_first = self.value.index('/')
+                    self.index_bd_second = self.index_bd_first
+                    for element in self.value[self.index_bd_first+1:]:
+                        if element == "/":
+                            self.index_bd_second +=1
+                            break
+                        self.index_bd_second += 1
+                    self.fd_CkBt.select()
+                    self.drop_down_id_baudrate_var.set(self.value[self.index_bd_first+1:self.index_bd_second])
+                    self.drop_down_data_baudrate_var.set(self.value[self.index_bd_second+1:])
+                    self.drop_down_id_baudrate.config(state="normal")
+                    self.drop_down_data_baudrate.config(state="normal")
+                    
+
+                    
+                print("1", self.value)
+                print("2", self.index_element)
+                print("3", self.index_bd_first)
+                print("4", self.index_bd_second)
+
+                    
+                print("element", self.index_element)
+                self.frame_id_entry.insert(0,self.value[0:self.index_element])
+                self.payload_Entry.insert(0, self.value[self.index_element+1:self.index_bd_first])
+                if int(self.frame_id_entry.get(), 16) > 2047:
+                    self.ext_flag_CkBt.select()
+
+            else:
+                messagebox.showerror("Status", "Select a message")
                 
         else:
             messagebox.showerror("Status", "Listbox empty")
@@ -267,9 +300,14 @@ class CANInterface():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-        self.string_max = self.current_time + "  " + self.frame_id_entry.get() + " " + self.payload_entry.get()
-        print(self.string_max)
-        self.position += 1
+        if self.fd_box.get() == 1:
+            print("what youa asked for", self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
+            self.string_max = self.current_time + "  " + self.frame_id_entry.get() + "#" + self.payload_entry.get() + "/" + self.drop_down_id_baudrate_var.get() + "/" + self.drop_down_data_baudrate_var.get()
+            print(self.string_max)
+            self.position += 1
+        else:
+            self.string_max = self.current_time + "  " + self.frame_id_entry.get() + "#" + self.payload_entry.get() 
+            self.position += 1
         
 
     def fd_box_checked(self):
@@ -305,14 +343,14 @@ class CANInterface():
                 f.write(i+"\n")
 
     def check_all_fields(self):
-        self.box_retVal = False
+        self.fd_box_retVal = False
         if self.ext_box.get() == 1:
             if int(self.frame_id_entry.get(), 16) < 2047:
-                self.box_retVal = True
+                self.fd_box_retVal = True
             
         else:
             if int(self.frame_id_entry.get(), 16) > 2047:
-                self.box_retVal = True
+                self.fd_box_retVal = True
 
     def initial_interface_state(self):
         self.Error_label.config(text="")   
@@ -329,9 +367,9 @@ class CANInterface():
         self.ext_box.set(0)
         self.ok_button.config(state="disable")
 
-    def clear_text(self):
+    def add_to_Q(self):
         self.check_all_fields()
-        if self.box_retVal:
+        if self.fd_box_retVal:
             self.Error_label.config(text="Error", fg='red')
         else:
             self.refresh_time()
