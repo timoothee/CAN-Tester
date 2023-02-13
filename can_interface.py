@@ -264,17 +264,18 @@ class CANInterface():
         self.currdir = os.getcwd()
         self.path = fd.askopenfilename(parent= self.ask_textfile_tk, initialdir= self.currdir, title= "Please select a file")
         if not self.path:
-            messagebox.showerror("Status", "Folder not selected!")
-        self.textfile = os.path.join(r"", self.path)
-        with open(self.textfile) as f:
-            self.lines = f.readlines()
-        print(self.lines)
+            pass
+        else:
+            self.textfile = os.path.join(r"", self.path)
+            with open(self.textfile) as f:
+                self.lines = f.readlines()
+            print(self.lines)
 
-        self.refresh_time()
-        
-        for item in self.lines:
-            self.string_import = self.current_time + "  " + item
-            self.listbox1.insert(0, self.string_import)
+            self.refresh_time()
+            
+            for item in self.lines:
+                self.string_import = self.current_time + "  " + item
+                self.listbox1.insert(0, self.string_import)
 
 
     def frame_uncompleted(self, *args):
@@ -348,7 +349,6 @@ class CANInterface():
             self.payload_size_Label.config(state="disabled")
             self.payload_size_Entry.config(state="disabled")
             self.dropdown_can_baudrate.config(state= "normal")
-            
             self.can_baudrate_changed = False
 
         self.frame_uncompleted()
