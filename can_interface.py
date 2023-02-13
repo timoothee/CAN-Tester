@@ -27,6 +27,9 @@ class CANInterface():
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
+        self.dropdown_can_baudrate_var = StringVar()
+        self.dropdown_can_baudrate_var.set("Select")
+        self.dropdown_can_baudrate_var.trace("w", self.can_baudrate_option_changed)
         self.drop_down_id_baudrate_var = StringVar()
         self.drop_down_id_baudrate_var.set("Select")
         self.drop_down_id_baudrate_var.trace("w", self.id_baudrate_option_changed)
@@ -35,8 +38,11 @@ class CANInterface():
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
         self.position = 0
         self.can_interface_list = ('CAN0', 'CAN1')
+        self.can_baudrate_list = ('1M','2M','5M','8M')
         self.baudrate_list = ('1M','2M','5M','8M')
         self.data_baudrate_list = ('1M','2M','5M','8M')
+        self.can_baudrate_changed = False
+        self.cand_frame_changed = False
 
     def build(self):
         self.can_frame1 = Frame(self.root)
@@ -67,22 +73,29 @@ class CANInterface():
         self.drop_down_menu.config(width=5)
         self.drop_down_menu.grid(row = 1, column = 0)
 
+        self.can_baudrate_Label = Label(self.can_frame1, text="Can Baudrate")
+        self.can_baudrate_Label.grid(row=0, column=1,padx=(0,20), pady=(20,0))
 
-        self.can_interface_Label = Label(self.can_frame1, text = "Id Baudrate")
-        self.can_interface_Label.grid(row=0, column=1, padx=20, pady=(20,0))
+        self.dropdown_can_baudrate = OptionMenu(self.can_frame1, self.dropdown_can_baudrate_var, *self.can_baudrate_list)
+        self.dropdown_can_baudrate.config(width=5)
+        self.dropdown_can_baudrate.grid(row=1, column=1, padx=(0,20))
+
+        self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
+        self.id_baudrate_Label.grid(row=0, column=2, pady=(20,0))
 
         self.drop_down_id_baudrate = OptionMenu(self.can_frame1,  self.drop_down_id_baudrate_var, *self.baudrate_list)
         self.drop_down_id_baudrate.config(width=5, state="disabled")
-        self.drop_down_id_baudrate.grid(row = 1, column=1, padx= 20)
+        self.drop_down_id_baudrate.grid(row = 1, column=2)
 
-
-        self.can_interface_Label = Label(self.can_frame1, text = "Data Baudrate")
-        self.can_interface_Label.grid(row=0, column=2, padx=20, pady=(20,0))
+        self.data_baudrate_Label = Label(self.can_frame1, text = "Data Baudrate")
+        self.data_baudrate_Label.grid(row=0, column=3, pady=(20,0))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
         self.drop_down_data_baudrate.config(width=5, state="disabled")
-        self.drop_down_data_baudrate.grid(row = 1, column=2, padx= 20 )
+        self.drop_down_data_baudrate.grid(row = 1, column=3)
 
+        self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
+        self.send_button.grid(row = 1, column=4, padx=(80,0))
         
         self.fd_Label = Label(self.can_frame2, text="Fd")
         self.fd_Label.grid(row= 0, column =0, padx=(40,0), pady=(50,0))
@@ -118,9 +131,6 @@ class CANInterface():
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5, pady=(2,0))
 
-        self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
-        self.send_button.grid(row = 1, column=3, padx=(110,0))
-
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
@@ -155,6 +165,30 @@ class CANInterface():
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
+    def data_format(self, *args):
+        self.string_data_format = self.payload_entry.get() + "."
+        self.payload_entry = self.string_data_format
+        print(self.string_data_format)
+
+    def can_baudrate_option_changed(self, *args):
+        self.can_baudrate_changed = True
+        self.frame_uncompleted()
+
+    def id_baudrate_option_changed(self, *args):
+        self.id_baudrate_changed = True
+        self.frame_uncompleted()
+
+    def data_baudrate_option_changed(self, *args):
+        self.data_baudrate_changed = True
+        self.frame_uncompleted()
+
+    def can_frame_option_changed(self, *args):
+        self.cand_frame_changed = True
+        
+    def delete_function(self, listbox):
+        listbox.delete(ANCHOR)
+
+
     def ok_command(self):
         self.check_all_fields()
         if self.fd_box_retVal:
@@ -168,7 +202,6 @@ class CANInterface():
             self.listbox1.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
         
-
     def edit_button(self):
         if self.listbox1.size() != 0:
             if len(self.listbox1.curselection()) != 0:
@@ -204,8 +237,6 @@ class CANInterface():
                     self.drop_down_id_baudrate.config(state="normal")
                     self.drop_down_data_baudrate.config(state="normal")
                     
-
-                    
                 print("1", self.value)
                 print("2", self.index_element)
                 print("3", self.index_bd_first)
@@ -223,28 +254,6 @@ class CANInterface():
                 
         else:
             messagebox.showerror("Status", "Listbox empty")
-
-
-        
-        
-    def data_format(self, *args):
-        self.string_data_format = self.payload_entry.get() + "."
-        self.payload_entry = self.string_data_format
-        print(self.string_data_format)
-
-    def id_baudrate_option_changed(self, *args):
-        self.id_baudrate_changed = True
-        self.frame_uncompleted()
-
-    def data_baudrate_option_changed(self, *args):
-        self.data_baudrate_changed = True
-        self.frame_uncompleted()
-
-    def can_frame_option_changed(self, *args):
-        self.cand_frame_changed = True
-        
-    def delete_function(self, listbox):
-        listbox.delete(ANCHOR)
 
 
     def import_messagges(self):
@@ -276,11 +285,18 @@ class CANInterface():
                 pass
             else:
                 self.frame_uncompleted_retVal = 1
+        else: 
+            if self.can_baudrate_changed == True:
+                pass
+            else:
+                self.frame_uncompleted_retVal = 1
+
         if self.ext_box.get() == 1:
             if len(self.payload_size_Entry.get()) != 0:
                 pass
             else:
                 self.frame_uncompleted_retVal = 1
+                
         if len(self.frame_id_entry.get()) != 0 and len(self.payload_Entry.get()) != 0:
             pass
         else:
@@ -316,6 +332,8 @@ class CANInterface():
         self.data_baudrate_changed = False
 
         if self.fd_box.get() == 1:
+            self.dropdown_can_baudrate.config(state= "disabled")
+            self.dropdown_can_baudrate_var.set("Select")
             self.drop_down_id_baudrate.config(state="normal")
             self.drop_down_data_baudrate.config(state="normal")
             self.payload_size_Label.config(state="normal")
@@ -329,6 +347,9 @@ class CANInterface():
             self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
             self.payload_size_Entry.config(state="disabled")
+            self.dropdown_can_baudrate.config(state= "normal")
+            
+            self.can_baudrate_changed = False
 
         self.frame_uncompleted()
     
