@@ -6,6 +6,7 @@ import ast
 import os
 from tkinter import messagebox
 import sys
+#from tkmacosx import Button
 
 class CANInterface():
 
@@ -18,7 +19,7 @@ class CANInterface():
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
-        self.baudrate_dict = {"1M":1,"2M":2,"5M":5,"8M":8}
+        self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}
         self.id_text.trace("w", self.frame_uncompleted)
         self.payload_size_entry = StringVar()
         self.payload_size_entry.trace("w", self.frame_uncompleted)
@@ -35,10 +36,10 @@ class CANInterface():
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
         self.position = 0
         self.can_interface_list = ('CAN0', 'CAN1')
-        self.can_baudrate_list = ('1M','2M','5M','8M')
-        self.baudrate_list = ('1M','2M','5M','8M')
-        self.data_baudrate_list = ('1M','2M','5M','8M')
+        self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
+        self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
         self.cand_frame_changed = False
+        self.can_down_var = True
 
     def build(self):
         self.can_frame1 = Frame(self.root)
@@ -84,8 +85,11 @@ class CANInterface():
         self.drop_down_data_baudrate.grid(row = 1, column=3)
 
         self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
-        self.send_button.grid(row = 1, column=4, padx=(80,0))
+        self.send_button.grid(row = 1, column=4)
         
+        self.up_down_button = Button(self.can_frame1, text="DOWN",fg="red", command=self.up_down_button_command, width=3)
+        self.up_down_button.grid(row=0, column=4, padx=170)
+
         self.fd_Label = Label(self.can_frame2, text="Fd")
         self.fd_Label.grid(row= 0, column =0, padx=(40,0), pady=(50,0))
 
@@ -153,6 +157,14 @@ class CANInterface():
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
+
+    def up_down_button_command(self):
+        if self.can_down_var:
+            self.up_down_button.config(fg="green", text= "UP")
+            self.can_down_var = False
+        else:
+            self.up_down_button.config(fg="red", text="DOWN")
+            self.can_down_var = True
 
     def data_format(self, *args):
         self.string_data_format = self.payload_entry.get() + "."
