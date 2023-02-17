@@ -13,7 +13,7 @@ class CANInterface():
     def __init__(self):
         self.root = Tk("")
         self.root.title("CanInterfaceGUI")
-        self.root.iconbitmap("Raspberry.ico")
+        self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x700")
 
         self.fd_box = IntVar()
