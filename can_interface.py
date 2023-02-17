@@ -94,7 +94,7 @@ class CANInterface():
         self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
         self.send_button.grid(row = 1, column=4, sticky='e')
         
-        self.up_down_button = Button(self.can_frame1, text="DOWN",fg="red", command=self.up_down_button_command, width=3)
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3)
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Fd")
@@ -167,9 +167,11 @@ class CANInterface():
 
     def up_down_button_command(self):
         if self.can_down_var:
+            self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
         else:
+            self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.can_down_var = True
 
