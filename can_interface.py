@@ -72,24 +72,30 @@ class CANInterface():
         self.drop_down_menu.grid(row = 1, column = 0)
 
         self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
-        self.id_baudrate_Label.grid(row=0, column=2, pady=(20,0))
+        self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
 
         self.drop_down_id_baudrate = OptionMenu(self.can_frame1,  self.drop_down_id_baudrate_var, *self.baudrate_list)
         self.drop_down_id_baudrate.config(width=5, state="disabled")
-        self.drop_down_id_baudrate.grid(row = 1, column=2)
+        self.drop_down_id_baudrate.grid(row = 1, column=1)
 
         self.data_baudrate_Label = Label(self.can_frame1, text = "Data Baudrate")
-        self.data_baudrate_Label.grid(row=0, column=3, pady=(20,0))
+        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
         self.drop_down_data_baudrate.config(width=5, state="disabled")
-        self.drop_down_data_baudrate.grid(row = 1, column=3)
+        self.drop_down_data_baudrate.grid(row = 1, column=2)
+
+        self.status_label = Label(self.can_frame1, text="STATUS")
+        self.status_label.grid(row=0, column=3, padx=30, pady=(20,0))
+
+        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
+        self.default_status_label.grid(row=1, column=3, padx=30)
 
         self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
-        self.send_button.grid(row = 1, column=4)
+        self.send_button.grid(row = 1, column=4, sticky='e')
         
         self.up_down_button = Button(self.can_frame1, text="DOWN",fg="red", command=self.up_down_button_command, width=3)
-        self.up_down_button.grid(row=0, column=4, padx=170)
+        self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Fd")
         self.fd_Label.grid(row= 0, column =0, padx=(40,0), pady=(50,0))
@@ -161,10 +167,10 @@ class CANInterface():
 
     def up_down_button_command(self):
         if self.can_down_var:
-            self.up_down_button.config(fg="green", text= "UP")
+            self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
         else:
-            self.up_down_button.config(fg="red", text="DOWN")
+            self.up_down_button.config(fg="green", text= "UP")
             self.can_down_var = True
 
     def data_format(self, *args):
