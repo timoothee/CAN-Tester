@@ -10,9 +10,10 @@ import sys
 
 class CANInterface():
 
-    def __init__(self):
+    def __init__(self, gui_revision: str):
+        self.gui_revision = gui_revision
         self.root = Tk("")
-        self.root.title("CanInterfaceGUI")
+        self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x700")
 

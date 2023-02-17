@@ -3,7 +3,7 @@ from can_interface import *
 from can_module import CanModule
 from tkinter import ttk
 
-interface = CANInterface()
+interface = CANInterface("v.1.0.0")
 
 
 if __name__ == "__main__":
