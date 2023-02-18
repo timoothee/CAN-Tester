@@ -43,7 +43,7 @@ class CANInterface():
         self.can_down_var = True
 
     def build(self):
-        self.can_frame1 = Frame(self.root)
+        self.can_frame1 = Frame(self.root, borderwidth=2, border=2)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
         self.can_frame2 = Frame(self.root)
@@ -252,8 +252,11 @@ class CANInterface():
                 print("element", self.index_element)
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
                 self.payload_Entry.insert(0, self.value[self.index_element+1:self.index_bd_first])
-                if int(self.frame_id_entry.get(), 16) > 2047:
-                    self.ext_flag_CkBt.select()
+                try:
+                    if int(self.frame_id_entry.get(), 16) > 2047:
+                        self.ext_flag_CkBt.select()
+                except:
+                    print("Not hexadecimal")
 
             else:
                 messagebox.showerror("Status", "Select a message")
@@ -363,12 +366,17 @@ class CANInterface():
     def check_all_fields(self):
         self.fd_box_retVal = False
         if self.ext_box.get() == 1:
-            if int(self.frame_id_entry.get(), 16) < 2047:
-                self.fd_box_retVal = True
-            
+            try:
+                if int(self.frame_id_entry.get(), 16) < 2047:
+                    self.fd_box_retVal = True
+            except:
+                    print("Not hexadecimal")
         else:
-            if int(self.frame_id_entry.get(), 16) > 2047:
-                self.fd_box_retVal = True
+            try:
+                if int(self.frame_id_entry.get(), 16) > 2047:
+                    self.fd_box_retVal = True
+            except:
+                    print("Not hexadecimal")
 
     def initial_interface_state(self):
         self.Error_label.config(text="")   
