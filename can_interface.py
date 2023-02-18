@@ -75,14 +75,14 @@ class CANInterface():
         self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
 
         self.drop_down_id_baudrate = OptionMenu(self.can_frame1,  self.drop_down_id_baudrate_var, *self.baudrate_list)
-        self.drop_down_id_baudrate.config(width=5, state="disabled")
+        self.drop_down_id_baudrate.config(width=5)
         self.drop_down_id_baudrate.grid(row = 1, column=1)
 
         self.data_baudrate_Label = Label(self.can_frame1, text = "Data Baudrate")
         self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
-        self.drop_down_data_baudrate.config(width=5, state="disabled")
+        self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         self.status_label = Label(self.can_frame1, text="STATUS")
@@ -337,16 +337,10 @@ class CANInterface():
         self.data_baudrate_changed = False
 
         if self.fd_box.get() == 1:
-            self.drop_down_id_baudrate.config(state="normal")
-            self.drop_down_data_baudrate.config(state="normal")
             self.payload_size_Label.config(state="normal")
             self.payload_size_Entry.config(state="normal")
             self.fd_box_checked_retVal = True
         else:
-            self.drop_down_id_baudrate.config(state="disabled")
-            self.drop_down_id_baudrate_var.set("Select")
-            self.drop_down_data_baudrate.config(state="disabled")
-            self.drop_down_data_baudrate_var.set("Select")
             self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
             self.payload_size_Entry.config(state="disabled")
