@@ -39,7 +39,7 @@ class CANInterface():
         self.can_interface_list = ('CAN0', 'CAN1')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
-        self.cand_frame_changed = False
+        self.can_frame_changed = False
         self.can_down_var = True
 
     def build(self):
@@ -94,7 +94,7 @@ class CANInterface():
         self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
         self.send_button.grid(row = 1, column=4, sticky='e')
         
-        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3)
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Fd")
@@ -166,6 +166,8 @@ class CANInterface():
         self.ok_button.grid(row=0, column=4)
 
     def up_down_button_command(self):
+        self.cand_frame_changed
+        
         if self.can_down_var:
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
@@ -189,7 +191,7 @@ class CANInterface():
         self.frame_uncompleted()
 
     def can_frame_option_changed(self, *args):
-        self.cand_frame_changed = True
+        self.can_frame_changed = True
         
     def delete_function(self, listbox):
         listbox.delete(ANCHOR)
@@ -290,6 +292,12 @@ class CANInterface():
     def frame_uncompleted(self, *args):
         self.frame_uncompleted_retVal = 0
 
+        try:
+            if self.can_frame_changed == True and self.id_baudrate_changed == True and self.data_baudrate_changed == True:
+                self.up_down_button.config(state="normal")
+        except:
+            pass
+
         if self.ext_box.get() == 1:
             if len(self.payload_size_Entry.get()) != 0:
                 pass
@@ -300,6 +308,8 @@ class CANInterface():
             pass
         else:
             self.frame_uncompleted_retVal = 1
+
+        
 
         print("retvval", self.frame_uncompleted_retVal)
         print(self.id_text.get())
