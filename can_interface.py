@@ -20,12 +20,8 @@ class CANInterface():
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
-        self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}
-        self.id_text.trace("w", self.frame_uncompleted)
         self.payload_size_entry = IntVar()
-        self.payload_size_entry.trace("w", self.frame_uncompleted)
         self.payload_entry = IntVar()
-        self.payload_entry.trace("w", self.frame_uncompleted)
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
@@ -39,6 +35,7 @@ class CANInterface():
         self.can_interface_list = ('CAN0', 'CAN1')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
+        self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}        
         self.can_frame_changed = False
         self.can_down_var = True
 
@@ -365,14 +362,14 @@ class CANInterface():
         
         
     def initial_interface_state(self):
-        self.Error_label.config(text="")   
+        self.Error_label.config(text="")
+        self.fd_box.set(0)
+        self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
         self.payload_size_Entry.delete(0, 'end')
         self.payload_size_Label.config(state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
         self.payload_Entry.delete(0, 'end')
-        self.fd_box.set(0)
-        self.ext_box.set(0)
 
     def add_to_Q(self):
         self.check_all_fields()
