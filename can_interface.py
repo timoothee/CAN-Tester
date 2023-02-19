@@ -313,15 +313,9 @@ class CANInterface():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-        if self.fd_box.get() == 1:
-            print("what youa asked for", self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.string_max = self.current_time + "  " + self.frame_id_entry.get() + "#" + self.payload_entry.get() + "/" + self.drop_down_id_baudrate_var.get() + "/" + self.drop_down_data_baudrate_var.get()
-            print(self.string_max)
+            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.payload_entry.get())
             self.position += 1
-        else:
-            self.string_max = self.current_time + "  " + self.frame_id_entry.get() + "#" + self.payload_entry.get() 
-            self.position += 1
-        
+
 
     def fd_box_checked(self):
         self.fd_box_checked_retVal = False
@@ -361,12 +355,14 @@ class CANInterface():
         if self.fd_box.get() == 1:
             if int(self.frame_id_entry.get(), 16) < 2047:
                 self.check_all_fields_retVal = True
+            if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
+                self.check_all_fields_retVal = True
+
         else:
             if int(self.frame_id_entry.get(), 16) > 2047:
                 self.check_all_fields_retVal = True
-        if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
-            self.check_all_fields_retVal = True
 
+        
         
     def initial_interface_state(self):
         self.Error_label.config(text="")   
