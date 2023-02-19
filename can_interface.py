@@ -174,15 +174,15 @@ class CANInterface():
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
-        self.frame_uncompleted()
+        self.bt_up_down_active()
 
     def data_baudrate_option_changed(self, *args):
         self.data_baudrate_changed = True
-        self.frame_uncompleted()
+        self.bt_up_down_active()
 
     def can_frame_option_changed(self, *args):
         self.can_frame_changed = True
-        self.frame_uncompleted()
+        self.bt_up_down_active()
         
     def delete_function(self, listbox):
         listbox.delete(ANCHOR)
@@ -279,31 +279,13 @@ class CANInterface():
                 self.listbox1.insert(0, self.string_import)
 
 
-    def frame_uncompleted(self, *args):
-        self.frame_uncompleted_retVal = 0
-
+    def btn_up_down_active(self, *args):
+        self.bt_up_down_active_retVal = 0
         try:
             if self.can_frame_changed == True and self.id_baudrate_changed == True and self.data_baudrate_changed == True:
                 self.up_down_button.config(state="normal")
         except:
             pass
-
-        if self.ext_box.get() == 1:
-            if len(self.payload_size_Entry.get()) != 0:
-                pass
-            else:
-                self.frame_uncompleted_retVal = 1
-                
-        if len(self.frame_id_entry.get()) != 0 and len(self.payload_Entry.get()) != 0:
-            pass
-        else:
-            self.frame_uncompleted_retVal = 1
-
-        
-
-        print("retvval", self.frame_uncompleted_retVal)
-        print(self.id_text.get())
-
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -327,8 +309,6 @@ class CANInterface():
             self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
             self.payload_size_Entry.config(state="disabled")
-
-        self.frame_uncompleted()
     
     def save_messages_sent(self):
         with open("Messages_sent.txt","w") as f:
