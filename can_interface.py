@@ -22,9 +22,9 @@ class CANInterface():
         self.id_text = StringVar()
         self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}
         self.id_text.trace("w", self.frame_uncompleted)
-        self.payload_size_entry = StringVar()
+        self.payload_size_entry = IntVar()
         self.payload_size_entry.trace("w", self.frame_uncompleted)
-        self.payload_entry = StringVar()
+        self.payload_entry = IntVar()
         self.payload_entry.trace("w", self.frame_uncompleted)
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
@@ -166,8 +166,6 @@ class CANInterface():
         self.ok_button.grid(row=0, column=4)
 
     def up_down_button_command(self):
-        self.cand_frame_changed
-        
         if self.can_down_var:
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
@@ -176,11 +174,6 @@ class CANInterface():
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.can_down_var = True
-
-    def data_format(self, *args):
-        self.string_data_format = self.payload_entry.get() + "."
-        self.payload_entry = self.string_data_format
-        print(self.string_data_format)
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -192,14 +185,14 @@ class CANInterface():
 
     def can_frame_option_changed(self, *args):
         self.can_frame_changed = True
+        self.frame_uncompleted()
         
     def delete_function(self, listbox):
         listbox.delete(ANCHOR)
 
-
     def ok_command(self):
         self.check_all_fields()
-        if self.fd_box_retVal:
+        if self.check_all_fields_retVal:
             self.Error_label.config(text="Error", fg='red')
         else:
             self.refresh_time()
@@ -357,20 +350,24 @@ class CANInterface():
                 f.write(i+"\n")
 
     def check_all_fields(self):
-        self.fd_box_retVal = False
+        self.check_all_fields_retVal = False
         if self.ext_box.get() == 1:
-            try:
-                if int(self.frame_id_entry.get(), 16) < 2047:
-                    self.fd_box_retVal = True
-            except:
-                    print("Not hexadecimal")
+            if int(self.frame_id_entry.get(), 16) < 2047:
+                self.check_all_fields_retVal = True
         else:
-            try:
-                if int(self.frame_id_entry.get(), 16) > 2047:
-                    self.fd_box_retVal = True
-            except:
-                    print("Not hexadecimal")
+            if int(self.frame_id_entry.get(), 16) > 2047 and self.fd_box.get() != 1:
+                self.check_all_fields_retVal = True
 
+        if self.fd_box.get() == 1:
+            if int(self.frame_id_entry.get(), 16) < 2047:
+                self.check_all_fields_retVal = True
+        else:
+            if int(self.frame_id_entry.get(), 16) > 2047:
+                self.check_all_fields_retVal = True
+        if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
+            self.check_all_fields_retVal = True
+
+        
     def initial_interface_state(self):
         self.Error_label.config(text="")   
         self.frame_id_entry.delete(0, 'end')
@@ -383,7 +380,7 @@ class CANInterface():
 
     def add_to_Q(self):
         self.check_all_fields()
-        if self.fd_box_retVal:
+        if self.check_all_fields_retVal:
             self.Error_label.config(text="Error", fg='red')
         else:
             self.refresh_time()
