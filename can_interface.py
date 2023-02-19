@@ -134,7 +134,7 @@ class CANInterface():
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, state="disabled", fg='red')
+        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, fg='red')
         self.add_to_q.grid(row = 1, column=6)
 
         self.listbox1.grid(row=0, column=0, padx=20, pady=(20,10))
@@ -162,7 +162,7 @@ class CANInterface():
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
         self.ok_button.grid(row=0, column=4)
 
     def up_down_button_command(self):
@@ -289,12 +289,6 @@ class CANInterface():
 
     def frame_uncompleted(self, *args):
         self.frame_uncompleted_retVal = 0
-        
-        if self.fd_box.get() == 1:
-            if self.id_baudrate_changed == True and self.data_baudrate_changed == True:
-                pass
-            else:
-                self.frame_uncompleted_retVal = 1
 
         if self.ext_box.get() == 1:
             if len(self.payload_size_Entry.get()) != 0:
@@ -306,11 +300,6 @@ class CANInterface():
             pass
         else:
             self.frame_uncompleted_retVal = 1
-        
-        if self.frame_uncompleted_retVal == 0:
-            self.add_to_q.config(state= "normal")
-        else:
-            self.add_to_q.config(state= "disabled")
 
         print("retvval", self.frame_uncompleted_retVal)
         print(self.id_text.get())
@@ -378,14 +367,9 @@ class CANInterface():
         self.payload_size_Entry.delete(0, 'end')
         self.payload_size_Label.config(state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
-        self.drop_down_id_baudrate.config(state="disabled")
-        self.drop_down_id_baudrate_var.set("Select")
-        self.drop_down_data_baudrate.config(state="disabled")
-        self.drop_down_data_baudrate_var.set("Select")
         self.payload_Entry.delete(0, 'end')
         self.fd_box.set(0)
         self.ext_box.set(0)
-        self.ok_button.config(state="disable")
 
     def add_to_Q(self):
         self.check_all_fields()
