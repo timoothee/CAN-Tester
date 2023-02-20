@@ -280,12 +280,45 @@ class CANInterface():
 
 
     def btn_up_down_active(self, *args):
-        self.bt_up_down_active_retVal = 0
         try:
             if self.can_frame_changed == True and self.id_baudrate_changed == True and self.data_baudrate_changed == True:
                 self.up_down_button.config(state="normal")
         except:
             pass
+
+    def check_all_fields_completed(self):
+        self.check_all_fields_completed_retVal = False
+        self.id_entry_error = False
+        self.payload_size_error = False
+        self.payload_entry_error = False
+        if self.ext_box.get() == 1:
+            if len(self.payload_size_Entry.get()) != 0:
+                pass
+            else:
+                self.payload_size_error = True
+                self.check_all_fields_completed_retVal = True
+
+        if len(self.frame_id_entry.get()) != 0:
+            pass
+        else:
+            self.id_entry_error = True
+            self.check_all_fields_completed_retVal = True
+
+        if len(self.payload_Entry.get()) != 0:
+            pass
+        else:
+            self.payload_entry_error = True
+            self.check_all_fields_completed_retVal = True
+
+    def error(self):
+        if self.check_all_fields_completed_retVal:
+            if self.id_entry_error == True:
+                self.frame_id_entry.config(highlightbackground = 'red')
+            if self.payload_size_error == True:
+                self.payload_size_Entry.config(highlightbackground = 'red')
+            if self.payload_entry_error == True:
+                self.payload_Entry.config(highlightbackground = 'red')
+
 
     def refresh_time(self):
         self.t = time.localtime()
