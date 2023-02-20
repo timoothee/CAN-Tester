@@ -318,7 +318,15 @@ class CANInterface():
                 self.payload_size_Entry.config(highlightbackground = 'red')
             if self.payload_entry_error == True:
                 self.payload_Entry.config(highlightbackground = 'red')
-
+    
+    def fields_completed_wrong_error(self):
+        if self.check_all_fields_retVal == True:
+            if self.id_entry_error == True:
+                self.frame_id_entry.config(fg= 'red')
+            if self.payload_size_error == True:
+                self.payload_size_Entry.config(fg= 'red')
+            if self.payload_entry_error == True:
+                self.payload_Entry.config(fg= 'red')
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -354,28 +362,32 @@ class CANInterface():
                 f.write(i+"\n")
 
     def check_all_fields(self):
+        self.check_all_fields_retVal = False
         if self.check_all_fields_completed_retVal:
-            self.check_all_fields_retVal = True
             pass
         else:
-            self.check_all_fields_retVal = False
             if self.ext_box.get() == 1:
                 if int(self.frame_id_entry.get(), 16) < 2047:
                     self.id_entry_error = True
+                    self.check_all_fields_retVal = True
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047 and self.fd_box.get() != 1:
                     self.id_entry_error = True
+                    self.check_all_fields_retVal = True
 
             if self.fd_box.get() == 1:
                 if int(self.frame_id_entry.get(), 16) < 2047:
                     self.id_entry_error = True
+                    self.check_all_fields_retVal = True
                 if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
                     self.payload_size_error = True
                     self.payload_entry_error = True
+                    self.check_all_fields_retVal = True
 
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
+                    self.check_all_fields_retVal = True
 
         
     def initial_interface_state(self):
@@ -390,9 +402,10 @@ class CANInterface():
 
     def add_to_Q(self):
         self.check_all_fields_completed()
-        self.fields_uncompleted_error()
         self.check_all_fields()
-        if self.check_all_fields_retVal == False:
+        self.fields_uncompleted_error()
+        self.fields_completed_wrong_error()
+        if self.check_all_fields_retVal == False and self.check_all_fields_completed_retVal == False:
             self.refresh_time()
             self.get_frame_data()
             self.listbox1.insert(self.position, self.string_max)
