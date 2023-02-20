@@ -310,7 +310,7 @@ class CANInterface():
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
 
-    def error(self):
+    def fields_uncompleted_error(self):
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
                 self.frame_id_entry.config(highlightbackground = 'red')
@@ -318,7 +318,6 @@ class CANInterface():
                 self.payload_size_Entry.config(highlightbackground = 'red')
             if self.payload_entry_error == True:
                 self.payload_Entry.config(highlightbackground = 'red')
-
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -372,7 +371,6 @@ class CANInterface():
             if int(self.frame_id_entry.get(), 16) > 2047:
                 self.check_all_fields_retVal = True
 
-        
         
     def initial_interface_state(self):
         self.Error_label.config(text="")
