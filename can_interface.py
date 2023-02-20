@@ -15,13 +15,15 @@ class CANInterface():
         self.root = Tk("")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
-        self.root.geometry("600x700")
+        self.root.geometry("600x800")
 
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.payload_size_entry = IntVar()
+        self.payload_size_entry.set("")
         self.payload_entry = IntVar()
+        self.payload_entry.set("")
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
@@ -101,38 +103,38 @@ class CANInterface():
         self.fd_CkBt.grid(row = 1, column=0, padx=(40,0), pady=(2,0))
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
-        self.ext_flag_Label.grid(row =0 ,column=2, pady=(50,0))
+        self.ext_flag_Label.grid(row =0 ,column=1, pady=(50,0))
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
-        self.ext_flag_CkBt.grid(row=1, column=2, padx= 10, pady=(2,0))
+        self.ext_flag_CkBt.grid(row=1, column=1, padx= 10, pady=(2,0))
 
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
-        self.frame_id_Label.grid(row = 0, column=3, pady=(50,0))
+        self.frame_id_Label.grid(row = 0, column=2, pady=(50,0))
 
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 5)
-        self.frame_id_entry.grid(row = 1, column=3, padx=(5,0), pady=(2,0))
+        self.frame_id_entry.grid(row = 1, column=2, padx=(5,0), pady=(2,0))
 
 
         self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=4, pady=(50,0))
+        self.payload_size_Label.grid(row = 0, column=3, pady=(50,0))
 
         self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
-        self.payload_size_Entry.grid(row = 1, column=4, pady=(2,0))
+        self.payload_size_Entry.grid(row = 1, column=3, pady=(2,0))
 
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
-        self.payload_Label.grid(row = 0, column=5, pady=(50,0))
+        self.payload_Label.grid(row = 0, column=4, pady=(50,0))
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
-        self.payload_Entry.grid(row = 1, column=5, pady=(2,0))
+        self.payload_Entry.grid(row = 1, column=4, pady=(2,0))
 
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
         self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, fg='red')
-        self.add_to_q.grid(row = 1, column=6)
+        self.add_to_q.grid(row = 1, column=5, padx=30)
 
         self.listbox1.grid(row=0, column=0, padx=20, pady=(20,10))
 
@@ -148,19 +150,22 @@ class CANInterface():
         self.listbox2.grid(row=0, column=0, padx=20, pady=(40,10))
 
         self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
-        self.save_button_output.grid(row=0, column=1, padx=(20,10))
+        self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
 
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.listbox2))
-        self.clear_button_output.grid(row=0, column=2)
+        self.clear_button_output.grid(row=0, column=1, sticky='n')
 
-        self.Error_label = Label(self.root, text = "")
-        self.Error_label.grid(row = 1, column= 3)
+        self.Error_label = Label(self.can_frame2, text = "")
+        self.Error_label.grid(row = 0, column= 5, pady=(50,0))
 
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
         self.ok_button.grid(row=0, column=4)
+
+        self.listbox3 =Listbox(self.can_frame6, width = 30,height=5, selectmode=EXTENDED)
+        self.listbox3.grid(row=0, column= 2, padx=(127,0))
 
     def up_down_button_command(self):
         if self.can_down_var:
@@ -174,15 +179,15 @@ class CANInterface():
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
-        self.bt_up_down_active()
+        self.btn_up_down_active()
 
     def data_baudrate_option_changed(self, *args):
         self.data_baudrate_changed = True
-        self.bt_up_down_active()
+        self.btn_up_down_active()
 
     def can_frame_option_changed(self, *args):
         self.can_frame_changed = True
-        self.bt_up_down_active()
+        self.btn_up_down_active()
         
     def delete_function(self, listbox):
         listbox.delete(ANCHOR)
@@ -314,10 +319,13 @@ class CANInterface():
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
                 self.frame_id_entry.config(highlightbackground = 'red')
+                self.Error_label.config(text="Error: Id uncompleted", fg='red')
             if self.payload_size_error == True:
                 self.payload_size_Entry.config(highlightbackground = 'red')
+                self.Error_label.config(text="Error: Payload size uncompleted", fg='red')
             if self.payload_entry_error == True:
                 self.payload_Entry.config(highlightbackground = 'red')
+                self.Error_label.config(text="Error: Payload uncompleted", fg='red')
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
