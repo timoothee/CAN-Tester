@@ -212,43 +212,17 @@ class CANInterface():
                 self.our_item = self.listbox1.curselection()
                 self.ok_button.config(state="normal")
                 self.index_element = 0
-                self.index_bd_first = 0
-                self.index_bd_second = 0
-                self.index_bd = 0
-                self.value = self.listbox1.get(self.listbox1.curselection())
-                print("1", self.value)
-                self.value = self.value[10:]
-                print("2", self.value)
+                self.value = self.listbox1.get(self.listbox1.curselection())[10:]
                 for element in self.value:
                     if element == "#":
-                        print("here", type(element))
                         if self.value[self.value.index(element)+1] == "#":
                             self.index_element += 1
                         break
                     self.index_element += 1
-                if self.value.count('/') == 2:
-                    self.index_bd_first = self.value.index('/')
-                    self.index_bd_second = self.index_bd_first
-                    for element in self.value[self.index_bd_first+1:]:
-                        if element == "/":
-                            self.index_bd_second +=1
-                            break
-                        self.index_bd_second += 1
-                    self.fd_CkBt.select()
-                    self.drop_down_id_baudrate_var.set(self.value[self.index_bd_first+1:self.index_bd_second])
-                    self.drop_down_data_baudrate_var.set(self.value[self.index_bd_second+1:])
-                    self.drop_down_id_baudrate.config(state="normal")
-                    self.drop_down_data_baudrate.config(state="normal")
                     
-                print("1", self.value)
-                print("2", self.index_element)
-                print("3", self.index_bd_first)
-                print("4", self.index_bd_second)
-
-                    
-                print("element", self.index_element)
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
-                self.payload_Entry.insert(0, self.value[self.index_element+1:self.index_bd_first])
+                self.payload_Entry.insert(0, self.value[self.index_element+1:])
+
                 try:
                     if int(self.frame_id_entry.get(), 16) > 2047:
                         self.ext_flag_CkBt.select()
