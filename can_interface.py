@@ -164,8 +164,8 @@ class CANInterface():
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
         self.ok_button.grid(row=0, column=4)
 
-        self.listbox3 =Listbox(self.can_frame6, width = 30,height=5, selectmode=EXTENDED)
-        self.listbox3.grid(row=0, column= 2, padx=(127,0))
+        self.error_listbox =Listbox(self.can_frame6, width = 30,height=5, selectmode=EXTENDED)
+        self.error_listbox.grid(row=0, column= 2, padx=(127,0))
 
     def up_down_button_command(self):
         if self.can_down_var:
@@ -296,13 +296,6 @@ class CANInterface():
         self.id_entry_error = False
         self.payload_size_error = False
         self.payload_entry_error = False
-        if self.ext_box.get() == 1:
-            if len(self.payload_size_Entry.get()) != 0:
-                pass
-            else:
-                self.payload_size_error = True
-                self.check_all_fields_completed_retVal = True
-
         if len(self.frame_id_entry.get()) != 0:
             pass
         else:
@@ -315,26 +308,81 @@ class CANInterface():
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
 
+        if self.fd_box.get() == 1:
+            if len(self.payload_size_Entry.get()) != 0:
+                print(len(self.payload_size_Entry.get()))
+                pass
+            else:
+                self.payload_size_error = True
+                self.check_all_fields_completed_retVal = True
+
+    def check_all_fields(self):
+        self.check_all_fields_retVal = False
+        if self.check_all_fields_completed_retVal:
+            pass
+        else:
+            if self.ext_box.get() == 1:
+                if int(self.frame_id_entry.get(), 16) < 2047:
+                    self.id_entry_error = True
+                    self.check_all_fields_retVal = True
+            else:
+                if int(self.frame_id_entry.get(), 16) > 2047 and self.fd_box.get() != 1:
+                    self.id_entry_error = True
+                    self.check_all_fields_retVal = True
+
+            if self.fd_box.get() == 1:
+                if int(self.frame_id_entry.get(), 16) < 2047:
+                    self.id_entry_error = True
+                    self.check_all_fields_retVal = True
+                if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
+                    self.payload_size_error = True
+                    self.payload_entry_error = True
+                    self.check_all_fields_retVal = True
+
     def fields_uncompleted_error(self):
+        self.error_listbox.delete(0,END)
+        self.frame_id_Label.config(fg='white')
+        self.payload_size_Label.config(fg='white')
+        self.payload_Label.config(fg='white')
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
-                self.frame_id_entry.config(highlightbackground = 'red')
-                self.Error_label.config(text="Error: Id uncompleted", fg='red')
+                self.frame_id_Label.config(fg='red')
+                self.error_listbox.insert(END,"Error: Id uncompleted")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_size_error == True:
-                self.payload_size_Entry.config(highlightbackground = 'red')
-                self.Error_label.config(text="Error: Payload size uncompleted", fg='red')
+                self.payload_size_Label.config(fg='red')
+                self.error_listbox.insert(END,"Error: Payload size uncompleted")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_entry_error == True:
-                self.payload_Entry.config(highlightbackground = 'red')
-                self.Error_label.config(text="Error: Payload uncompleted", fg='red')
+                self.payload_Label.config(fg='red')
+                self.error_listbox.insert(END,"Error: Payload uncompleted")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
+            self.error_listbox.delete(0,END)
+            self.frame_id_entry.config(fg='white')
+            self.payload_size_Entry.config(fg='white')
+            self.payload_Entry.config(fg='white')
             if self.id_entry_error == True:
-                self.frame_id_entry.config(fg= 'red')
-            if self.payload_size_error == True:
+                if self.ext_box.get() == 1:
+                    self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.frame_id_entry.config(fg= 'red')
+                if self.ext_box.get() == 0 and self.fd_box.get() == 0:
+                    self.error_listbox.insert(END,"Error: Id ext")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.frame_id_entry.config(fg= 'red')
+                if self.fd_box.get() == 1:
+                    self.error_listbox.insert(END,"Error: Fd selected, Id not ext")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.frame_id_entry.config(fg= 'red')
+            if self.payload_size_error == True or self.payload_entry_error == True:
+                self.error_listbox.insert(END,"Error: Payload not equal to payload size")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_size_Entry.config(fg= 'red')
-            if self.payload_entry_error == True:
                 self.payload_Entry.config(fg= 'red')
+                
 
     def refresh_time(self):
         self.t = time.localtime()
@@ -368,29 +416,6 @@ class CANInterface():
         with open("Messages_received.txt","w") as f:
             for i in self.listbox1.get(0,END):
                 f.write(i+"\n")
-
-    def check_all_fields(self):
-        self.check_all_fields_retVal = False
-        if self.check_all_fields_completed_retVal:
-            pass
-        else:
-            if self.ext_box.get() == 1:
-                if int(self.frame_id_entry.get(), 16) < 2047:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
-            else:
-                if int(self.frame_id_entry.get(), 16) > 2047 and self.fd_box.get() != 1:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
-
-            if self.fd_box.get() == 1:
-                if int(self.frame_id_entry.get(), 16) < 2047:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
-                if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
-                    self.payload_size_error = True
-                    self.payload_entry_error = True
-                    self.check_all_fields_retVal = True
 
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047:

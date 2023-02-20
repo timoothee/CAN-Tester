@@ -3,7 +3,7 @@ from can_interface import *
 from can_module import CanModule
 from tkinter import ttk
 
-interface = CANInterface("v.1.1.3")
+interface = CANInterface("v.1.2.3")
 # MAJOR.MINOR.PATCH
 
 
