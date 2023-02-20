@@ -432,6 +432,13 @@ class CANInterface():
         self.payload_size_Label.config(state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
         self.payload_Entry.delete(0, 'end')
+        self.error_listbox.delete(0,END)
+        self.frame_id_Label.config(fg='white')
+        self.payload_size_Label.config(fg='white')
+        self.payload_Label.config(fg='white')
+        self.frame_id_entry.config(fg='white')
+        self.payload_size_Entry.config(fg='white')
+        self.payload_Entry.config(fg='white')
 
     def add_to_Q(self):
         self.check_all_fields_completed()
@@ -446,5 +453,11 @@ class CANInterface():
 
 
     def progress_bar(self):
-        self.Final_list = list(self.listbox1.get(0, END))
-        print (self.Final_list)
+        if self.default_status_label.cget("text") == "UP":
+            self.error_listbox.delete(0, END)
+            self.Final_list = list(self.listbox1.get(0, END))
+            print(self.Final_list)
+        else:
+            self.initial_interface_state()
+            self.error_listbox.insert(END,"Error: CAN is DOWN")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
