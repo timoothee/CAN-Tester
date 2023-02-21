@@ -22,7 +22,7 @@ class CANInterface():
         self.id_text = StringVar()
         self.payload_size_entry = IntVar()
         self.payload_size_entry.set("")
-        self.payload_entry = IntVar()
+        self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
@@ -107,7 +107,7 @@ class CANInterface():
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=1, padx= 10)
-        
+
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
         self.frame_id_Label.grid(row = 0, column=2, pady=(30,0))
