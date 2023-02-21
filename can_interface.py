@@ -97,38 +97,38 @@ class CANInterface():
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Fd")
-        self.fd_Label.grid(row= 0, column =0, padx=(40,0), pady=(50,0))
+        self.fd_Label.grid(row= 0, column =0, padx=(30,0), pady=(30,0))
 
         self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
-        self.fd_CkBt.grid(row = 1, column=0, padx=(40,0), pady=(2,0))
+        self.fd_CkBt.grid(row = 1, column=0, padx=(30,0))
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
-        self.ext_flag_Label.grid(row =0 ,column=1, pady=(50,0))
+        self.ext_flag_Label.grid(row =0 ,column=1, pady=(30,0))
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
-        self.ext_flag_CkBt.grid(row=1, column=1, padx= 10, pady=(2,0))
-
+        self.ext_flag_CkBt.grid(row=1, column=1, padx= 10)
+        
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
-        self.frame_id_Label.grid(row = 0, column=2, pady=(50,0))
+        self.frame_id_Label.grid(row = 0, column=2, pady=(30,0))
 
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 5)
-        self.frame_id_entry.grid(row = 1, column=2, padx=(5,0), pady=(2,0))
+        self.frame_id_entry.grid(row = 1, column=2, padx=(5,0))
 
 
         self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=3, pady=(50,0))
+        self.payload_size_Label.grid(row = 0, column=3, pady=(30,0))
 
         self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
-        self.payload_size_Entry.grid(row = 1, column=3, pady=(2,0))
+        self.payload_size_Entry.grid(row = 1, column=3)
 
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
-        self.payload_Label.grid(row = 0, column=4, pady=(50,0))
+        self.payload_Label.grid(row = 0, column=4, pady=(30,0))
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
-        self.payload_Entry.grid(row = 1, column=4, pady=(2,0))
+        self.payload_Entry.grid(row = 1, column=4)
 
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
@@ -136,7 +136,19 @@ class CANInterface():
         self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, fg='red')
         self.add_to_q.grid(row = 1, column=5, padx=30)
 
-        self.listbox1.grid(row=0, column=0, padx=20, pady=(20,10))
+        self.listbox1.grid(row=1, column=0, padx=20, pady=(5,10))
+
+        self.que_listbox_label = Label(self.can_frame3, text = "Message list")
+        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20, pady=(15,0))
+        self.que_listbox_label.config(font=('Helvetica bold', 13))
+
+        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
+        self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
+
+        self.error_listbox_label = Label(self.can_frame6, text='Error list')
+        self.error_listbox_label.grid(row=0, column=2, sticky='w', padx= 125,pady=(10,0))
+        self.error_listbox_label.config(font=('Helvetica bold', 13))
 
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
@@ -147,7 +159,7 @@ class CANInterface():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.listbox2.grid(row=0, column=0, padx=20, pady=(40,10))
+        self.listbox2.grid(row=1, column=0, padx=20, pady=(5,10))
 
         self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
         self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
@@ -164,8 +176,8 @@ class CANInterface():
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
         self.ok_button.grid(row=0, column=4)
 
-        self.error_listbox =Listbox(self.can_frame6, width = 30,height=5, selectmode=EXTENDED)
-        self.error_listbox.grid(row=0, column= 2, padx=(127,0))
+        self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
+        self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
     def up_down_button_command(self):
         if self.can_down_var:
