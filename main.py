@@ -2,10 +2,14 @@ from can_frame import CanFrame
 from can_interface import *
 from can_module import CanModule
 from tkinter import ttk
+import os
 
 interface = CANInterface("v.1.2.5")
 # MAJOR.MINOR.PATCH
 
+if os.environ.get('DISPLAY','') == '':
+    print('no display found. Using :0.0')
+    os.environ.__setitem__('DISPLAY', ':0.0')
 
 if __name__ == "__main__":
     interface.build()
