@@ -9,6 +9,14 @@ class CanModule():
         self.dbaudrate = dbaudrate
         self.frame_que = []
 
+    def set_can_send_module_name(self, name):
+        self.can_send_module_name = name
+        print(self.can_send_module_name)
+
+    def set_can_receive_module_name(self, name):
+        self.can_receive_module_name = name
+        print(self.can_receive_module_name)
+
     def set_baudrate(self, baudrate):
         self.baudrate = baudrate
 
@@ -26,9 +34,6 @@ class CanModule():
     def add_frame_to_que(self, frame):
         self.frame_que.append(frame)
 
-    def set_can_send_module_name(self, name):
-        self.can_send_module_name = name
-        print(self.can_send_module_name)
 
     def get_name(self):
         return self.can_send_module_name
