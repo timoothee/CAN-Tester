@@ -47,7 +47,7 @@ class CanModule():
         pass
 
     def interface_down(self):
-        os.popen(f"candump {self.can_send_module_name}")
+        os.popen(f"candump {self.can_send_module_name}",'w',1)
         pass
 
     def add_frame_to_que(self, frame):
@@ -56,4 +56,5 @@ class CanModule():
 
     def send_q(self):
         for message in self.frame_que:
-            os.popen(f"cansend {self.can_send_module_name} {message}")
+            os.popen(f"cansend {self.can_send_module_name} {message}", 'w',1)
+            print(f"cansend {self.can_send_module_name} {message}")
