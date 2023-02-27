@@ -198,24 +198,26 @@ class CANInterface():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
-        self.option_menu2 = OptionMenu(self.root, self.sender_var, value=("1"))
-        self.option_menu2.grid()
-        self.option_menu2.grid_forget()
-        
-        self.option_menu3 = OptionMenu(self.root, self.receiver_var, value=("3"))
-        self.option_menu3.grid()
+        self.option_menu2 = OptionMenu(self.can_frame1, self.sender_var, value=("1"))
+        self.option_menu2.grid(row=2, column=0, padx=20, sticky='w')
+        self.option_menu2.config(state='disabled')
+
+        self.option_menu3 = OptionMenu(self.can_frame1, self.receiver_var, value=("3"))
+        self.option_menu3.grid(row=2, column=0, padx=20, sticky='w')
         self.option_menu3.grid_forget()
 
     def on_select(self, value):
+        
+
         if value == "Sender":
             sub_options = self.can_send_module_optionmenu[value]
-            self.option_menu2 = OptionMenu(self.root, self.sender_var, *sub_options)
-            self.option_menu2.grid()
+            self.option_menu2 = OptionMenu(self.can_frame1, self.sender_var, *sub_options)
+            self.option_menu2.grid(row=2, column=0, padx=20, sticky='w')
             self.option_menu3.grid_forget()
         else:
             sub_options = self.can_receive_module_optionmenu[value]
-            self.option_menu3 = OptionMenu(self.root, self.receiver_var, *sub_options)
-            self.option_menu3.grid()
+            self.option_menu3 = OptionMenu(self.can_frame1, self.receiver_var, *sub_options)
+            self.option_menu3.grid(row=2, column=0, padx=20, sticky='w')
             self.option_menu2.grid_forget()
 
 
