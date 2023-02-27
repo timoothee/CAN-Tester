@@ -46,11 +46,12 @@ class CANInterface():
         self.can_receive_module_optionmenu = None
         self.can_module_optionmenu = ("Sender", "Receiver")
         self.can_send_module_optionmenu = {"Sender": ["CAN0", "CAN1"]}
-        self.can_receive_module_optionmenu = {"Receiver": ["CAN2", "CAN3"]}
+        self.can_receive_module_optionmenu = {"Receiver": ["CAN0", "CAN1"]}
         self.can_interface_list = ('Sender', 'Receiver')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
-        self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}        
+        self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}
+        self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}        
         self.can_frame_changed = False
         self.can_down_var = True
         self.module = CAN.CanModule()
@@ -223,12 +224,12 @@ class CANInterface():
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
-            self.module.set_can_send_module_name(self.sender_var.get())
-            self.module.set_can_receive_module_name(self.receiver_var.get())
+            self.module.set_can_send_module_name(self.can_dict[self.sender_var.get()])
+            self.module.set_can_receive_module_name(self.can_dict[self.receiver_var.get()])
             self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.module.interface_up(self.sender_var.get())
-            self.module.interface_up(self.receiver_var.get())
+            self.module.interface_up(self.module.get_can_send_module_name())
+            self.module.interface_up(self.module.get_can_receive_module_name())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
