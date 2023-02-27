@@ -14,7 +14,7 @@ class CANInterface():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
-        self.root = Tk(0)
+        self.root = Tk()
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
@@ -32,6 +32,12 @@ class CANInterface():
         self.interface_var.set('Select')
         self.sender_var = StringVar()
         self.sender_var.set('Select')
+        self.can_sender_var = StringVar()
+        self.can_sender_var.set('Select')
+        self.can_sender_var.trace("w", self.can_frame_option_changed)
+        self.can_receiver_var = StringVar()
+        self.can_receiver_var.set('Select')
+        self.can_receiver_var.trace("w", self.can_frame_option_changed_1)
         self.receiver_var = StringVar()
         self.receiver_var.set('Select')
         self.interface_var.trace("w", self.can_frame_option_changed)
@@ -45,8 +51,8 @@ class CANInterface():
         self.can_send_module_optionmenu = None
         self.can_receive_module_optionmenu = None
         self.can_module_optionmenu = ("Sender", "Receiver")
-        self.can_send_module_optionmenu = {"Sender": ["CAN0", "CAN1"]}
-        self.can_receive_module_optionmenu = {"Receiver": ["CAN0", "CAN1"]}
+        self.can_send_module_optionmenu = ("CAN0", "CAN1")
+        self.can_receive_module_optionmenu = ("CAN0", "CAN1")
         self.can_interface_list = ('Sender', 'Receiver')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
@@ -81,12 +87,19 @@ class CANInterface():
         self.listbox1 = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
         self.listbox2 = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
-        self.can_interface_Label = Label(self.can_frame1, text = "Can interface")
+        self.can_interface_Label = Label(self.can_frame1, text = "Can Sender")
         self.can_interface_Label.grid(row=0, column=0, padx=20, pady=(20,0))
 
-        self.drop_down_menu = OptionMenu(self.can_frame1, self.interface_var, *self.can_module_optionmenu, command= self.on_select)
+        self.drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
         self.drop_down_menu.config(width=5)
         self.drop_down_menu.grid(row = 1, column = 0)
+
+        self.can_interface_Label_1 = Label(self.can_frame1, text = "Can Receiver")
+        self.can_interface_Label_1.grid(row=2, column=0)
+
+        self.drop_down_menu_1 = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
+        self.drop_down_menu_1.config(width=5)
+        self.drop_down_menu_1.grid(row = 3, column = 0)
 
         self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
         self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
@@ -199,25 +212,6 @@ class CANInterface():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
-        self.option_menu2 = OptionMenu(self.can_frame1, self.sender_var, value=("1"))
-        self.option_menu2.grid(row=2, column=0, padx=20, sticky='w')
-        self.option_menu2.config(state='disabled')
-
-        self.option_menu3 = OptionMenu(self.can_frame1, self.receiver_var, value=("3"))
-        self.option_menu3.grid(row=2, column=0, padx=20, sticky='w')
-        self.option_menu3.grid_forget()
-
-    def on_select(self, value):
-        if value == "Sender":
-            sub_options = self.can_send_module_optionmenu[value]
-            self.option_menu2 = OptionMenu(self.can_frame1, self.sender_var, *sub_options)
-            self.option_menu2.grid(row=2, column=0, padx=20, sticky='w')
-            self.option_menu3.grid_forget()
-        else:
-            sub_options = self.can_receive_module_optionmenu[value]
-            self.option_menu3 = OptionMenu(self.can_frame1, self.receiver_var, *sub_options)
-            self.option_menu3.grid(row=2, column=0, padx=20, sticky='w')
-            self.option_menu2.grid_forget()
 
     def up_down_button_command(self):
         if self.can_down_var:
@@ -248,6 +242,10 @@ class CANInterface():
 
     def can_frame_option_changed(self, *args):
         self.can_frame_changed = True
+        self.btn_up_down_active()
+
+    def can_frame_option_changed_1(self, *args):
+        self.can_frame_changed_1 = True
         self.btn_up_down_active()
         
     def delete_function(self, listbox):
@@ -322,7 +320,7 @@ class CANInterface():
 
     def btn_up_down_active(self, *args):
         try:
-            if self.can_frame_changed == True and self.id_baudrate_changed == True and self.data_baudrate_changed == True:
+            if self.can_frame_changed == True and self.id_baudrate_changed == True and self.data_baudrate_changed == True and self.can_frame_changed_1 == True:
                 self.up_down_button.config(state="normal")
         except:
             pass
