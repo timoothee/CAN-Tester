@@ -115,9 +115,11 @@ class CANInterface():
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
         self.frame_id_Label.grid(row = 0, column=2, pady=(30,0))
+        self.default_label_color = self.frame_id_Label.cget('fg')
 
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 5)
         self.frame_id_entry.grid(row = 1, column=2, padx=(5,0))
+        self.default_entry_color = self.frame_id_entry.cget('fg')
 
 
         self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
@@ -332,9 +334,9 @@ class CANInterface():
 
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
-        self.frame_id_Label.config(fg='white')
-        self.payload_size_Label.config(fg='white')
-        self.payload_Label.config(fg='white')
+        self.frame_id_Label.config(fg=self.default_label_color)
+        self.payload_size_Label.config(fg=self.default_label_color)
+        self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
                 self.frame_id_Label.config(fg='red')
@@ -352,9 +354,9 @@ class CANInterface():
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
             self.error_listbox.delete(0,END)
-            self.frame_id_entry.config(fg='white')
-            self.payload_size_Entry.config(fg='white')
-            self.payload_Entry.config(fg='white')
+            self.frame_id_entry.config(fg=self.default_entry_color)
+            self.payload_size_Entry.config(fg=self.default_entry_color)
+            self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True:
                 if self.ext_box.get() == 1:
                     self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
@@ -424,12 +426,12 @@ class CANInterface():
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
-        self.frame_id_Label.config(fg='white')
-        self.payload_size_Label.config(fg='white')
-        self.payload_Label.config(fg='white')
-        self.frame_id_entry.config(fg='white')
-        self.payload_size_Entry.config(fg='white')
-        self.payload_Entry.config(fg='white')
+        self.frame_id_Label.config(fg=self.default_label_color)
+        self.payload_size_Label.config(fg=self.default_label_color)
+        self.payload_Label.config(fg=self.default_label_color)
+        self.frame_id_entry.config(fg=self.default_entry_color)
+        self.payload_size_Entry.config(fg=self.default_entry_color)
+        self.payload_Entry.config(fg=self.default_entry_color)
 
     
     def add_to_Q(self):
