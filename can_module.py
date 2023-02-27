@@ -5,17 +5,25 @@ class CanModule():
         self.can_send_module_name = ""
         self.can_receive_module_name = ""
         self.txquelen = txquelen
-        self.baudrate = baudrate
-        self.dbaudrate = dbaudrate
+        self.baudrate = ""
+        self.dbaudrate = ""
         self.frame_que = []
 
     def set_can_send_module_name(self, name):
         self.can_send_module_name = name
         print(self.can_send_module_name)
 
+    def get_can_send_module_name(self):
+        return self.can_send_module_name
+
+
     def set_can_receive_module_name(self, name):
         self.can_receive_module_name = name
         print(self.can_receive_module_name)
+
+    def get_can_receive_module_name(self):
+        return self.can_receive_module_name
+
 
     def set_baudrate(self, baudrate):
         self.baudrate = baudrate
@@ -23,26 +31,25 @@ class CanModule():
     def get_baudrate(self):
         return self.baudrate
     
+
     def set_dbaudrate(self, dbaudrate):
         self.dbaudrate = dbaudrate
 
     def get_dbaudrate(self):
         return self.dbaudrate
     
+
     def interface_up(self):
         os.popen(f"sudo ip link set {self.can_send_module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
         pass
 
     def interface_down(self):
-        os.popen(f"candump {self.name}")
+        os.popen(f"candump {self.can_send_module_name}")
         pass
 
     def add_frame_to_que(self, frame):
         self.frame_que.append(frame)
 
-
-    def get_name(self):
-        return self.can_send_module_name
 
     def send_q(self):
         for message in self.frame_que:
