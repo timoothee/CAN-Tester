@@ -234,6 +234,9 @@ class CANInterface():
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.can_down_var = True
+            self.module.interface_down(self.module.get_can_send_module_name())
+            self.module.interface_down(self.module.get_can_receive_module_name())
+
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
