@@ -63,7 +63,7 @@ class CANInterface():
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
         self.can_frame2 = Frame(self.root)
-        self.can_frame2.grid(row=1, column=0, sticky="nsew")
+        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
 
         self.can_frame3 = Frame(self.root)
         self.can_frame3.grid(row=2, column=0, sticky="nsew")
@@ -114,20 +114,20 @@ class CANInterface():
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Fd")
-        self.fd_Label.grid(row= 0, column =0, padx=(30,0), pady=(30,0))
+        self.fd_Label.grid(row= 0, column =0, padx=(30,0))
 
         self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
         self.fd_CkBt.grid(row = 1, column=0, padx=(30,0))
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
-        self.ext_flag_Label.grid(row =0 ,column=1, pady=(30,0))
+        self.ext_flag_Label.grid(row =0 ,column=1)
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=1, padx= 10)
 
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
-        self.frame_id_Label.grid(row = 0, column=2, pady=(30,0))
+        self.frame_id_Label.grid(row = 0, column=2)
         self.default_label_color = self.frame_id_Label.cget('fg')
 
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 5)
@@ -136,7 +136,7 @@ class CANInterface():
 
 
         self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=3, pady=(30,0))
+        self.payload_size_Label.grid(row = 0, column=3)
 
         self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
@@ -144,7 +144,7 @@ class CANInterface():
 
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
-        self.payload_Label.grid(row = 0, column=4, pady=(30,0))
+        self.payload_Label.grid(row = 0, column=4)
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=4)
@@ -155,7 +155,7 @@ class CANInterface():
         self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, fg='red')
         self.add_to_q.grid(row = 1, column=5, padx=30)
 
-        self.listbox1.grid(row=1, column=0, padx=20, pady=(5,10))
+        self.listbox1.grid(row=1, column=0, padx=20)
 
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20, pady=(15,0))
@@ -187,7 +187,7 @@ class CANInterface():
         self.clear_button_output.grid(row=0, column=1, sticky='n')
 
         self.Error_label = Label(self.can_frame2, text = "")
-        self.Error_label.grid(row = 0, column= 5, pady=(50,0))
+        self.Error_label.grid(row = 0, column= 5)
 
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
@@ -207,8 +207,6 @@ class CANInterface():
         self.option_menu3.grid_forget()
 
     def on_select(self, value):
-        
-
         if value == "Sender":
             sub_options = self.can_send_module_optionmenu[value]
             self.option_menu2 = OptionMenu(self.can_frame1, self.sender_var, *sub_options)
@@ -219,7 +217,6 @@ class CANInterface():
             self.option_menu3 = OptionMenu(self.can_frame1, self.receiver_var, *sub_options)
             self.option_menu3.grid(row=2, column=0, padx=20, sticky='w')
             self.option_menu2.grid_forget()
-
 
     def up_down_button_command(self):
         if self.can_down_var:
@@ -250,7 +247,8 @@ class CANInterface():
     def ok_command(self):
         self.check_all_fields()
         if self.check_all_fields_retVal:
-            self.Error_label.config(text="Error", fg='red')
+            self.fields_uncompleted_error()
+            self.fields_completed_wrong_error()
         else:
             self.refresh_time()
             self.get_frame_data()
