@@ -121,13 +121,13 @@ class CANInterface():
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.grid(row=1, column=3, padx=30)
 
-        self.send_button = Button(self.can_frame1, text="Send", command=self.progress_bar, state="normal")
+        self.send_button = Button(self.can_frame1, text="Send to que", command=self.progress_bar, state="normal")
         self.send_button.grid(row = 1, column=4, sticky='e')
         
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
-        self.fd_Label = Label(self.can_frame2, text="Fd")
+        self.fd_Label = Label(self.can_frame2, text="Brs")
         self.fd_Label.grid(row= 0, column =0, padx=(30,0))
 
         self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
@@ -166,7 +166,7 @@ class CANInterface():
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q)
+        self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=5, padx=30)
 
         self.listbox1.grid(row=1, column=0, padx=20)
