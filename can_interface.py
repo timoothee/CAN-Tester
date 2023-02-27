@@ -22,6 +22,7 @@ class CANInterface():
         self.fd_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
+        self.RTR_box = IntVar()
         self.payload_size_entry = IntVar()
         self.payload_size_entry.set("")
         self.payload_entry = StringVar()
@@ -128,17 +129,22 @@ class CANInterface():
         self.up_down_button.grid(row=0, column=4, sticky='e')
 
         self.fd_Label = Label(self.can_frame2, text="Brs")
-        self.fd_Label.grid(row= 0, column =0, padx=(30,0))
+        self.fd_Label.grid(row= 0, column =0, padx=(60,0))
 
         self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
-        self.fd_CkBt.grid(row = 1, column=0, padx=(30,0))
+        self.fd_CkBt.grid(row = 1, column=0, padx=(60,0))
+
+        self.RTR_Label = Label(self.can_frame2, text="RTR")
+        self.RTR_Label.grid(row= 0, column =0)
+
+        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
+        self.RTR_CkBtn.grid(row = 1, column=0)
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
         self.ext_flag_Label.grid(row =0 ,column=1)
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
-        self.ext_flag_CkBt.grid(row=1, column=1, padx= 10)
-
+        self.ext_flag_CkBt.grid(row=1, column=1)
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
         self.frame_id_Label.grid(row = 0, column=2)
