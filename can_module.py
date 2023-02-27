@@ -11,7 +11,7 @@ class CanModule():
 
     def set_can_send_module_name(self, name):
         self.can_send_module_name = name
-        print(self.can_send_module_name)
+        print("send",self.can_send_module_name)
 
     def get_can_send_module_name(self):
         return self.can_send_module_name
@@ -19,7 +19,7 @@ class CanModule():
 
     def set_can_receive_module_name(self, name):
         self.can_receive_module_name = name
-        print(self.can_receive_module_name)
+        print("r",self.can_receive_module_name)
 
     def get_can_receive_module_name(self):
         return self.can_receive_module_name
@@ -27,6 +27,7 @@ class CanModule():
 
     def set_baudrate(self, baudrate):
         self.baudrate = baudrate
+        print("b",self.baudrate)
 
     def get_baudrate(self):
         return self.baudrate
@@ -34,13 +35,15 @@ class CanModule():
 
     def set_dbaudrate(self, dbaudrate):
         self.dbaudrate = dbaudrate
+        print("d",self.dbaudrate)
 
     def get_dbaudrate(self):
         return self.dbaudrate
     
 
-    def interface_up(self):
-        os.popen(f"sudo ip link set {self.can_send_module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
+    def interface_up(self, can_interface):
+        os.popen(f"sudo ip link set {can_interface} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w',1)
+        print(f"sudo ip link set {can_interface} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
         pass
 
     def interface_down(self):
