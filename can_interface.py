@@ -224,8 +224,8 @@ class CANInterface():
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
-            self.module.set_can_send_module_name(self.can_dict[self.sender_var.get()])
-            self.module.set_can_receive_module_name(self.can_dict[self.receiver_var.get()])
+            self.module.set_can_send_module_name(self.can_dict[self.can_sender_var.get()])
+            self.module.set_can_receive_module_name(self.can_dict[self.can_receiver_var.get()])
             self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module.interface_up(self.module.get_can_send_module_name())
