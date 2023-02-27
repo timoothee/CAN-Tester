@@ -153,7 +153,7 @@ class CANInterface():
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q, fg='red')
+        self.add_to_q = Button(self.can_frame2, text="Add to q", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=5, padx=30)
 
         self.listbox1.grid(row=1, column=0, padx=20)
