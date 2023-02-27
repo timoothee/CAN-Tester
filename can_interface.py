@@ -14,9 +14,9 @@ class CANInterface():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
-        self.root = Tk()
+        self.root = Tk(0)
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
-        self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
+        #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
 
         self.fd_box = IntVar()
