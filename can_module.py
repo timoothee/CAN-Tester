@@ -20,15 +20,21 @@ class CanModule():
     def set_baudrate(self, baudrate):
         self.baudrate = baudrate
 
+    def get_baudrate(self):
+        return self.baudrate
+    
     def set_dbaudrate(self, dbaudrate):
         self.dbaudrate = dbaudrate
+
+    def get_dbaudrate(self):
+        return self.dbaudrate
     
     def interface_up(self):
         os.popen(f"sudo ip link set {self.can_send_module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
         pass
 
     def interface_down(self):
-        os.popen(f"sudo ip link set down {self.name}")
+        os.popen(f"candump {self.name}")
         pass
 
     def add_frame_to_que(self, frame):
