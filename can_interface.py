@@ -7,6 +7,8 @@ import os
 from tkinter import messagebox
 import sys
 #from tkmacosx import Button
+import can_module as CAN
+
 
 class CANInterface():
 
@@ -40,6 +42,8 @@ class CANInterface():
         self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}        
         self.can_frame_changed = False
         self.can_down_var = True
+        self.can_send_module = CAN.CanModule()
+        self.can_receive_module = CAN.CanModule()
 
     def build(self):
         self.can_frame1 = Frame(self.root, borderwidth=2, border=2)
@@ -184,6 +188,7 @@ class CANInterface():
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
+            self.can_send_module.set_name(self.drop_down_menu_can.get())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
@@ -426,6 +431,7 @@ class CANInterface():
         self.payload_size_Entry.config(fg='white')
         self.payload_Entry.config(fg='white')
 
+    
     def add_to_Q(self):
         self.check_all_fields_completed()
         self.check_all_fields()
@@ -436,9 +442,10 @@ class CANInterface():
             self.get_frame_data()
             self.listbox1.insert(self.position, self.string_max)
             self.initial_interface_state()
-
+    
 
     def progress_bar(self):
+        self.can_send_module.send_q()
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.Final_list = list(self.listbox1.get(0, END))
