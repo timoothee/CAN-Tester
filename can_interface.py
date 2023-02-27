@@ -28,6 +28,12 @@ class CANInterface():
         self.payload_entry.set("")
         self.drop_down_menu_can = StringVar()
         self.drop_down_menu_can.set("Select")
+        self.interface_var = StringVar()
+        self.interface_var.set('Select')
+        self.sender_var = StringVar()
+        self.sender_var.set('Select')
+        self.receiver_var = StringVar()
+        self.receiver_var.set('Select')
         self.drop_down_menu_can.trace("w", self.can_frame_option_changed)
         self.drop_down_id_baudrate_var = StringVar()
         self.drop_down_id_baudrate_var.set("Select")
@@ -36,7 +42,12 @@ class CANInterface():
         self.drop_down_data_baudrate_var.set("Select")
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
         self.position = 0
-        self.can_interface_list = ('CAN0', 'CAN1')
+        self.can_send_module_optionmenu = None
+        self.can_receive_module_optionmenu = None
+        self.can_module_optionmenu = ("Sender", "Receiver")
+        self.can_send_module_optionmenu = {"Sender": ["CAN0", "CAN1"]}
+        self.can_receive_module_optionmenu = {"Receiver": ["CAN2", "CAN3"]}
+        self.can_interface_list = ('Sender', 'Receiver')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
         self.baudrate_dict = {'100K':100,'200K':200,'400K':400,'500K':500,"1M":1,"2M":2,'3M':3,'4M':4,"5M":5,"8M":8}        
@@ -44,6 +55,8 @@ class CANInterface():
         self.can_down_var = True
         self.can_send_module = CAN.CanModule()
         self.can_receive_module = CAN.CanModule()
+
+
 
     def build(self):
         self.can_frame1 = Frame(self.root, borderwidth=2, border=2)
@@ -70,7 +83,7 @@ class CANInterface():
         self.can_interface_Label = Label(self.can_frame1, text = "Can interface")
         self.can_interface_Label.grid(row=0, column=0, padx=20, pady=(20,0))
 
-        self.drop_down_menu = OptionMenu(self.can_frame1, self.drop_down_menu_can, *self.can_interface_list)
+        self.drop_down_menu = OptionMenu(self.can_frame1, self.interface_var, *self.can_module_optionmenu, command= self.on_select)
         self.drop_down_menu.config(width=5)
         self.drop_down_menu.grid(row = 1, column = 0)
 
@@ -185,12 +198,33 @@ class CANInterface():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
+        self.option_menu2 = OptionMenu(self.root, self.sender_var, value=("1"))
+        self.option_menu2.grid()
+        self.option_menu2.grid_forget()
+        
+        self.option_menu3 = OptionMenu(self.root, self.receiver_var, value=("3"))
+        self.option_menu3.grid()
+        self.option_menu3.grid_forget()
+
+    def on_select(self, value):
+        if value == "Sender":
+            sub_options = self.can_send_module_optionmenu[value]
+            self.option_menu2 = OptionMenu(self.root, self.sender_var, *sub_options)
+            self.option_menu2.grid()
+            self.option_menu3.grid_forget()
+        else:
+            sub_options = self.can_receive_module_optionmenu[value]
+            self.option_menu3 = OptionMenu(self.root, self.receiver_var, *sub_options)
+            self.option_menu3.grid()
+            self.option_menu2.grid_forget()
+
+
     def up_down_button_command(self):
         if self.can_down_var:
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
-            self.can_send_module.set_name(self.drop_down_menu_can.get())
+            self.can_send_module.can_send_module_name(self.drop_down_menu_can.get())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")

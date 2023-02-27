@@ -4,7 +4,7 @@ from can_module import CanModule
 from tkinter import ttk
 import os
 
-interface = CANInterface("v.1.2.5")
+interface = CANInterface("v.1.3.5")
 # MAJOR.MINOR.PATCH
 
 if os.environ.get('DISPLAY','') == '':
