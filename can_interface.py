@@ -486,10 +486,13 @@ class CANInterface():
     
 
     def progress_bar(self):
-        self.module.send_q()
+        
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.Final_list = list(self.listbox1.get(0, END))
+            for message in self.Final_list:
+                self.module.add_frame_to_que(message[10:])
+            self.module.send_q()
             print(self.Final_list)
         else:
             self.initial_interface_state()
