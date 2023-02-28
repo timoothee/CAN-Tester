@@ -194,7 +194,7 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.send_button = Button(self.can_frame4, text="Send que", command=self.progress_bar, state="normal")
+        self.send_button = Button(self.can_frame4, text="Send que", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
 
         self.listbox2.grid(row=1, column=0, padx=20, pady=(5,10))
@@ -491,8 +491,7 @@ class CANGui():
             self.initial_interface_state()
     
 
-    def progress_bar(self):
-        
+    def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.Final_list = list(self.listbox1.get(0, END))
