@@ -428,7 +428,7 @@ class CANInterface():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.payload_entry.get())
+            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.RTR_box.get()) + "." + str(self.payload_entry.get())
             self.position += 1
 
 
