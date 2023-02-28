@@ -67,7 +67,7 @@ class CANInterface():
 
 
     def build(self):
-        self.can_frame1 = Frame(self.root, borderwidth=2, border=2)
+        self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
         self.can_frame2 = Frame(self.root)
@@ -117,68 +117,64 @@ class CANInterface():
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=3, padx=30, pady=(20,0))
+        self.status_label.grid(row=0, column=3, padx=(150,0), pady=(20,0))
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=1, column=3, padx=30)
-
-        self.send_button = Button(self.can_frame1, text="Send to que", command=self.progress_bar, state="normal")
-        self.send_button.grid(row = 1, column=4, sticky='e')
+        self.default_status_label.grid(row=0, column=4, pady=(20,0))
         
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=4, sticky='e')
-
-        self.fd_Label = Label(self.can_frame2, text="Brs")
-        self.fd_Label.grid(row= 0, column =0, padx=(60,0))
-
-        self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
-        self.fd_CkBt.grid(row = 1, column=0, padx=(60,0))
+        self.up_down_button.grid(row=1, column=4, sticky='w')
 
         self.RTR_Label = Label(self.can_frame2, text="RTR")
-        self.RTR_Label.grid(row= 0, column =0)
+        self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
-        self.RTR_CkBtn.grid(row = 1, column=0)
+        self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
+
+        self.fd_Label = Label(self.can_frame2, text="Brs")
+        self.fd_Label.grid(row= 0, column =1)
+
+        self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
+        self.fd_CkBt.grid(row = 1, column=1)
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
-        self.ext_flag_Label.grid(row =0 ,column=1)
+        self.ext_flag_Label.grid(row =0 ,column=2)
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
-        self.ext_flag_CkBt.grid(row=1, column=1)
+        self.ext_flag_CkBt.grid(row=1, column=2)
 
         self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
-        self.frame_id_Label.grid(row = 0, column=2)
+        self.frame_id_Label.grid(row = 0, column=3, padx=(5,0), sticky='w')
         self.default_label_color = self.frame_id_Label.cget('fg')
 
-        self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 5)
-        self.frame_id_entry.grid(row = 1, column=2, padx=(5,0))
+        self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 10)
+        self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
 
-
         self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=3)
+        self.payload_size_Label.grid(row = 0, column=4)
 
         self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
-        self.payload_size_Entry.grid(row = 1, column=3)
+        self.payload_size_Entry.grid(row = 1, column=4)
 
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
-        self.payload_Label.grid(row = 0, column=4)
+        self.payload_Label.grid(row = 0, column=5, sticky='w')
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
-        self.payload_Entry.grid(row = 1, column=4)
+        self.payload_Entry.grid(row = 1, column=5)
 
         #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
         #self.pb.grid(row = 2, column=7)
 
         self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=5, padx=30)
+        self.add_to_q.grid(row = 1, column=6, padx=5)
 
         self.listbox1.grid(row=1, column=0, padx=20)
 
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
-        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20, pady=(15,0))
+        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
 
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
@@ -197,6 +193,9 @@ class CANInterface():
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
         self.clear_button_input.grid(row=0, column=2)
+
+        self.send_button = Button(self.can_frame4, text="Send que", command=self.progress_bar, state="normal")
+        self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
 
         self.listbox2.grid(row=1, column=0, padx=20, pady=(5,10))
 
