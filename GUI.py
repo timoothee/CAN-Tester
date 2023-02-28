@@ -7,10 +7,11 @@ import os
 from tkinter import messagebox
 import sys
 #from tkmacosx import Button
-import can_module as CAN
+import can_module as CAN_module
+import can_frame as CAN_frame
 
 
-class CANInterface():
+class CANGui():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
@@ -61,9 +62,8 @@ class CANInterface():
         self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}        
         self.can_frame_changed = False
         self.can_down_var = True
-        self.module = CAN.CanModule()
-        self.can_receive_module = CAN.CanModule()
-
+        self.module = CAN_module.CanModule()
+        self.frame = CAN_frame.CanFrame()
 
 
     def build(self):
@@ -235,7 +235,6 @@ class CANInterface():
             self.can_down_var = True
             self.module.interface_down(self.module.get_can_send_module_name())
             self.module.interface_down(self.module.get_can_receive_module_name())
-
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True

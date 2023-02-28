@@ -1,7 +1,7 @@
 # Working on it
 
 class CanFrame():
-    def __init__(self, frame_id: int, extented_id_status: bool = True, fd_id_status: bool = True, payload_size: int = 1, payload: int = 1, delay: int = 0):
+    def __init__(self, frame_id: int = 1, extented_id_status: bool = True, fd_id_status: bool = True, payload_size: int = 1, payload: int = 1, delay: int = 0):
         self.frame_id = frame_id
         self.extented_id_status = extented_id_status
         self.fd_id_status = fd_id_status
