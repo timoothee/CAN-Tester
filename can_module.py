@@ -39,14 +39,6 @@ class CanModule():
 
     def get_dbaudrate(self):
         return self.dbaudrate
-    
-
-    def interface_up(self, can_interface):
-        os.popen(f"sudo ip link set {can_interface} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w',1)
-        print(f"sudo ip link set {can_interface} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
-
-    def interface_down(self, can_interface):
-        os.popen(f"sudo ip link set {can_interface} down",'w',1)
 
     def send_q(self):
         for message in self.frame_que:
