@@ -11,6 +11,6 @@ class CanTrasnmitter():
     def interface_down(self, can_interface):
         os.popen(f"sudo ip link set {can_interface} down",'w',1)
 
-    def send_q(self, id_list, brs_list, payload_list):
-        print("-",id_list)
-        pass
+    def send_q(self, id_list, brs_list, payload_list, can_sender):
+        for i in range(len(id_list)):
+            os.popen(f"cansend {can_sender} {id_list[i]}##{brs_list[i]}.{payload_list[i]}", 'w',1)
