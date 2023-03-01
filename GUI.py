@@ -21,7 +21,7 @@ class CANGui():
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
 
-        self.fd_box = IntVar()
+        self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
@@ -133,11 +133,11 @@ class CANGui():
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
-        self.fd_Label = Label(self.can_frame2, text="Brs")
-        self.fd_Label.grid(row= 0, column =1)
+        self.brs_Label = Label(self.can_frame2, text="Brs")
+        self.brs_Label.grid(row= 0, column =1)
 
-        self.fd_CkBt = Checkbutton(self.can_frame2, variable=self.fd_box, command= lambda: self.fd_box_checked())
-        self.fd_CkBt.grid(row = 1, column=1)
+        self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box, command= lambda: self.brs_box_checked())
+        self.brs_CkBt.grid(row = 1, column=1)
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
         self.ext_flag_Label.grid(row =0 ,column=2)
@@ -342,9 +342,8 @@ class CANGui():
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
 
-        if self.fd_box.get() == 1:
+        if self.brs_box.get() == 1:
             if len(self.payload_size_Entry.get()) != 0:
-                print(len(self.payload_size_Entry.get()))
                 pass
             else:
                 self.payload_size_error = True
@@ -360,11 +359,11 @@ class CANGui():
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
             else:
-                if int(self.frame_id_entry.get(), 16) > 2047 and self.fd_box.get() != 1:
+                if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
 
-            if self.fd_box.get() == 1:
+            if self.brs_box.get() == 1:
                 if int(self.frame_id_entry.get(), 16) < 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
@@ -403,11 +402,11 @@ class CANGui():
                     self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
-                if self.ext_box.get() == 0 and self.fd_box.get() == 0:
+                if self.ext_box.get() == 0 and self.brs_box.get() == 0:
                     self.error_listbox.insert(END,"Error: Id ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
-                if self.fd_box.get() == 1:
+                if self.brs_box.get() == 1:
                     self.error_listbox.insert(END,"Error: Fd selected, Id not ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
@@ -423,19 +422,19 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.RTR_box.get()) + "." + str(self.payload_entry.get())
+            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + "." + str(self.payload_entry.get())
             self.position += 1
 
 
-    def fd_box_checked(self):
-        self.fd_box_checked_retVal = False
+    def brs_box_checked(self):
+        self.brs_box_checked_retVal = False
         self.id_baudrate_changed = False
         self.data_baudrate_changed = False
 
-        if self.fd_box.get() == 1:
+        if self.brs_box.get() == 1:
             self.payload_size_Label.config(state="normal")
             self.payload_size_Entry.config(state="normal")
-            self.fd_box_checked_retVal = True
+            self.brs_box_checked_retVal = True
         else:
             self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
@@ -459,7 +458,7 @@ class CANGui():
         
     def initial_interface_state(self):
         self.Error_label.config(text="")
-        self.fd_box.set(0)
+        self.brs_box.set(0)
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
         self.payload_size_Entry.delete(0, 'end')
@@ -516,6 +515,7 @@ class CANGui():
             self.error_listbox.delete(0, END)
             self.module.send_q()
             self.backend_frame()
+            print(f"{self.frame.id_list}{self.frame.payload_list}{self.frame.brs_list}")
         else:
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")

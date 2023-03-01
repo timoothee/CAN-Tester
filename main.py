@@ -15,10 +15,10 @@ if __name__ == "__main__":
     gui.build()
     gui.root.mainloop()
 
-    fdbox = gui.fd_box.get()
+    brsbox = gui.brs_box.get()
     extbox = gui.ext_box.get()
     frameid = gui.id_text.get()
     #payloadsize = gui.payload_size_entry.get()
     payload = gui.payload_entry.get()
 
-    x = CanFrame(frameid, extbox, fdbox, payload)
+    x = CanFrame(frameid, extbox, brsbox, payload)
