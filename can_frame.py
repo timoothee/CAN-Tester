@@ -9,14 +9,16 @@ class CanFrame():
         self.payload = payload 
         self.delay = delay
         self.brs = ""
+        self.id_list = []
+        self.brs_list = []
+        self.payload_list = []
 
     # id
     def set_id(self, new_id):
-        self.frame_id = new_id
+        self.id_list.append(new_id)
 
-    def get_id(self):
-        print(self.frame_id)
-        return self.frame_id
+    def get_id(self, index):
+        return self.id_list[index]
 
     # fd flag
     def set_fd_flag(self, new_fd_flag):
@@ -26,7 +28,6 @@ class CanFrame():
         print(self.fd_id_status)
         return self.fd_id_status
 
-
     # ext id status
     def set_extflag(self, new_extented_id_status):
         self.extented_id_status = new_extented_id_status
@@ -35,15 +36,17 @@ class CanFrame():
         print(self.extented_id_status)
         return self.extented_id_status
     
-    def set_payload(self, payload):
-        self.payload = payload
+    # payload
+    def set_payload(self, new_payload):
+        self.payload_list.append(new_payload)
 
-    def get_payload(self):
-        return self.payload
+    def get_payload(self, index):
+        return self.payload_list[index]
     
-    def set_brs(self, brs):
-        self.brs = brs
+    # brs
+    def set_brs(self, new_brs):
+        self.brs_list.append(new_brs)
 
-    def get_brs(self):
-        return self.brs
+    def get_brs(self, index):
+        return self.brs_list[index]
 
