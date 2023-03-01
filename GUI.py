@@ -224,12 +224,13 @@ class CANGui():
         if self.can_down_var:
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
+            self.backend_module()
             self.can_down_var = False
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
+            self.backend_module()
             self.can_down_var = True
-        self.backend_module()
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -491,15 +492,14 @@ class CANGui():
             self.module.set_can_receive_module_name(self.can_dict[self.can_receiver_var.get()])
             self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.module.interface_up(self.module.get_can_send_module_name())
-            self.module.interface_up(self.module.get_can_receive_module_name())
+            self.transmitter.interface_up(self.module.get_can_send_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
+            self.transmitter.interface_up(self.module.get_can_receive_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
         else:
-            self.module.interface_down(self.module.get_can_send_module_name())
-            self.module.interface_down(self.module.get_can_receive_module_name())
+            self.transmitter.interface_down(self.module.get_can_send_module_name())
+            self.transmitter.interface_down(self.module.get_can_receive_module_name())
 
     def backend_frame(self):
         self.Final_list = list(self.listbox1.get(0, END))
-        
         for message in self.Final_list:
             index = 0
             for element in message:
