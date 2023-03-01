@@ -9,6 +9,7 @@ import sys
 #from tkmacosx import Button
 import can_module as CAN_module
 import can_frame as CAN_frame
+import can_transmitter as CAN_transmitter
 
 
 class CANGui():
@@ -64,6 +65,7 @@ class CANGui():
         self.can_down_var = True
         self.module = CAN_module.CanModule()
         self.frame = CAN_frame.CanFrame()
+        self.transmitter = CAN_transmitter.CanTrasnmitter()
 
 
     def build(self):
@@ -223,18 +225,11 @@ class CANGui():
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.can_down_var = False
-            self.module.set_can_send_module_name(self.can_dict[self.can_sender_var.get()])
-            self.module.set_can_receive_module_name(self.can_dict[self.can_receiver_var.get()])
-            self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
-            self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.module.interface_up(self.module.get_can_send_module_name())
-            self.module.interface_up(self.module.get_can_receive_module_name())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.can_down_var = True
-            self.module.interface_down(self.module.get_can_send_module_name())
-            self.module.interface_down(self.module.get_can_receive_module_name())
+        self.backend_module()
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -490,15 +485,40 @@ class CANGui():
             self.listbox1.insert(self.position, self.string_max)
             self.initial_interface_state()
     
+    def backend_module(self):
+        if self.can_down_var:
+            self.module.set_can_send_module_name(self.can_dict[self.can_sender_var.get()])
+            self.module.set_can_receive_module_name(self.can_dict[self.can_receiver_var.get()])
+            self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
+            self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
+            self.module.interface_up(self.module.get_can_send_module_name())
+            self.module.interface_up(self.module.get_can_receive_module_name())
+        else:
+            self.module.interface_down(self.module.get_can_send_module_name())
+            self.module.interface_down(self.module.get_can_receive_module_name())
+
+    def backend_frame(self):
+        self.Final_list = list(self.listbox1.get(0, END))
+        
+        for message in self.Final_list:
+            index = 0
+            for element in message:
+                if element == "#":
+                    break
+                index += 1
+            
+            self.frame.set_id(message[10:index])
+            self.frame.set_brs(message[index+2:index+3])
+            self.frame.set_payload(message[index+4:])
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.Final_list = list(self.listbox1.get(0, END))
             for message in self.Final_list:
-                self.module.add_frame_to_que(message[10:])
+                self.transmitter.get_list(message[10:])
             self.module.send_q()
-            print(self.Final_list)
+            self.backend_frame()
         else:
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
