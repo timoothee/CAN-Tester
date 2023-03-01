@@ -494,8 +494,8 @@ class CANGui():
     
     def backend_module(self):
         if self.can_down_var:
-            self.module.set_can_sender_module_name(self.can_dict[self.can_sender_var.get()])
-            self.module.set_can_receiver_module_name(self.can_dict[self.can_receiver_var.get()])
+            self.module.set_can_sender_module_name(self.can_sender_var.get())
+            self.module.set_can_receiver_module_name(self.can_receiver_var.get())
             self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.transmitter.interface_up(self.module.get_can_sender_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
