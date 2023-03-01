@@ -48,10 +48,6 @@ class CanModule():
     def interface_down(self, can_interface):
         os.popen(f"sudo ip link set {can_interface} down",'w',1)
 
-    def add_frame_to_que(self, frame):
-        self.frame_que.append(frame)
-
-
     def send_q(self):
         for message in self.frame_que:
             os.popen(f"cansend {self.can_send_module_name} {message}", 'w',1)
