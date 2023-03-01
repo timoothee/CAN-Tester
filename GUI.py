@@ -10,6 +10,8 @@ import sys
 import can_module as CAN_module
 import can_frame as CAN_frame
 import can_transmitter as CAN_transmitter
+import psutil
+import platform
 
 
 class CANGui():
@@ -54,13 +56,18 @@ class CANGui():
         self.can_send_module_optionmenu = None
         self.can_receive_module_optionmenu = None
         self.can_module_optionmenu = ("Sender", "Receiver")
-        self.can_send_module_optionmenu = ("CAN0", "CAN1")
-        self.can_receive_module_optionmenu = ("CAN0", "CAN1")
+        if platform.system() == "Darwin":
+            self.can_send_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
+            self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
+            self.can_dict = {'anpi0':"anpi0", 'anpi1':"anpi1", 'en0':"en0"}
+        elif platform.system() == "Linux":
+            self.can_send_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
+            self.can_receive_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
+            self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
         self.can_interface_list = ('Sender', 'Receiver')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
-        self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}
-        self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}        
+        self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}   
         self.can_frame_changed = False
         self.can_down_var = True
         self.module = CAN_module.CanModule()
@@ -487,15 +494,15 @@ class CANGui():
     
     def backend_module(self):
         if self.can_down_var:
-            self.module.set_can_send_module_name(self.can_dict[self.can_sender_var.get()])
-            self.module.set_can_receive_module_name(self.can_dict[self.can_receiver_var.get()])
+            self.module.set_can_sender_module_name(self.can_dict[self.can_sender_var.get()])
+            self.module.set_can_receiver_module_name(self.can_dict[self.can_receiver_var.get()])
             self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.transmitter.interface_up(self.module.get_can_send_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
-            self.transmitter.interface_up(self.module.get_can_receive_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
+            self.transmitter.interface_up(self.module.get_can_sender_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
+            self.transmitter.interface_up(self.module.get_can_receiver_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
         else:
-            self.transmitter.interface_down(self.module.get_can_send_module_name())
-            self.transmitter.interface_down(self.module.get_can_receive_module_name())
+            self.transmitter.interface_down(self.module.get_can_sender_module_name())
+            self.transmitter.interface_down(self.module.get_can_receiver_module_name())
 
     def backend_frame(self):
         self.Final_list = list(self.listbox1.get(0, END))
@@ -517,7 +524,7 @@ class CANGui():
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.module.get_can_send_module_name())
+            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.module.get_can_sender_module_name())
             print(f"{self.frame.id_list}{self.frame.payload_list}{self.frame.brs_list}")
         else:
             self.initial_interface_state()
