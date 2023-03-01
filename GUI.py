@@ -499,6 +499,9 @@ class CANGui():
 
     def backend_frame(self):
         self.Final_list = list(self.listbox1.get(0, END))
+        self.frame.id_list.clear()
+        self.frame.brs_list.clear()
+        self.frame.payload_list.clear()
         for message in self.Final_list:
             index = 0
             for element in message:
@@ -513,8 +516,8 @@ class CANGui():
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
-            self.module.send_q()
             self.backend_frame()
+            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
             print(f"{self.frame.id_list}{self.frame.payload_list}{self.frame.brs_list}")
         else:
             self.initial_interface_state()
