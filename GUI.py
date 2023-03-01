@@ -517,7 +517,7 @@ class CANGui():
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
+            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.module.get_can_send_module_name())
             print(f"{self.frame.id_list}{self.frame.payload_list}{self.frame.brs_list}")
         else:
             self.initial_interface_state()
