@@ -14,3 +14,4 @@ class CanTrasnmitter():
     def send_q(self, id_list, brs_list, payload_list, can_sender):
         for i in range(len(id_list)):
             os.popen(f"cansend {can_sender} {id_list[i]}##{brs_list[i]}.{payload_list[i]}", 'w',1)
+            print(f"cansend {can_sender} {id_list[i]}##{brs_list[i]}.{payload_list[i]}", 'w',1)

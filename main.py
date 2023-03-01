@@ -4,7 +4,7 @@ from can_module import CanModule
 from tkinter import ttk
 import os
 
-gui = CANGui("v.1.3.5")
+gui = CANGui("v.1.4.0")
 # MAJOR.MINOR.PATCH
 
 if os.environ.get('DISPLAY','') == '':
@@ -14,11 +14,3 @@ if os.environ.get('DISPLAY','') == '':
 if __name__ == "__main__":
     gui.build()
     gui.root.mainloop()
-
-    brsbox = gui.brs_box.get()
-    extbox = gui.ext_box.get()
-    frameid = gui.id_text.get()
-    #payloadsize = gui.payload_size_entry.get()
-    payload = gui.payload_entry.get()
-
-    x = CanFrame(frameid, extbox, brsbox, payload)
