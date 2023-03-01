@@ -514,9 +514,6 @@ class CANGui():
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
-            self.Final_list = list(self.listbox1.get(0, END))
-            for message in self.Final_list:
-                self.transmitter.get_list(message[10:])
             self.module.send_q()
             self.backend_frame()
         else:
