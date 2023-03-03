@@ -60,7 +60,7 @@ class CANGui():
             self.can_send_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_dict = {'anpi0':"anpi0", 'anpi1':"anpi1", 'en0':"en0"}
-        elif platform.system() == "Linux":
+        else:
             self.can_send_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
             self.can_receive_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
             self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
