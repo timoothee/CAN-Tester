@@ -226,6 +226,14 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
+    def CAN_BUS_log(self):
+        self.infinite_condition = 2
+        while self.infinite_condition >= 1:
+            with open(r'can.log') as f:
+                self.log_lines = f.readlines()
+
+            for line in self.log_lines:
+                self.listbox2.insert(END, line)
 
     def up_down_button_command(self):
         if self.can_down_var:
@@ -233,6 +241,7 @@ class CANGui():
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
             self.can_down_var = False
+            self.transmitter.dump_log(self.module.get_can_receiver_module_name())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
