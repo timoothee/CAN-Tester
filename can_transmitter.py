@@ -15,3 +15,6 @@ class CanTrasnmitter():
         for i in range(len(id_list)):
             os.popen(f"cansend {can_sender} {id_list[i]}##{brs_list[i]}.{payload_list[i]}", 'w',1)
             print(f"cansend {can_sender} {id_list[i]}##{brs_list[i]}.{payload_list[i]}", 'w',1)
+
+    def dump_log(self, can_receiver):
+        os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
