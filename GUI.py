@@ -99,9 +99,9 @@ class CANGui():
         self.can_interface_receiver_label = Label(self.can_frame1, text = "Can Receiver")
         self.can_interface_receiver_label.grid(row=2, column=0)
 
-        self.drop_down_menu_1 = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
-        self.drop_down_menu_1.config(width=5)
-        self.drop_down_menu_1.grid(row = 3, column = 0)
+        self.receiver_drop_down_menu = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
+        self.receiver_drop_down_menu.config(width=5)
+        self.receiver_drop_down_menu.grid(row = 3, column = 0)
 
         self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
         self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
