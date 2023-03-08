@@ -92,9 +92,9 @@ class CANGui():
         self.can_interface_sender_label = Label(self.can_frame1, text = "Can Sender")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
-        self.drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
-        self.drop_down_menu.config(width=5)
-        self.drop_down_menu.grid(row = 1, column = 0)
+        self.sender_drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
+        self.sender_drop_down_menu.config(width=5)
+        self.sender_drop_down_menu.grid(row = 1, column = 0)
 
         self.can_interface_receiver_label = Label(self.can_frame1, text = "Can Receiver")
         self.can_interface_receiver_label.grid(row=2, column=0)
