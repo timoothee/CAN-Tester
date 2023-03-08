@@ -30,8 +30,6 @@ class CANGui():
         self.payload_size_entry.set("")
         self.payload_entry = StringVar()
         self.payload_entry.set("")
-        self.sender_var = StringVar()
-        self.sender_var.set('Select')
         self.can_sender_var = StringVar()
         self.can_sender_var.set('Select')
         self.can_sender_var.trace("w", self.can_frame_option_changed)
