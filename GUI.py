@@ -99,7 +99,7 @@ class CANGui():
         self.can_frame6.grid(row=6, column=0, sticky="nsew")
 
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
-        self.listbox2 = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
         self.can_interface_Label = Label(self.can_frame1, text = "Can Sender")
         self.can_interface_Label.grid(row=0, column=0, padx=20, pady=(20,0))
@@ -210,12 +210,12 @@ class CANGui():
         self.send_button = Button(self.can_frame4, text="Send que", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
 
-        self.listbox2.grid(row=1, column=0, padx=20, pady=(5,10))
+        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
 
         self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
         self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
 
-        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.listbox2))
+        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
         self.clear_button_output.grid(row=0, column=1, sticky='n')
 
         self.Error_label = Label(self.can_frame2, text = "")
@@ -237,7 +237,7 @@ class CANGui():
                 self.log_lines = f.readlines()
 
             for line in self.log_lines:
-                self.listbox2.insert(END, line)
+                self.can_bus_listbox.insert(END, line)
 
     def up_down_button_command(self):
         if self.can_down_var:
