@@ -9,7 +9,6 @@ import sys
 #from tkmacosx import Button
 import can_module as CAN_module
 import can_frame as CAN_frame
-import can_transmitter as CAN_transmitter
 import psutil
 import platform
 
@@ -60,9 +59,13 @@ class CANGui():
             self.can_send_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_dict = {'anpi0':"anpi0", 'anpi1':"anpi1", 'en0':"en0"}
-        else:
+        elif platform.system() == "Linux":
             self.can_send_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
             self.can_receive_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
+            self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
+        else:
+            self.can_send_module_optionmenu = ("CAN0", "CAN1")
+            self.can_receive_module_optionmenu = ("CAN0","CAN1")
             self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
         self.can_interface_list = ('Sender', 'Receiver')
         self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
@@ -72,7 +75,8 @@ class CANGui():
         self.can_down_var = True
         self.module = CAN_module.CanModule()
         self.frame = CAN_frame.CanFrame()
-        self.transmitter = CAN_transmitter.CanTrasnmitter()
+        self.module_sender = CAN_module.CanModule()
+        self.module_receiver = CAN_module.CanModule()
 
 
     def build(self):
@@ -241,7 +245,6 @@ class CANGui():
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
             self.can_down_var = False
-            self.transmitter.dump_log(self.module.get_can_receiver_module_name())
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
@@ -503,15 +506,17 @@ class CANGui():
     
     def backend_module(self):
         if self.can_down_var:
-            self.module.set_can_sender_module_name(self.can_sender_var.get())
-            self.module.set_can_receiver_module_name(self.can_receiver_var.get())
-            self.module.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
-            self.module.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
-            self.transmitter.interface_up(self.module.get_can_sender_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
-            self.transmitter.interface_up(self.module.get_can_receiver_module_name(), self.module.get_baudrate(), self.module.get_dbaudrate())
+            self.module_sender.set_module_name(self.can_sender_var.get())
+            self.module_receiver.set_module_name(self.can_receiver_var.get())
+            self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
+            self.module_sender.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
+            self.module_receiver.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
+            self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
+            self.module_sender.interface_up()
+            self.module_receiver.interface_up()
         else:
-            self.transmitter.interface_down(self.module.get_can_sender_module_name())
-            self.transmitter.interface_down(self.module.get_can_receiver_module_name())
+            self.module_sender.interface_down()
+            self.module_receiver.interface_down()
 
     def backend_frame(self):
         self.Final_list = list(self.listbox1.get(0, END))
@@ -533,8 +538,7 @@ class CANGui():
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            self.transmitter.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.module.get_can_sender_module_name())
-            print(f"{self.frame.id_list}{self.frame.payload_list}{self.frame.brs_list}")
+            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
         else:
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
