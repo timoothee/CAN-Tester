@@ -89,8 +89,8 @@ class CANGui():
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
         self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
-        self.can_interface_Label = Label(self.can_frame1, text = "Can Sender")
-        self.can_interface_Label.grid(row=0, column=0, padx=20, pady=(20,0))
+        self.can_interface_sender_label = Label(self.can_frame1, text = "Can Sender")
+        self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
         self.drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
         self.drop_down_menu.config(width=5)
