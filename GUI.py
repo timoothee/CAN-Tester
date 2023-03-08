@@ -45,7 +45,6 @@ class CANGui():
         self.position = 0
         self.can_send_module_optionmenu = None
         self.can_receive_module_optionmenu = None
-        self.can_module_optionmenu = ("Sender", "Receiver")
         if platform.system() == "Darwin":
             self.can_send_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
