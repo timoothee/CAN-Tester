@@ -36,8 +36,6 @@ class CANGui():
         self.can_receiver_var = StringVar()
         self.can_receiver_var.set('Select')
         self.can_receiver_var.trace("w", self.can_frame_option_changed_1)
-        self.receiver_var = StringVar()
-        self.receiver_var.set('Select')
         self.drop_down_id_baudrate_var = StringVar()
         self.drop_down_id_baudrate_var.set("Select")
         self.drop_down_id_baudrate_var.trace("w", self.id_baudrate_option_changed)
