@@ -62,7 +62,6 @@ class CANGui():
         self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}   
         self.can_frame_changed = False
         self.can_down_var = True
-        self.module = CAN_module.CanModule()
         self.frame = CAN_frame.CanFrame()
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
