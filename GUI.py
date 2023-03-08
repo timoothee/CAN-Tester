@@ -98,7 +98,7 @@ class CANGui():
         self.can_frame6 = Frame(self.root)
         self.can_frame6.grid(row=6, column=0, sticky="nsew")
 
-        self.listbox1 = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
         self.listbox2 = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
         self.can_interface_Label = Label(self.can_frame1, text = "Can Sender")
@@ -184,7 +184,7 @@ class CANGui():
         self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
-        self.listbox1.grid(row=1, column=0, padx=20)
+        self.que_listbox.grid(row=1, column=0, padx=20)
 
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
@@ -204,7 +204,7 @@ class CANGui():
         self.save_button_input = Button(self.can_frame4, text="Save", command = self.save_messages_sent)
         self.save_button_input.grid(row=0, column=1, padx=10)
 
-        self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.listbox1))
+        self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
         self.send_button = Button(self.can_frame4, text="Send que", command=self.send_que, state="normal")
@@ -279,19 +279,19 @@ class CANGui():
             self.refresh_time()
             self.get_frame_data()
             
-            self.listbox1.delete(self.our_item)
-            self.listbox1.insert(self.our_item, self.string_max)
-            self.listbox1.itemconfig(self.our_item, {'fg': 'green'})
+            self.que_listbox.delete(self.our_item)
+            self.que_listbox.insert(self.our_item, self.string_max)
+            self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
         
     def edit_button(self):
-        if self.listbox1.size() != 0:
-            if len(self.listbox1.curselection()) != 0:
+        if self.que_listbox.size() != 0:
+            if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
-                self.our_item = self.listbox1.curselection()
+                self.our_item = self.que_listbox.curselection()
                 self.ok_button.config(state="normal")
                 self.index_element = 0
-                self.value = self.listbox1.get(self.listbox1.curselection())[10:]
+                self.value = self.que_listbox.get(self.que_listbox.curselection())[10:]
                 for element in self.value:
                     if element == "#":
                         if self.value[self.value.index(element)+1] == "#":
@@ -334,7 +334,7 @@ class CANGui():
             
             for item in self.lines:
                 self.string_import = self.current_time + "  " + item
-                self.listbox1.insert(0, self.string_import)
+                self.que_listbox.insert(0, self.string_import)
 
 
     def btn_up_down_active(self, *args):
@@ -461,12 +461,12 @@ class CANGui():
     
     def save_messages_sent(self):
         with open("Messages_sent.txt","w") as f:
-            for i in self.listbox1.get(0,END):
+            for i in self.que_listbox.get(0,END):
                 f.write(i+"\n")
 
     def save_messages_received(self):
         with open("Messages_received.txt","w") as f:
-            for i in self.listbox1.get(0,END):
+            for i in self.que_listbox.get(0,END):
                 f.write(i+"\n")
 
             else:
@@ -501,7 +501,7 @@ class CANGui():
         if self.check_all_fields_retVal == False and self.check_all_fields_completed_retVal == False:
             self.refresh_time()
             self.get_frame_data()
-            self.listbox1.insert(self.position, self.string_max)
+            self.que_listbox.insert(self.position, self.string_max)
             self.initial_interface_state()
     
     def backend_module(self):
@@ -519,7 +519,7 @@ class CANGui():
             self.module_receiver.interface_down()
 
     def backend_frame(self):
-        self.Final_list = list(self.listbox1.get(0, END))
+        self.Final_list = list(self.que_listbox.get(0, END))
         self.frame.id_list.clear()
         self.frame.brs_list.clear()
         self.frame.payload_list.clear()
@@ -543,3 +543,4 @@ class CANGui():
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
+            
