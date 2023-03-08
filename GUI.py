@@ -30,8 +30,6 @@ class CANGui():
         self.payload_size_entry.set("")
         self.payload_entry = StringVar()
         self.payload_entry.set("")
-        self.drop_down_menu_can = StringVar()
-        self.drop_down_menu_can.set("Select")
         self.interface_var = StringVar()
         self.interface_var.set('Select')
         self.sender_var = StringVar()
