@@ -519,11 +519,11 @@ class CANGui():
             self.module_receiver.interface_down()
 
     def backend_frame(self):
-        self.Final_list = list(self.que_listbox.get(0, END))
+        self.backend_list = list(self.que_listbox.get(0, END))
         self.frame.id_list.clear()
         self.frame.brs_list.clear()
         self.frame.payload_list.clear()
-        for message in self.Final_list:
+        for message in self.backend_list:
             index = 0
             for element in message:
                 if element == "#":
