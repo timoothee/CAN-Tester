@@ -96,8 +96,8 @@ class CANGui():
         self.drop_down_menu.config(width=5)
         self.drop_down_menu.grid(row = 1, column = 0)
 
-        self.can_interface_Label_1 = Label(self.can_frame1, text = "Can Receiver")
-        self.can_interface_Label_1.grid(row=2, column=0)
+        self.can_interface_receiver_label = Label(self.can_frame1, text = "Can Receiver")
+        self.can_interface_receiver_label.grid(row=2, column=0)
 
         self.drop_down_menu_1 = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
         self.drop_down_menu_1.config(width=5)
