@@ -69,7 +69,6 @@ class CANGui():
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
         self.program_running = True
-        self.module_receiver.can_dump()
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
 
@@ -268,13 +267,16 @@ class CANGui():
     def threadfunc(self):
         self.log_list = []
         while self.program_running:
-            with open('can.log', 'r+') as f:
-                self.log_list.clear()
-                self.log_list = f.readlines()
-                if len(self.log_list) != 0:
-                    self.can_bus_listbox.insert('end', self.log_list)
-                    with open('can.log', 'w+') as ft:
-                        ft.truncate()
+            try:
+                with open('can.log', 'r+') as f:
+                    self.log_list.clear()
+                    self.log_list = f.readlines()
+                    if len(self.log_list) != 0:
+                        self.can_bus_listbox.insert('end', self.log_list)
+                        with open('can.log', 'w+') as ft:
+                            ft.truncate()
+            except:
+                print("No can.log file")
             time.sleep(2)
         
 
@@ -522,6 +524,7 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
+            self.module_receiver.can_dump()
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
