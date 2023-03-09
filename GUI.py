@@ -19,11 +19,12 @@ class CANGui():
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.protocol("WM_DELETE_WINDOW", on_closing)
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
-
+        def on_closing(self):
+            self.program_running = False
+        self.root.protocol("WM_DELETE_WINDOW", on_closing)
         self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
@@ -273,9 +274,7 @@ class CANGui():
                     with open('can.log', 'w+') as ft:
                         ft.truncate()
             time.sleep(2)
-
-    def on_closing(self):
-        self.program_running = False
+        
 
     def ok_command(self):
         self.check_all_fields()
@@ -521,6 +520,7 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
+            self.module_receiver.can_dump()
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
