@@ -263,7 +263,7 @@ class CANGui():
         pass 
 
     def on_closing(self):
-        pass
+        self.program_running = False
 
     def ok_command(self):
         self.check_all_fields()
