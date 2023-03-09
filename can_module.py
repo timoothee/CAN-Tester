@@ -33,7 +33,7 @@ class CanModule():
         print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
         
     def can_dump(self):
-        pass
+        os.popen(f"candump {self.module_name} > can.log", "w")
 
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w',1)
