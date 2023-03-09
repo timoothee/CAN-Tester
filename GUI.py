@@ -159,7 +159,6 @@ class CANGui():
         self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
         self.payload_size_Entry.grid(row = 1, column=4)
 
-
         self.payload_Label = Label(self.can_frame2, text="Payload")
         self.payload_Label.grid(row = 0, column=5, sticky='w')
 
@@ -257,6 +256,9 @@ class CANGui():
         
     def delete_function(self, listbox):
         listbox.delete(ANCHOR)
+
+    def threadfunc(self):
+        pass 
 
     def ok_command(self):
         self.check_all_fields()
@@ -531,4 +533,3 @@ class CANGui():
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
-            
