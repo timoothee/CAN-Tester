@@ -29,20 +29,21 @@ class CanModule():
         return self.dbaudrate
     
     def interface_up(self):
-        os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w',1)
+        os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w')
         print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
-        
+        os.popen(f"sudo ifconfig {self.module_name} txqueuelen 65536")
+        print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     def can_dump(self):
         os.popen(f"candump {self.module_name} > can.log", "w")
         print("---")
 
     def interface_down(self):
-        os.popen(f"sudo ip link set {self.module_name} down",'w',1)
+        os.popen(f"sudo ip link set {self.module_name} down",'w')
 
     def send_q(self, id_list, brs_list, payload_list):
         for i in range(len(id_list)):
-            os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w',1)
-            print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w',1)
+            os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w')
+            print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}")
 
     def dump_log(self, can_receiver):
         os.popen(f"candump {can_receiver} > CAN-Tester/can.log")

@@ -22,9 +22,6 @@ class CANGui():
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
-        def on_closing(self):
-            self.program_running = False
-        self.root.protocol("WM_DELETE_WINDOW", on_closing)
         self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
@@ -71,10 +68,14 @@ class CANGui():
         self.program_running = True
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
+        self.chg_var = 0
+        self.chg_var1 = 0
 
+    
 
 
     def build(self):
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
@@ -224,6 +225,11 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
+    def on_closing(self):
+        print("---")
+        self.program_running = False
+        self.root.destroy()
+
     def CAN_BUS_log(self):
         self.infinite_condition = 2
         while self.infinite_condition >= 1:
@@ -258,6 +264,7 @@ class CANGui():
         self.btn_up_down_active()
 
     def can_frame_option_changed_1(self, *args):
+        self.chg_var1 += 1
         self.can_frame_changed_1 = True
         self.btn_up_down_active()
         
@@ -268,16 +275,19 @@ class CANGui():
         self.log_list = []
         while self.program_running:
             try:
+                print("Before try")git pull
                 with open('can.log', 'r+') as f:
-                    self.log_list.clear()
+                    print("After try", self.log_list)
                     self.log_list = f.readlines()
+                    print("MAMA MIA", self.log_list)
                     if len(self.log_list) != 0:
                         self.can_bus_listbox.insert('end', self.log_list)
                         with open('can.log', 'w+') as ft:
                             ft.truncate()
+                    self.log_list.clear()
             except:
                 print("No can.log file")
-            time.sleep(2)
+            time.sleep(0.5)
         
 
     def ok_command(self):
@@ -524,7 +534,10 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
-            self.module_receiver.can_dump()
+            if self.chg_var1 != self.chg_var:
+                self.chg_var = self.chg_var1
+                time.sleep(2)
+                self.module_receiver.can_dump()
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
