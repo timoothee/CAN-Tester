@@ -18,6 +18,7 @@ class CANGui():
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
         self.root = Tk()
+        self.root.protocol("WM_DELETE_WINDOW", on_closing)
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.root.geometry("600x800")
@@ -65,6 +66,7 @@ class CANGui():
         self.frame = CAN_frame.CanFrame()
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
+        self.program_running = True
 
 
     def build(self):
@@ -259,6 +261,9 @@ class CANGui():
 
     def threadfunc(self):
         pass 
+
+    def on_closing(self):
+        pass
 
     def ok_command(self):
         self.check_all_fields()
