@@ -69,8 +69,10 @@ class CANGui():
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
         self.program_running = True
+        self.module_receiver.can_dump()
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
+
 
 
     def build(self):
@@ -520,7 +522,6 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
-            self.module_receiver.can_dump()
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
