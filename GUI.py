@@ -11,6 +11,7 @@ import can_module as CAN_module
 import can_frame as CAN_frame
 import psutil
 import platform
+import threading
 
 
 class CANGui():
@@ -67,6 +68,8 @@ class CANGui():
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
         self.program_running = True
+        t1 = threading.Thread(target=self.threadfunc)
+        t1.start()
 
 
     def build(self):
