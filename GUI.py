@@ -134,7 +134,7 @@ class CANGui():
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=1, column=4, sticky='w')
 
-        self.dev_button = Button(self.can_frame1, text= "<  >")
+        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
         self.dev_button.grid(row=2, column=4, sticky='w')
 
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -227,6 +227,10 @@ class CANGui():
 
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
+
+    def developer_settings(self):
+        self.root2 = Tk()
+        self.root2.mainloop()
 
     def on_closing(self):
         print("---")
