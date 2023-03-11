@@ -9,6 +9,7 @@ import sys
 #from tkmacosx import Button
 import can_module as CAN_module
 import can_frame as CAN_frame
+from GUI_DEV import *
 import psutil
 import platform
 import threading
@@ -65,6 +66,7 @@ class CANGui():
         self.frame = CAN_frame.CanFrame()
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
+        self.guidev = CAN_gui_dev()
         self.program_running = True
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
@@ -229,9 +231,10 @@ class CANGui():
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
     def developer_settings(self):
-        self.root2 = Tk()
-        self.root2.mainloop()
-
+        self.guidev.root_dev = Toplevel(self.root)
+        self.guidev.build()
+        self.guidev.root_dev.mainloop()
+    
     def on_closing(self):
         print("---")
         self.program_running = False
