@@ -134,6 +134,9 @@ class CANGui():
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=1, column=4, sticky='w')
 
+        self.dev_button = Button(self.can_frame1, text= "<  >")
+        self.dev_button.grid(row=2, column=4, sticky='w')
+
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
@@ -275,7 +278,7 @@ class CANGui():
         self.log_list = []
         while self.program_running:
             try:
-                print("Before try")git pull
+                print("Before try")
                 with open('can.log', 'r+') as f:
                     print("After try", self.log_list)
                     self.log_list = f.readlines()
