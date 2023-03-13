@@ -42,6 +42,12 @@ class CanModule():
 
     def send_q(self, id_list, brs_list, payload_list):
         for i in range(len(id_list)):
+            '''
+            self.message_string = "cansend " + self.module_name + id_list[i] + "#" + brs_list[i] + payload_list[i]
+            self.message_string = str(self.message_string, encoding='utf-8')
+            self.message_string = self.message_string.strip()
+            self.message_string = self.message_string.replace(b'\x00'.decode(),'')
+            '''
             os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w')
             print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}")
 
