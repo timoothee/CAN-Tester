@@ -232,6 +232,7 @@ class CANGui():
 
     def developer_settings(self):
         self.guidev.root_dev = Toplevel(self.root)
+        self.guidev.root_dev.geometry("500x500")
         self.guidev.build()
         self.guidev.root_dev.mainloop()
     
@@ -289,7 +290,7 @@ class CANGui():
                 with open('can.log', 'r+') as f:
                     print("After try", self.log_list)
                     self.log_list = f.readlines()
-                    print("MAMA MIA", self.log_list)
+                    print("After try 2", self.log_list)
                     if len(self.log_list) != 0:
                         self.can_bus_listbox.insert('end', self.log_list)
                         with open('can.log', 'w+') as ft:
