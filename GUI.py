@@ -247,13 +247,16 @@ class CANGui():
         self.default_candump_button = Button(self.root_dev, text="Default candump", command=self.default_candump)
         self.default_candump_button.grid(row=2, column=2, padx=30, sticky='w')
 
+        self.status_listbox = Listbox(self.root_dev, width = 40)
+        self.status_listbox.grid(row=3, column=0)
+
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
-        self.root_dev.geometry("500x500")
+        self.root_dev.geometry("500x600")
         self.build2()
         self.root_dev.bind('<Return>', self.dsend_func)
         self.root_dev.mainloop()
@@ -318,16 +321,19 @@ class CANGui():
         self.log_list = []
         while self.program_running:
             try:
-                with open('can.log', 'r+') as f:
+                with open('can.log', 'r') as f:
                     self.log_list = f.readlines()
+                    self.status_listbox.insert('end', self.log_list)
                     if len(self.log_list) != 0:
-                        for itemi in self.log_list:                        
+                        for itemi in self.log_list:                       
                             self.can_bus_listbox.insert('end', itemi)
                         self.log_list.clear()
-                        f.truncate()
+                        self.status_listbox.insert('end', self.log_list)
+                        with open('can.log', 'w') as file:
+                            pass
             except:
                 print("No can.log file")
-            time.sleep(2)
+            time.sleep(5)
         
 
     def ok_command(self):
