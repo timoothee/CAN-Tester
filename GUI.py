@@ -227,7 +227,7 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
-    def dsend_func(self):
+    def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
         os.popen(self.message_entry.get())
 
@@ -238,13 +238,11 @@ class CANGui():
         self.message_entry = Entry(self.root_dev, textvariable=self.dmessage)
         self.message_entry.grid(row=1, column=0)
 
-        self.dsend_button = Button(self.root_dev, text="Press to send", command= self.dsend_func)
-        self.dsend_button.grid()
-
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
         self.root_dev.geometry("500x500")
         self.build2()
+        self.root_dev.bind('<Return>', self.dsend_func)
         self.root_dev.mainloop()
     
     def on_closing(self):
