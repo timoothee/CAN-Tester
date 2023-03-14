@@ -242,7 +242,10 @@ class CANGui():
         self.default_up_button.grid(row=0, column=2, padx=30)
 
         self.default_message = Button(self.root_dev, text="1 message", command=self.default_message_func)
-        self.default_message.grid(row=1, column=2, padx=30)
+        self.default_message.grid(row=1, column=2, padx=30, sticky='w')
+
+        self.default_candump_button = Button(self.root_dev, text="Default candump", command=self.default_candump)
+        self.default_candump_button.grid(row=2, column=2, padx=30, sticky='w')
 
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
@@ -263,6 +266,9 @@ class CANGui():
         os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
         os.popen(f"sudo ifconfig can0 txqueuelen 65536", 'w')
         os.popen(f"sudo ifconfig can1 txqueuelen 65536", 'w')
+
+    def default_candump(self):
+        os.popen(f"candump can1 > can.log", 'w')
 
     def on_closing(self):
         print("---")
