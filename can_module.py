@@ -41,6 +41,7 @@ class CanModule():
         os.popen(f"sudo ip link set {self.module_name} down",'w')
 
     def send_q(self, id_list, brs_list, payload_list):
+        itemi = ''
         for i in range(len(id_list)):
             '''
             self.message_string = "cansend " + self.module_name + id_list[i] + "#" + brs_list[i] + payload_list[i]
@@ -48,6 +49,9 @@ class CanModule():
             self.message_string = self.message_string.strip()
             self.message_string = self.message_string.replace(b'\x00'.decode(),'')
             '''
+            itemi = str(b'self.module_name', encoding='utf-8')
+            itemi= self.module_name.strip()
+            itemi = self.module_name.replace(b'\x00'.decode(), '')   
             os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w')
             print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}")
 
