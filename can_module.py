@@ -39,7 +39,7 @@ class CanModule():
     def interface_up(self):
         os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w')
         print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
-        os.popen(f"sudo ifconfig {self.module_name} txqueuelen 65536")
+        os.popen(f"sudo ifconfig {self.module_name} txqueuelen 65536", 'w')
         print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     def can_dump(self):
         os.popen(f"candump {self.module_name} > can.log", "w")
