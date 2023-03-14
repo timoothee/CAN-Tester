@@ -178,9 +178,6 @@ class CANGui():
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5)
 
-        #self.pb = Progressbar(self.root, orient='horizontal', mode='determinate', length=63)
-        #self.pb.grid(row = 2, column=7)
-
         self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
