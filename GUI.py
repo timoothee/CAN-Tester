@@ -61,7 +61,6 @@ class CANGui():
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
         self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}   
         self.can_frame_changed = False
-        self.can_down_var = True
         self.frame = CAN_frame.CanFrame()
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
@@ -265,16 +264,16 @@ class CANGui():
                 self.can_bus_listbox.insert(END, line)
 
     def up_down_button_command(self):
-        if self.can_down_var:
+        if self.module_sender.get_can_status() == "True":
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
-            self.can_down_var = False
+            self.module_sender.set_can_status("False")
         else:
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
-            self.can_down_var = True
+            self.module_sender.set_can_status("True")
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -548,7 +547,7 @@ class CANGui():
             self.initial_interface_state()
     
     def backend_module(self):
-        if self.can_down_var:
+        if self.module_sender.get_can_module_name() == "True":
             self.module_sender.set_module_name(self.can_sender_var.get())
             self.module_receiver.set_module_name(self.can_receiver_var.get())
             self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
