@@ -225,10 +225,6 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
-    def dsend_func(self, event):
-        print(f"{self.message_entry.get()}")
-        os.popen(self.message_entry.get())
-
     def build2(self):
         self.message_label = Label(self.root_dev, text="Message")
         self.message_label.grid(row=0, column=0, sticky='w')
@@ -242,6 +238,16 @@ class CANGui():
         self.program_running_status = Label(self.root_dev, text=self.program_running)
         self.program_running_status.grid(row=2, column=1)
 
+        self.default_up_button = Button(self.root_dev, text="Default canup", command=self.default_canup)
+        self.default_up_button.grid(row=0, column=2, padx=30)
+
+        self.default_message = Button(self.root_dev, text="1 message", command=self.default_message_func)
+        self.default_message.grid(row=1, column=2, padx=30)
+
+    def dsend_func(self, event):
+        print(f"{self.message_entry.get()}")
+        os.popen(self.message_entry.get())
+
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
         self.root_dev.geometry("500x500")
@@ -249,6 +255,15 @@ class CANGui():
         self.root_dev.bind('<Return>', self.dsend_func)
         self.root_dev.mainloop()
     
+    def default_message_func(self):
+        os.popen(f"cansend can0 123#1223")
+
+    def default_canup(self):
+        os.popen(f"sudo ip link set can0 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on")
+        os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on")
+        os.popen(f"sudo ifconfig can0 txqueuelen 65536")
+        os.popen(f"sudo ifconfig can1 txqueuelen 65536")
+
     def on_closing(self):
         print("---")
         self.program_running = False
