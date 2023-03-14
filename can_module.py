@@ -60,6 +60,8 @@ class CanModule():
             itemi = str(b'self.module_name', encoding='utf-8')
             itemi= self.module_name.strip()
             itemi = self.module_name.replace(b'\x00'.decode(), '')   
+
+            print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
             os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w')
             print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}")
 
