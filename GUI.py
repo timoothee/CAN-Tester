@@ -295,11 +295,8 @@ class CANGui():
         self.log_list = []
         while self.program_running:
             try:
-                print("Before try")
                 with open('can.log', 'r+') as f:
-                    print("After try", self.log_list)
                     self.log_list = f.readlines()
-                    print("After try 2", self.log_list)
                     if len(self.log_list) != 0:
                         self.can_bus_listbox.insert('end', self.log_list)
                         with open('can.log', 'w+') as ft:
