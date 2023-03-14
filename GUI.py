@@ -9,7 +9,6 @@ import sys
 #from tkmacosx import Button
 import can_module as CAN_module
 import can_frame as CAN_frame
-from GUI_DEV import *
 import psutil
 import platform
 import threading
@@ -66,12 +65,13 @@ class CANGui():
         self.frame = CAN_frame.CanFrame()
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
-        self.guidev = CAN_gui_dev()
         self.program_running = True
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
         self.chg_var = 0
         self.chg_var1 = 0
+
+        self.dmessage = StringVar
 
     
 
@@ -227,16 +227,30 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
+    def dsend_func(self):
+        print(f"{self.message_entry.get()}")
+        os.popen(self.message_entry.get())
+
+    def build2(self):
+        self.message_label = Label(self.root_dev, text="Message")
+        self.message_label.grid(row=0, column=0, sticky='w')
+
+        self.message_entry = Entry(self.root_dev, textvariable=self.dmessage)
+        self.message_entry.grid(row=1, column=0)
+
+        self.dsend_button = Button(self.root_dev, text="Press to send", command= self.dsend_func)
+        self.dsend_button.grid()
+
     def developer_settings(self):
-        self.guidev.root_dev = Toplevel(self.root)
-        self.guidev.root_dev.geometry("500x500")
-        self.guidev.build()
-        self.guidev.root_dev.mainloop()
+        self.root_dev = Toplevel(self.root)
+        self.root_dev.geometry("500x500")
+        self.build2()
+        self.root_dev.mainloop()
     
     def on_closing(self):
         print("---")
         self.program_running = False
-        self.root.destroy()
+        self.root.destroy() 
 
     def CAN_BUS_log(self):
         self.infinite_condition = 2
