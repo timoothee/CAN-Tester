@@ -72,7 +72,6 @@ class CANGui():
         self.chg_var1 = 0
 
         self.dmessage = StringVar
-
     
 
 
@@ -238,6 +237,12 @@ class CANGui():
         self.message_entry = Entry(self.root_dev, textvariable=self.dmessage)
         self.message_entry.grid(row=1, column=0)
 
+        self.program_running_status_label = Label(self.root_dev, text= "Program STATUS")
+        self.program_running_status_label.grid(row=2, column=0)
+
+        self.program_running_status = Label(self.root_dev, text=self.program_running)
+        self.program_running_status.grid(row=2, column=1)
+
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
         self.root_dev.geometry("500x500")
@@ -304,7 +309,7 @@ class CANGui():
                     self.log_list.clear()
             except:
                 print("No can.log file")
-            time.sleep(0.5)
+            time.sleep(2)
         
 
     def ok_command(self):
