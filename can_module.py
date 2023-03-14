@@ -7,7 +7,8 @@ class CanModule():
         self.dbaudrate = ""
         self.frame_que = []
         self.module_name = ""
-        self.can_status_var = "True"
+        self.can_status_var = False
+        print("hereee")
 
     def set_can_status(self, status):
         self.can_status_var = status

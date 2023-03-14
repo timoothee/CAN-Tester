@@ -285,16 +285,16 @@ class CANGui():
                 self.can_bus_listbox.insert(END, line)
 
     def up_down_button_command(self):
-        if self.module_sender.get_can_status() == "True":
+        if self.module_sender.get_can_status() == False:
+            self.module_sender.set_can_status(True)
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
-            self.module_sender.set_can_status("False")
         else:
+            self.module_sender.set_can_status(False)
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
-            self.module_sender.set_can_status("True")
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -568,7 +568,7 @@ class CANGui():
             self.initial_interface_state()
     
     def backend_module(self):
-        if self.module_sender.get_can_module_name() == "True":
+        if self.module_sender.get_can_status() == True:
             self.module_sender.set_module_name(self.can_sender_var.get())
             self.module_receiver.set_module_name(self.can_receiver_var.get())
             self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
