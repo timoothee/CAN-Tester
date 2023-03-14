@@ -259,16 +259,13 @@ class CANGui():
         self.root_dev.mainloop()
     
     def default_message_func(self):
-        os.popen(f"cansend can0 123#1223", 'w')
+        self.module_sender.default_message_func()
 
     def default_canup(self):
-        os.popen(f"sudo ip link set can0 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
-        os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
-        os.popen(f"sudo ifconfig can0 txqueuelen 65536", 'w')
-        os.popen(f"sudo ifconfig can1 txqueuelen 65536", 'w')
+        self.module_sender.defaul_canup()
 
     def default_candump(self):
-        os.popen(f"candump can1 > can.log", 'w')
+        self.module_sender.default_candump()
 
     def on_closing(self):
         print("---")

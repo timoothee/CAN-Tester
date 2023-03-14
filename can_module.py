@@ -49,21 +49,22 @@ class CanModule():
         os.popen(f"sudo ip link set {self.module_name} down",'w')
 
     def send_q(self, id_list, brs_list, payload_list):
-        itemi = ''
         for i in range(len(id_list)):
-            '''
-            self.message_string = "cansend " + self.module_name + id_list[i] + "#" + brs_list[i] + payload_list[i]
-            self.message_string = str(self.message_string, encoding='utf-8')
-            self.message_string = self.message_string.strip()
-            self.message_string = self.message_string.replace(b'\x00'.decode(),'')
-            '''
-            itemi = str(b'self.module_name', encoding='utf-8')
-            itemi= self.module_name.strip()
-            itemi = self.module_name.replace(b'\x00'.decode(), '')   
-
             print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
             os.popen(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}", 'w')
             print(f"cansend {self.module_name} {id_list[i]}#{brs_list[i]}{payload_list[i]}")
 
     def dump_log(self, can_receiver):
         os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
+
+    def defaul_canup(self):
+        os.popen(f"sudo ip link set can0 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
+        os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
+        os.popen(f"sudo ifconfig can0 txqueuelen 65536", 'w')
+        os.popen(f"sudo ifconfig can1 txqueuelen 65536", 'w')
+
+    def default_candump(self):
+        os.popen(f"candump can1 > can.log", 'w')
+
+    def default_message_func(self):
+        os.popen(f"cansend can0 123#1223", 'w')
