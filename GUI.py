@@ -12,11 +12,13 @@ import can_frame as CAN_frame
 import psutil
 import platform
 import threading
-
+import can
+from can import *
 
 class CANGui():
 
     def __init__(self, gui_revision: str):
+
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
@@ -317,23 +319,36 @@ class CANGui():
         listbox.delete(ANCHOR)
 
     def threadfunc(self):
-        bus_item = ''
-        self.log_list = []
+        string1 = ''
         while self.program_running:
+            bus = can.interface.Bus(bustype='pcan', channel='can1', bitrate=1000000)
+            logger = can.Logger('can.log', 'a')
+            notifier = can.Notifier(bus, [can.Printer(), logger])
+            
+            '''
+            print("---ss")
             try:
-                with open('can.log', 'r') as f:
-                    self.log_list = f.readlines()
-                    self.status_listbox.insert('end', self.log_list)
-                    if len(self.log_list) != 0:
-                        for itemi in self.log_list:                       
-                            self.can_bus_listbox.insert('end', itemi)
-                        self.log_list.clear()
-                        self.status_listbox.insert('end', self.log_list)
-                        with open('can.log', 'w') as file:
+                with open('can.log', 'r') as file:
+                    lista = file.readlines()
+                    print("lalista", lista)
+                    time.sleep(5)
+                    if len(lista) != 0:
+                        with open('can.log', 'w') as f:
                             pass
+                        for item in lista:
+                            for char in item:
+                                if char == " ":
+                                    pass
+                                else:
+                                    string1 = string1 + char
+                        print(string1)
+                        self.can_bus_listbox.insert('end', string1)
+                    
             except:
                 print("No can.log file")
-            time.sleep(5)
+            print("---")
+            time.sleep(2)
+            '''
         
 
     def ok_command(self):
