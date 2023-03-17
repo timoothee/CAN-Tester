@@ -336,11 +336,8 @@ class CANGui():
                         with open('can.log', 'w') as f:
                             pass
                         for item in lista:
-                            for char in item:
-                                if char == " ":
-                                    pass
-                                else:
-                                    string1 = string1 + char
+                            string1 = str(item, encoding='utf-8')
+                            item = item.replace(b'\x00'.decode(),'') 
                         print(string1)
                         self.can_bus_listbox.insert('end', string1)
                     
