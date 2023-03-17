@@ -321,10 +321,10 @@ class CANGui():
     def threadfunc(self):
         string1 = ''
         while self.program_running:
+            '''
             bus = can.interface.Bus(bustype='pcan', channel='can1', bitrate=1000000)
             logger = can.Logger('can.log', 'a')
             notifier = can.Notifier(bus, [can.Printer(), logger])
-            
             '''
             print("---ss")
             try:
@@ -348,7 +348,7 @@ class CANGui():
                 print("No can.log file")
             print("---")
             time.sleep(2)
-            '''
+            
         
 
     def ok_command(self):
