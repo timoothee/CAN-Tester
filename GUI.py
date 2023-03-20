@@ -69,6 +69,10 @@ class CANGui():
         t1.start()
         self.chg_var = 0
         self.chg_var1 = 0
+        self.list_read = []
+        self.list_mem = []
+        with open('can.log', 'w') as f:
+                pass
 
         self.dmessage = StringVar
     
@@ -310,24 +314,16 @@ class CANGui():
         listbox.delete(ANCHOR)
 
     def threadfunc(self):
-        list_read = []
-        list_mem = []
         while self.program_running:
-            try:
-                with open('can.log', 'r') as f:
-                    list_read = f.readlines()
-
-                if len(list_read) != len(list_mem):
-                    for item in range(len(list_mem)-1 ,len(list_read)-1):
-                        string1 = str(item, encoding='utf-8')
-                        item = item.replace(b'\x00'.decode(),'') 
-                    list_mem = list_read
-                    self.can_bus_listbox.insert('end', string1)
-            except:
-                print("No can.log file")
-            time.sleep(2)
-            
-        
+            with open('can.log', 'r') as f:
+                self.list_read = f.readlines()
+            if len(self.list_read) != len(self.list_mem):
+                for i in range(len(self.list_mem) ,len(self.list_read)):
+                    self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
+                    self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
+                    self.can_bus_listbox.insert('end', self.list_read[i]) 
+                self.list_mem = self.list_read
+    
 
     def ok_command(self):
         self.check_all_fields()
@@ -556,12 +552,15 @@ class CANGui():
             
             self.frame.set_id(message[10:index])
             self.frame.set_brs(message[index+2:index+3])
-            self.frame.set_payload(message[index+4:])
+            self.frame.set_payload(message[index+3:])
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
+            print(self.frame.id_list)
+            print(self.frame.brs_list)
+            print(self.frame.payload_list)
             self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
         else:
             self.initial_interface_state()
