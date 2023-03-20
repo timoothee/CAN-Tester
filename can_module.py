@@ -48,6 +48,7 @@ class CanModule():
 
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
+        os.popen(f"cat can.log", 'w')
 
     def send_q(self, id_list, brs_list, payload_list):
         for i in range(len(id_list)):
