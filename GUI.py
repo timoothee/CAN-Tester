@@ -493,18 +493,6 @@ class CANGui():
             self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
             self.position += 1
 
-
-    def brs_box_checked(self):
-        self.brs_box_checked_retVal = False
-        self.id_baudrate_changed = False
-        self.data_baudrate_changed = False
-
-        if self.brs_box.get() == 1:
-            self.payload_size_Label.config(state="normal")
-            self.brs_box_checked_retVal = True
-        else:
-            self.payload_size_Label.config(state="disabled")
-    
     def save_messages_sent(self):
         with open("Messages_sent.txt","w") as f:
             for i in self.que_listbox.get(0,END):
