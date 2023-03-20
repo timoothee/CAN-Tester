@@ -460,15 +460,6 @@ class CANGui():
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
 
-            if self.brs_box.get() == 1:
-                if int(self.frame_id_entry.get(), 16) < 2047:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
-                if self.payload_size_entry.get()*2 != len(str(self.payload_entry.get())):
-                    self.payload_size_error = True
-                    self.payload_entry_error = True
-                    self.check_all_fields_retVal = True
-
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
