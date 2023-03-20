@@ -28,8 +28,6 @@ class CANGui():
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
-        self.payload_size_entry = IntVar()
-        self.payload_size_entry.set("")
         self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.can_sender_var = StringVar()
@@ -148,7 +146,7 @@ class CANGui():
         self.brs_Label = Label(self.can_frame2, text="Brs")
         self.brs_Label.grid(row= 0, column =1)
 
-        self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box, command= lambda: self.brs_box_checked())
+        self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box)
         self.brs_CkBt.grid(row = 1, column=1)
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
@@ -164,13 +162,6 @@ class CANGui():
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 10)
         self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
-
-        self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=4)
-
-        self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
-        self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
-        self.payload_size_Entry.grid(row = 1, column=4)
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
         self.payload_Label.grid(row = 0, column=5, sticky='w')
@@ -319,31 +310,21 @@ class CANGui():
         listbox.delete(ANCHOR)
 
     def threadfunc(self):
-        string1 = ''
+        list_read = []
+        list_mem = []
         while self.program_running:
-            '''
-            bus = can.interface.Bus(bustype='pcan', channel='can1', bitrate=1000000)
-            logger = can.Logger('can.log', 'a')
-            notifier = can.Notifier(bus, [can.Printer(), logger])
-            '''
-            print("---ss")
             try:
-                with open('can.log', 'r') as file:
-                    lista = file.readlines()
-                    print("lalista", lista)
-                    time.sleep(5)
-                    if len(lista) != 0:
-                        with open('can.log', 'w') as f:
-                            pass
-                        for item in lista:
-                            string1 = str(item, encoding='utf-8')
-                            item = item.replace(b'\x00'.decode(),'') 
-                        print(string1)
-                        self.can_bus_listbox.insert('end', string1)
-                    
+                with open('can.log', 'r') as f:
+                    list_read = f.readlines()
+
+                if len(list_read) != len(list_mem):
+                    for item in range(len(list_mem)-1 ,len(list_read)-1):
+                        string1 = str(item, encoding='utf-8')
+                        item = item.replace(b'\x00'.decode(),'') 
+                    list_mem = list_read
+                    self.can_bus_listbox.insert('end', string1)
             except:
                 print("No can.log file")
-            print("---")
             time.sleep(2)
             
         
@@ -439,13 +420,6 @@ class CANGui():
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
 
-        if self.brs_box.get() == 1:
-            if len(self.payload_size_Entry.get()) != 0:
-                pass
-            else:
-                self.payload_size_error = True
-                self.check_all_fields_completed_retVal = True
-
     def check_all_fields(self):
         self.check_all_fields_retVal = False
         if self.check_all_fields_completed_retVal:
@@ -463,7 +437,6 @@ class CANGui():
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_size_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
@@ -471,7 +444,6 @@ class CANGui():
                 self.error_listbox.insert(END,"Error: Id uncompleted")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_size_error == True:
-                self.payload_size_Label.config(fg='red')
                 self.error_listbox.insert(END,"Error: Payload size uncompleted")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_entry_error == True:
@@ -483,7 +455,6 @@ class CANGui():
         if self.check_all_fields_retVal == True:
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
-            self.payload_size_Entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True:
                 if self.ext_box.get() == 1:
@@ -501,7 +472,6 @@ class CANGui():
             if self.payload_size_error == True or self.payload_entry_error == True:
                 self.error_listbox.insert(END,"Error: Payload not equal to payload size")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
-                self.payload_size_Entry.config(fg= 'red')
                 self.payload_Entry.config(fg= 'red')
                 
 
@@ -513,21 +483,6 @@ class CANGui():
             self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
             self.position += 1
 
-
-    def brs_box_checked(self):
-        self.brs_box_checked_retVal = False
-        self.id_baudrate_changed = False
-        self.data_baudrate_changed = False
-
-        if self.brs_box.get() == 1:
-            self.payload_size_Label.config(state="normal")
-            self.payload_size_Entry.config(state="normal")
-            self.brs_box_checked_retVal = True
-        else:
-            self.payload_size_Entry.delete(0, 'end')
-            self.payload_size_Label.config(state="disabled")
-            self.payload_size_Entry.config(state="disabled")
-    
     def save_messages_sent(self):
         with open("Messages_sent.txt","w") as f:
             for i in self.que_listbox.get(0,END):
@@ -549,16 +504,11 @@ class CANGui():
         self.brs_box.set(0)
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
-        self.payload_size_Entry.delete(0, 'end')
-        self.payload_size_Label.config(state="disabled")
-        self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_size_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         self.frame_id_entry.config(fg=self.default_entry_color)
-        self.payload_size_Entry.config(fg=self.default_entry_color)
         self.payload_Entry.config(fg=self.default_entry_color)
 
     
@@ -587,6 +537,7 @@ class CANGui():
                 self.chg_var = self.chg_var1
                 time.sleep(2)
                 self.module_receiver.can_dump()
+                print("Can_dump was made")
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
