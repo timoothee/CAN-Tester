@@ -318,12 +318,11 @@ class CANGui():
                     list_read = f.readlines()
 
                 if len(list_read) != len(list_mem):
+                    for item in range(len(list_mem)-1 ,len(list_read)-1):
+                        string1 = str(item, encoding='utf-8')
+                        item = item.replace(b'\x00'.decode(),'') 
                     list_mem = list_read
-                for item in range(len(list_mem)-1 ,len(list_read)-1):
-                    string1 = str(item, encoding='utf-8')
-                    item = item.replace(b'\x00'.decode(),'') 
-                self.can_bus_listbox.insert('end', string1)
-                    
+                    self.can_bus_listbox.insert('end', string1)
             except:
                 print("No can.log file")
             time.sleep(2)
@@ -538,6 +537,7 @@ class CANGui():
                 self.chg_var = self.chg_var1
                 time.sleep(2)
                 self.module_receiver.can_dump()
+                print("Can_dump was made")
         else:
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
