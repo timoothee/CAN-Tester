@@ -146,7 +146,7 @@ class CANGui():
         self.brs_Label = Label(self.can_frame2, text="Brs")
         self.brs_Label.grid(row= 0, column =1)
 
-        self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box, command= lambda: self.brs_box_checked())
+        self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box)
         self.brs_CkBt.grid(row = 1, column=1)
 
         self.ext_flag_Label = Label(self.can_frame2, text="Ext")
@@ -310,31 +310,22 @@ class CANGui():
         listbox.delete(ANCHOR)
 
     def threadfunc(self):
-        string1 = ''
+        list_read = []
+        list_mem = []
         while self.program_running:
-            '''
-            bus = can.interface.Bus(bustype='pcan', channel='can1', bitrate=1000000)
-            logger = can.Logger('can.log', 'a')
-            notifier = can.Notifier(bus, [can.Printer(), logger])
-            '''
-            print("---ss")
             try:
-                with open('can.log', 'r') as file:
-                    lista = file.readlines()
-                    print("lalista", lista)
-                    time.sleep(5)
-                    if len(lista) != 0:
-                        with open('can.log', 'w') as f:
-                            pass
-                        for item in lista:
-                            string1 = str(item, encoding='utf-8')
-                            item = item.replace(b'\x00'.decode(),'') 
-                        print(string1)
-                        self.can_bus_listbox.insert('end', string1)
+                with open('can.log', 'r') as f:
+                    list_read = f.readlines()
+
+                if len(list_read) != len(list_mem):
+                    list_mem = list_read
+                for item in range(len(list_mem)-1 ,len(list_read)-1):
+                    string1 = str(item, encoding='utf-8')
+                    item = item.replace(b'\x00'.decode(),'') 
+                self.can_bus_listbox.insert('end', string1)
                     
             except:
                 print("No can.log file")
-            print("---")
             time.sleep(2)
             
         
