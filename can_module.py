@@ -43,12 +43,12 @@ class CanModule():
         print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     
     def can_dump(self):
+        os.popen(f"cat can.log")
         os.popen(f"candump {self.module_name} > can.log", "w", 128)
         print("---")
 
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
-        os.popen(f"cat can.log", 'w')
 
     def send_q(self, id_list, brs_list, payload_list):
         for i in range(len(id_list)):
