@@ -28,8 +28,6 @@ class CANGui():
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
-        self.payload_size_entry = IntVar()
-        self.payload_size_entry.set("")
         self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.can_sender_var = StringVar()
@@ -164,13 +162,6 @@ class CANGui():
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 10)
         self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
-
-        self.payload_size_Label = Label(self.can_frame2, text="Payload\nSize", state="disabled")
-        self.payload_size_Label.grid(row = 0, column=4)
-
-        self.payload_size_Entry = Entry(self.can_frame2, textvariable=self.payload_size_entry, width= 5, state="disabled")
-        self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", highlightthickness=0)
-        self.payload_size_Entry.grid(row = 1, column=4)
 
         self.payload_Label = Label(self.can_frame2, text="Payload")
         self.payload_Label.grid(row = 0, column=5, sticky='w')
@@ -439,13 +430,6 @@ class CANGui():
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
 
-        if self.brs_box.get() == 1:
-            if len(self.payload_size_Entry.get()) != 0:
-                pass
-            else:
-                self.payload_size_error = True
-                self.check_all_fields_completed_retVal = True
-
     def check_all_fields(self):
         self.check_all_fields_retVal = False
         if self.check_all_fields_completed_retVal:
@@ -463,7 +447,6 @@ class CANGui():
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_size_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
             if self.id_entry_error == True:
@@ -471,7 +454,6 @@ class CANGui():
                 self.error_listbox.insert(END,"Error: Id uncompleted")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_size_error == True:
-                self.payload_size_Label.config(fg='red')
                 self.error_listbox.insert(END,"Error: Payload size uncompleted")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_entry_error == True:
@@ -483,7 +465,6 @@ class CANGui():
         if self.check_all_fields_retVal == True:
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
-            self.payload_size_Entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True:
                 if self.ext_box.get() == 1:
@@ -501,7 +482,6 @@ class CANGui():
             if self.payload_size_error == True or self.payload_entry_error == True:
                 self.error_listbox.insert(END,"Error: Payload not equal to payload size")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
-                self.payload_size_Entry.config(fg= 'red')
                 self.payload_Entry.config(fg= 'red')
                 
 
@@ -521,12 +501,9 @@ class CANGui():
 
         if self.brs_box.get() == 1:
             self.payload_size_Label.config(state="normal")
-            self.payload_size_Entry.config(state="normal")
             self.brs_box_checked_retVal = True
         else:
-            self.payload_size_Entry.delete(0, 'end')
             self.payload_size_Label.config(state="disabled")
-            self.payload_size_Entry.config(state="disabled")
     
     def save_messages_sent(self):
         with open("Messages_sent.txt","w") as f:
@@ -549,16 +526,13 @@ class CANGui():
         self.brs_box.set(0)
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
-        self.payload_size_Entry.delete(0, 'end')
         self.payload_size_Label.config(state="disabled")
-        self.payload_size_Entry.config(state="disabled", highlightbackground= "grey", borderwidth=1)
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_size_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         self.frame_id_entry.config(fg=self.default_entry_color)
-        self.payload_size_Entry.config(fg=self.default_entry_color)
         self.payload_Entry.config(fg=self.default_entry_color)
 
     
