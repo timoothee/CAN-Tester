@@ -12,9 +12,6 @@ import can_frame as CAN_frame
 import psutil
 import platform
 import threading
-import can
-from can import *
-
 class CANGui():
 
     def __init__(self, gui_revision: str):
@@ -57,7 +54,7 @@ class CANGui():
             self.can_send_module_optionmenu = ("CAN0", "CAN1")
             self.can_receive_module_optionmenu = ("CAN0","CAN1")
             self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
-        self.baudrate_list = ('100K','200K','400K','500K','1M','2M','5M','8M')
+        self.baudrate_list = ('100K','200K','400K','500K','1M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
         self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}   
         self.can_frame_changed = False
