@@ -524,6 +524,8 @@ class CANGui():
             self.module_sender.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_receiver.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
+            self.module_sender.interface_down()
+            self.module_receiver.interface_down()
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
             self.module_receiver.can_dump()
