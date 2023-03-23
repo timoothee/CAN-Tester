@@ -526,8 +526,10 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
+            time.sleep(1)
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
+            time.sleep(1)
             self.module_receiver.can_dump()
             print("Can_dump was made")
         else:
