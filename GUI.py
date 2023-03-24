@@ -213,7 +213,7 @@ class CANGui():
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
@@ -493,6 +493,7 @@ class CANGui():
 
         
     def initial_interface_state(self):
+        self.ok_button.config(state="disable")
         self.Error_label.config(text="")
         self.brs_box.set(0)
         self.ext_box.set(0)   
