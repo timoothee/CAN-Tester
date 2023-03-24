@@ -347,18 +347,24 @@ class CANGui():
                 for element in self.value:
                     if element == "#":
                         if self.value[self.value.index(element)+1] == "#":
-                            self.index_element += 1
+                            pass
                         break
                     self.index_element += 1
                     
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
-                self.payload_Entry.insert(0, self.value[self.index_element+1:])
+                self.payload_Entry.insert(0, self.value[self.index_element+3:])
 
                 try:
                     if int(self.frame_id_entry.get(), 16) > 2047:
                         self.ext_flag_CkBt.select()
                 except:
                     print("Not hexadecimal")
+
+                try:
+                    if self.value[self.index_element+2] == "1":
+                        self.brs_CkBt.select()
+                except:
+                    print("whtever")
 
             else:
                 messagebox.showerror("Status", "Select a message")
