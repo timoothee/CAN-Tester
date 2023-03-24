@@ -487,7 +487,9 @@ class CANGui():
                 file.write(item+'\n')
             file.close()
         else:
-            pass
+            lista = list(self.can_bus_listbox.get(0, END))
+            for item in lista:
+                file.write(item+'\n')
             file.close()
 
         
