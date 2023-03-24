@@ -475,21 +475,6 @@ class CANGui():
             self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
             self.position += 1
 
-    def save_messages_sent(self):
-        with open("Messages_sent.txt","w") as f:
-            for i in self.que_listbox.get(0,END):
-                f.write(i+"\n")
-
-    def save_messages_received(self):
-        with open("Messages_received.txt","w") as f:
-            for i in self.que_listbox.get(0,END):
-                f.write(i+"\n")
-
-            else:
-                if int(self.frame_id_entry.get(), 16) > 2047:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
-
     def save(self, mode):
         files = [('All Files', '*.*'), 
              ('Python Files', '*.py'),
