@@ -476,23 +476,35 @@ class CANGui():
             self.position += 1
 
     def save(self, mode):
+        first_one = False
+
         files = [('All Files', '*.*'), 
              ('Python Files', '*.py'),
              ('Text Document', '*.txt')]
         file = asksaveasfile(filetypes = files, defaultextension = files)
-        
+
         if mode == "input":
             lista = list(self.que_listbox.get(0, END))
             for item in lista:
-                file.write(item+'\n')
+                if first_one == False:
+                    first_one = True
+                    file.write(item)
+                    continue
+                file.write('\n')
+                file.write(item)
             file.close()
+            
         else:
             lista = list(self.can_bus_listbox.get(0, END))
             for item in lista:
-                file.write(item+'\n')
+                if first_one == False:
+                    first_one = True
+                    file.write(item)
+                    continue
+                file.write('\n')
+                file.write(item)
             file.close()
 
-        
     def initial_interface_state(self):
         self.ok_button.config(state="disable")
         self.Error_label.config(text="")
