@@ -354,17 +354,11 @@ class CANGui():
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
                 self.payload_Entry.insert(0, self.value[self.index_element+3:])
 
-                try:
-                    if int(self.frame_id_entry.get(), 16) > 2047:
-                        self.ext_flag_CkBt.select()
-                except:
-                    print("Not hexadecimal")
+                if int(self.frame_id_entry.get(), 16) > 2047:
+                    self.ext_flag_CkBt.select()
 
-                try:
-                    if self.value[self.index_element+2] == "1":
-                        self.brs_CkBt.select()
-                except:
-                    print("whtever")
+                if self.value[self.index_element+2] == "1":
+                    self.brs_CkBt.select()
 
             else:
                 messagebox.showerror("Status", "Select a message")
