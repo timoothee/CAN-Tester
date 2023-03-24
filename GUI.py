@@ -478,32 +478,42 @@ class CANGui():
     def save(self, mode):
         first_one = False
 
-        files = [('All Files', '*.*'), 
-             ('Python Files', '*.py'),
-             ('Text Document', '*.txt')]
-        file = asksaveasfile(filetypes = files, defaultextension = files)
-
         if mode == "input":
-            lista = list(self.que_listbox.get(0, END))
-            for item in lista:
-                if first_one == False:
-                    first_one = True
-                    file.write(item)
-                    continue
-                file.write('\n')
-                file.write(item)
-            file.close()
+            if self.que_listbox.size() != 0:
+                files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
+                file = asksaveasfile(filetypes = files, defaultextension = files)
+                if not file:
+                    pass
+                else:
+                    lista = list(self.que_listbox.get(0, END))
+                    for item in lista:
+                        item = item[10:]
+                        if first_one == False:
+                            first_one = True
+                            file.write(item)
+                            continue
+                        file.write('\n')
+                        file.write(item)
+                    file.close()
+            else:
+                messagebox.showerror("Status", "List is empty")
             
+
         else:
-            lista = list(self.can_bus_listbox.get(0, END))
-            for item in lista:
-                if first_one == False:
-                    first_one = True
+            if self.can_bus_listbox.size() != 0:
+                files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
+                file = asksaveasfile(filetypes = files, defaultextension = files)
+                lista = list(self.can_bus_listbox.get(0, END))
+                for item in lista:
+                    if first_one == False:
+                        first_one = True
+                        file.write(item)
+                        continue
+                    file.write('\n')
                     file.write(item)
-                    continue
-                file.write('\n')
-                file.write(item)
-            file.close()
+                file.close()
+            else:
+                messagebox.showerror("Status", "List is empty")
 
     def initial_interface_state(self):
         self.ok_button.config(state="disable")
