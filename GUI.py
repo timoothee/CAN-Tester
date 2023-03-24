@@ -309,7 +309,10 @@ class CANGui():
         self.btn_up_down_active()
         
     def delete_function(self, listbox):
-        listbox.delete(ANCHOR)
+        if len(self.que_listbox.curselection()) != 0:
+            listbox.delete(ANCHOR)
+        else:
+            listbox.delete(0, END)
 
     def threadfunc(self):
         while self.program_running:
