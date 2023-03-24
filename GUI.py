@@ -12,6 +12,7 @@ import can_frame as CAN_frame
 import psutil
 import platform
 import threading
+from tkinter.filedialog import asksaveasfile
 class CANGui():
 
     def __init__(self, gui_revision: str):
@@ -488,6 +489,12 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+
+    def save(self, mode):
+        files = [('All Files', '*.*'), 
+             ('Python Files', '*.py'),
+             ('Text Document', '*.txt')]
+        file = asksaveasfile(filetypes = files, defaultextension = files)
 
         
     def initial_interface_state(self):
