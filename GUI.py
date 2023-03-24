@@ -191,7 +191,7 @@ class CANGui():
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
-        self.save_button_input = Button(self.can_frame4, text="Save", command = self.save_messages_sent)
+        self.save_button_input = Button(self.can_frame4, text="Save", command = lambda:self.save("input"))
         self.save_button_input.grid(row=0, column=1, padx=10)
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
@@ -202,7 +202,7 @@ class CANGui():
 
         self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
 
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
         self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
 
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
@@ -480,6 +480,15 @@ class CANGui():
              ('Python Files', '*.py'),
              ('Text Document', '*.txt')]
         file = asksaveasfile(filetypes = files, defaultextension = files)
+        
+        if mode == "input":
+            lista = list(self.que_listbox.get(0, END))
+            for item in lista:
+                file.write(item+'\n')
+            file.close()
+        else:
+            pass
+            file.close()
 
         
     def initial_interface_state(self):
