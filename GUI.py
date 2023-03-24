@@ -340,14 +340,12 @@ class CANGui():
         if self.que_listbox.size() != 0:
             if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
-                self.our_item = self.que_listbox.curselection()
                 self.ok_button.config(state="normal")
+                self.our_item = self.que_listbox.curselection()
                 self.index_element = 0
                 self.value = self.que_listbox.get(self.que_listbox.curselection())[10:]
                 for element in self.value:
                     if element == "#":
-                        if self.value[self.value.index(element)+1] == "#":
-                            pass
                         break
                     self.index_element += 1
                     
