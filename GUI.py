@@ -246,7 +246,12 @@ class CANGui():
         self.status_listbox.grid(row=3, column=0)
 
     def rtr_function(self):
-        pass
+        if self.RTR_box.get() == 1:
+            self.payload_Entry.config(state="readonly")
+            self.payload_Label.config(state="disabled")
+        else:
+            self.payload_Entry.config(state="normal")
+            self.payload_Label.config(state="normal")
 
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
