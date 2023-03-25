@@ -491,8 +491,11 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
-            self.position += 1
+            if self.RTR_box.get() == 1:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
+            else:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.position += 1
 
     def save(self, mode):
         first_one = False
@@ -543,9 +546,10 @@ class CANGui():
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_Label.config(fg=self.default_label_color)
+        self.payload_Label.config(fg=self.default_label_color, state="normal")
         self.frame_id_entry.config(fg=self.default_entry_color)
-        self.payload_Entry.config(fg=self.default_entry_color)
+        self.payload_Entry.config(fg=self.default_entry_color, state="normal")
+        
 
     
     def add_to_Q(self):
