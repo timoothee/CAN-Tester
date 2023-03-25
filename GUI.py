@@ -368,8 +368,11 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.ext_flag_CkBt.select()
 
-                if self.value[self.index_element+2] == "1":
-                    self.brs_CkBt.select()
+                print(f"hereeee {self.value[self.index_element]}, {self.value[self.index_element+1]}, {self.value[self.index_element+1]}")
+
+                if self.value[self.index_element+1] != "R":
+                    if self.value[self.index_element+2] == "1":
+                        self.brs_CkBt.select()
 
             else:
                 messagebox.showerror("Status", "Select a message")
