@@ -12,6 +12,7 @@ import can_frame as CAN_frame
 import psutil
 import platform
 import threading
+from tkinter.filedialog import asksaveasfile
 class CANGui():
 
     def __init__(self, gui_revision: str):
@@ -190,7 +191,7 @@ class CANGui():
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
-        self.save_button_input = Button(self.can_frame4, text="Save", command = self.save_messages_sent)
+        self.save_button_input = Button(self.can_frame4, text="Save", command = lambda:self.save("input"))
         self.save_button_input.grid(row=0, column=1, padx=10)
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
@@ -201,7 +202,7 @@ class CANGui():
 
         self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
 
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save_messages_received())
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
         self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
 
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
@@ -213,7 +214,7 @@ class CANGui():
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command)
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
@@ -277,6 +278,7 @@ class CANGui():
 
             for line in self.log_lines:
                 self.can_bus_listbox.insert(END, line)
+                self.can_bus_listbox.see(END)
 
     def up_down_button_command(self):
         if self.module_sender.get_can_status() == False:
@@ -308,7 +310,10 @@ class CANGui():
         self.btn_up_down_active()
         
     def delete_function(self, listbox):
-        listbox.delete(ANCHOR)
+        if len(self.que_listbox.curselection()) != 0:
+            listbox.delete(ANCHOR)
+        else:
+            listbox.delete(0, END)
 
     def threadfunc(self):
         while self.program_running:
@@ -340,25 +345,23 @@ class CANGui():
         if self.que_listbox.size() != 0:
             if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
-                self.our_item = self.que_listbox.curselection()
                 self.ok_button.config(state="normal")
+                self.our_item = self.que_listbox.curselection()
                 self.index_element = 0
                 self.value = self.que_listbox.get(self.que_listbox.curselection())[10:]
                 for element in self.value:
                     if element == "#":
-                        if self.value[self.value.index(element)+1] == "#":
-                            self.index_element += 1
                         break
                     self.index_element += 1
                     
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
-                self.payload_Entry.insert(0, self.value[self.index_element+1:])
+                self.payload_Entry.insert(0, self.value[self.index_element+3:])
 
-                try:
-                    if int(self.frame_id_entry.get(), 16) > 2047:
-                        self.ext_flag_CkBt.select()
-                except:
-                    print("Not hexadecimal")
+                if int(self.frame_id_entry.get(), 16) > 2047:
+                    self.ext_flag_CkBt.select()
+
+                if self.value[self.index_element+2] == "1":
+                    self.brs_CkBt.select()
 
             else:
                 messagebox.showerror("Status", "Select a message")
@@ -476,23 +479,48 @@ class CANGui():
             self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
             self.position += 1
 
-    def save_messages_sent(self):
-        with open("Messages_sent.txt","w") as f:
-            for i in self.que_listbox.get(0,END):
-                f.write(i+"\n")
+    def save(self, mode):
+        first_one = False
 
-    def save_messages_received(self):
-        with open("Messages_received.txt","w") as f:
-            for i in self.que_listbox.get(0,END):
-                f.write(i+"\n")
-
+        if mode == "input":
+            if self.que_listbox.size() != 0:
+                files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
+                file = asksaveasfile(filetypes = files, defaultextension = files)
+                if not file:
+                    pass
+                else:
+                    lista = list(self.que_listbox.get(0, END))
+                    for item in lista:
+                        item = item[10:]
+                        if first_one == False:
+                            first_one = True
+                            file.write(item)
+                            continue
+                        file.write('\n')
+                        file.write(item)
+                    file.close()
             else:
-                if int(self.frame_id_entry.get(), 16) > 2047:
-                    self.id_entry_error = True
-                    self.check_all_fields_retVal = True
+                messagebox.showerror("Status", "List is empty")
+            
 
-        
+        else:
+            if self.can_bus_listbox.size() != 0:
+                files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
+                file = asksaveasfile(filetypes = files, defaultextension = files)
+                lista = list(self.can_bus_listbox.get(0, END))
+                for item in lista:
+                    if first_one == False:
+                        first_one = True
+                        file.write(item)
+                        continue
+                    file.write('\n')
+                    file.write(item)
+                file.close()
+            else:
+                messagebox.showerror("Status", "List is empty")
+
     def initial_interface_state(self):
+        self.ok_button.config(state="disable")
         self.Error_label.config(text="")
         self.brs_box.set(0)
         self.ext_box.set(0)   
