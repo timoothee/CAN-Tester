@@ -589,15 +589,22 @@ class CANGui():
         self.frame.brs_list.clear()
         self.frame.payload_list.clear()
         for message in self.backend_list:
+            rtr_mode = "disabled"
             index = 0
             for element in message:
                 if element == "#":
+                    if message[index+1] == "R":
+                        rtr_mode = "active"
                     break
                 index += 1
-            
-            self.frame.set_id(message[10:index])
-            self.frame.set_brs(message[index+2:index+3])
-            self.frame.set_payload(message[index+3:])
+            if rtr_mode == "disabled":
+                self.frame.set_id(message[10:index])
+                self.frame.set_brs(message[index+2:index+3])
+                self.frame.set_payload(message[index+3:])
+            else:
+                self.frame.set_id(message[10:index])
+                self.frame.set_brs("")
+                self.frame.set_payload(message[index:])
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
