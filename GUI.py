@@ -277,6 +277,7 @@ class CANGui():
 
             for line in self.log_lines:
                 self.can_bus_listbox.insert(END, line)
+                self.can_bus_listbox.see(END)
 
     def up_down_button_command(self):
         if self.module_sender.get_can_status() == False:
