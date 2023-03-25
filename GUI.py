@@ -373,6 +373,8 @@ class CANGui():
                 if self.value[self.index_element+1] != "R":
                     if self.value[self.index_element+2] == "1":
                         self.brs_CkBt.select()
+                else:
+                    self.RTR_CkBtn.select()
 
             else:
                 messagebox.showerror("Status", "Select a message")
@@ -543,6 +545,7 @@ class CANGui():
     def initial_interface_state(self):
         self.ok_button.config(state="disable")
         self.Error_label.config(text="")
+        self.RTR_box.set(0)
         self.brs_box.set(0)
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
