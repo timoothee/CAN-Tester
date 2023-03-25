@@ -142,7 +142,7 @@ class CANGui():
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
-        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
+        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="Brs")
@@ -244,6 +244,9 @@ class CANGui():
 
         self.status_listbox = Listbox(self.root_dev, width = 40)
         self.status_listbox.grid(row=3, column=0)
+
+    def rtr_function(self):
+        pass
 
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
