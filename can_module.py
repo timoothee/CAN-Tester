@@ -53,8 +53,11 @@ class CanModule():
     def send_q(self, id_list, brs_list, payload_list):
         for i in range(len(id_list)):
             print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
-            os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
-            print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
+            if payload_list[i] == "R":
+                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
+            else:
+                os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
+                print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
 
     def dump_log(self, can_receiver):
         os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
