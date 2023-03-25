@@ -336,6 +336,7 @@ class CANGui():
     
 
     def ok_command(self):
+        self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
             self.fields_uncompleted_error()
@@ -375,6 +376,7 @@ class CANGui():
                         self.brs_CkBt.select()
                 else:
                     self.RTR_CkBtn.select()
+                    self.payload_Entry.config(state="disabled")
 
             else:
                 messagebox.showerror("Status", "Select a message")
