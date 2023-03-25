@@ -142,7 +142,7 @@ class CANGui():
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
-        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
+        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="Brs")
@@ -244,6 +244,14 @@ class CANGui():
 
         self.status_listbox = Listbox(self.root_dev, width = 40)
         self.status_listbox.grid(row=3, column=0)
+
+    def rtr_function(self):
+        if self.RTR_box.get() == 1:
+            self.payload_Entry.config(state="readonly")
+            self.payload_Label.config(state="disabled")
+        else:
+            self.payload_Entry.config(state="normal")
+            self.payload_Label.config(state="normal")
 
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
@@ -418,6 +426,13 @@ class CANGui():
 
     def check_all_fields(self):
         self.check_all_fields_retVal = False
+
+        if self.RTR_box.get() == 1:
+            if self.check_all_fields_completed_retVal == False:
+                pass
+            else:
+                self.check_all_fields_completed_retVal = False
+            
         if self.check_all_fields_completed_retVal:
             pass
         else:
@@ -476,8 +491,11 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
-            self.position += 1
+            if self.RTR_box.get() == 1:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
+            else:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.position += 1
 
     def save(self, mode):
         first_one = False
@@ -528,9 +546,10 @@ class CANGui():
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_Label.config(fg=self.default_label_color)
+        self.payload_Label.config(fg=self.default_label_color, state="normal")
         self.frame_id_entry.config(fg=self.default_entry_color)
-        self.payload_Entry.config(fg=self.default_entry_color)
+        self.payload_Entry.config(fg=self.default_entry_color, state="normal")
+        
 
     
     def add_to_Q(self):
