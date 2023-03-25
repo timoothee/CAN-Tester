@@ -418,6 +418,13 @@ class CANGui():
 
     def check_all_fields(self):
         self.check_all_fields_retVal = False
+
+        if self.RTR_box.get() == 1:
+            if self.check_all_fields_completed_retVal == False:
+                pass
+            else:
+                self.check_all_fields_completed_retVal = False
+            
         if self.check_all_fields_completed_retVal:
             pass
         else:
