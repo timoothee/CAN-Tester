@@ -604,7 +604,7 @@ class CANGui():
             else:
                 self.frame.set_id(message[10:index])
                 self.frame.set_brs("")
-                self.frame.set_payload(message[index:])
+                self.frame.set_payload(message[index+1:])
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
