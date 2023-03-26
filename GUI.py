@@ -245,6 +245,15 @@ class CANGui():
         self.status_listbox = Listbox(self.root_dev, width = 40)
         self.status_listbox.grid(row=3, column=0)
 
+
+    def debugging(self, message, color):
+        self.refresh_time()
+        status_message = self.current_time + " " + message
+        self.status_listbox.insert('end', status_message)
+        if color == 1:
+            self.status_listbox.itemconfig('end', {'fg': 'red'})
+        self.status_listbox.see(END)
+
     def rtr_function(self):
         if self.RTR_box.get() == 1:
             self.payload_Entry.config(state="readonly")
@@ -289,16 +298,20 @@ class CANGui():
                 self.can_bus_listbox.see(END)
 
     def up_down_button_command(self):
+        self.debugging("-- Inside up_down_button_command function --", 0)
         if self.module_sender.get_can_status() == False:
+            self.debugging(" Status is UP", 0)
             self.module_sender.set_can_status(True)
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
         else:
+            self.debugging(" Status is DOWN", 0)
             self.module_sender.set_can_status(False)
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
+        self.debugging("-- Leaving up_down_button_command function --", 0)
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -318,6 +331,7 @@ class CANGui():
         self.btn_up_down_active()
         
     def delete_function(self, listbox):
+        self.debugging("DELETE", 0)
         if len(self.que_listbox.curselection()) != 0:
             listbox.delete(ANCHOR)
         else:
@@ -336,6 +350,7 @@ class CANGui():
     
 
     def ok_command(self):
+        self.debugging("-- Inside ok_command function --", 0)
         self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
@@ -415,6 +430,7 @@ class CANGui():
             pass
 
     def check_all_fields_completed(self):
+        self.debugging("... checking if all fields completed", 0)
         self.check_all_fields_completed_retVal = False
         self.id_entry_error = False
         self.payload_size_error = False
@@ -430,8 +446,10 @@ class CANGui():
         else:
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
+        self.debugging("checking finished ...", 0)
 
     def check_all_fields(self):
+        self.debugging("... checking if the fields are completed correctly", 0)
         self.check_all_fields_retVal = False
 
         if self.RTR_box.get() == 1:
@@ -451,12 +469,14 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+        self.debugging(" checking finished! ...", 0)
 
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
+            self.debugging("... Not all fields were completed !", 1)
             if self.id_entry_error == True:
                 self.frame_id_Label.config(fg='red')
                 self.error_listbox.insert(END,"Error: Id uncompleted")
@@ -471,6 +491,7 @@ class CANGui():
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
+            self.debugging("... Some fields were completed wrong ! ", 1)
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
