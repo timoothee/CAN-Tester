@@ -142,7 +142,7 @@ class CANGui():
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
-        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
+        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="Brs")
@@ -245,6 +245,25 @@ class CANGui():
         self.status_listbox = Listbox(self.root_dev, width = 40)
         self.status_listbox.grid(row=3, column=0)
 
+
+    def debugging(self, message, color):
+        self.refresh_time()
+        status_message = self.current_time + " " + message
+        self.status_listbox.insert('end', status_message)
+        if color == 1:
+            self.status_listbox.itemconfig('end', {'fg': 'red'})
+        if color == 2:
+            self.status_listbox.itemconfig('end', {'fg': 'green'})
+        self.status_listbox.see(END)
+
+    def rtr_function(self):
+        if self.RTR_box.get() == 1:
+            self.payload_Entry.config(state="readonly")
+            self.payload_Label.config(state="disabled")
+        else:
+            self.payload_Entry.config(state="normal")
+            self.payload_Label.config(state="normal")
+
     def dsend_func(self, event):
         print(f"{self.message_entry.get()}")
         os.popen(self.message_entry.get())
@@ -281,16 +300,20 @@ class CANGui():
                 self.can_bus_listbox.see(END)
 
     def up_down_button_command(self):
+        self.debugging("-- Inside up_down_button_command function --", 0)
         if self.module_sender.get_can_status() == False:
             self.module_sender.set_can_status(True)
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
+            self.debugging(" Status is UP", 2)
         else:
             self.module_sender.set_can_status(False)
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
+            self.debugging(" Status is DOWN", 1)
+        self.debugging("-- Leaving up_down_button_command function --", 0)
 
     def id_baudrate_option_changed(self, *args):
         self.id_baudrate_changed = True
@@ -310,6 +333,7 @@ class CANGui():
         self.btn_up_down_active()
         
     def delete_function(self, listbox):
+        self.debugging("DELETE", 0)
         if len(self.que_listbox.curselection()) != 0:
             listbox.delete(ANCHOR)
         else:
@@ -328,6 +352,8 @@ class CANGui():
     
 
     def ok_command(self):
+        self.debugging("-- Inside ok_command function --", 0)
+        self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
             self.fields_uncompleted_error()
@@ -360,8 +386,14 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.ext_flag_CkBt.select()
 
-                if self.value[self.index_element+2] == "1":
-                    self.brs_CkBt.select()
+                print(f"hereeee {self.value[self.index_element]}, {self.value[self.index_element+1]}, {self.value[self.index_element+1]}")
+
+                if self.value[self.index_element+1] != "R":
+                    if self.value[self.index_element+2] == "1":
+                        self.brs_CkBt.select()
+                else:
+                    self.RTR_CkBtn.select()
+                    self.payload_Entry.config(state="disabled")
 
             else:
                 messagebox.showerror("Status", "Select a message")
@@ -400,6 +432,7 @@ class CANGui():
             pass
 
     def check_all_fields_completed(self):
+        self.debugging("... checking if all fields completed", 0)
         self.check_all_fields_completed_retVal = False
         self.id_entry_error = False
         self.payload_size_error = False
@@ -415,9 +448,18 @@ class CANGui():
         else:
             self.payload_entry_error = True
             self.check_all_fields_completed_retVal = True
+        self.debugging("checking finished ...", 0)
 
     def check_all_fields(self):
+        self.debugging("... checking if the fields are completed correctly", 0)
         self.check_all_fields_retVal = False
+
+        if self.RTR_box.get() == 1:
+            if self.check_all_fields_completed_retVal == False:
+                pass
+            else:
+                self.check_all_fields_completed_retVal = False
+            
         if self.check_all_fields_completed_retVal:
             pass
         else:
@@ -429,12 +471,14 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+        self.debugging(" checking finished! ...", 0)
 
     def fields_uncompleted_error(self):
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
+            self.debugging("... Not all fields were completed !", 1)
             if self.id_entry_error == True:
                 self.frame_id_Label.config(fg='red')
                 self.error_listbox.insert(END,"Error: Id uncompleted")
@@ -449,6 +493,7 @@ class CANGui():
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
+            self.debugging("... Some fields were completed wrong ! ", 1)
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
@@ -476,12 +521,16 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
-            self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
-            self.position += 1
+            self.debugging(".. getting frame data", 0)
+            if self.RTR_box.get() == 1:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
+            else:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.position += 1
 
     def save(self, mode):
         first_one = False
-
+        self.debugging(".. saving data to file", 0)
         if mode == "input":
             if self.que_listbox.size() != 0:
                 files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
@@ -520,17 +569,20 @@ class CANGui():
                 messagebox.showerror("Status", "List is empty")
 
     def initial_interface_state(self):
+        self.debugging("setting all to default", 0)
         self.ok_button.config(state="disable")
         self.Error_label.config(text="")
+        self.RTR_box.set(0)
         self.brs_box.set(0)
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
         self.payload_Entry.delete(0, 'end')
         self.error_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
-        self.payload_Label.config(fg=self.default_label_color)
+        self.payload_Label.config(fg=self.default_label_color, state="normal")
         self.frame_id_entry.config(fg=self.default_entry_color)
-        self.payload_Entry.config(fg=self.default_entry_color)
+        self.payload_Entry.config(fg=self.default_entry_color, state="normal")
+        
 
     
     def add_to_Q(self):
@@ -539,13 +591,17 @@ class CANGui():
         self.fields_uncompleted_error()
         self.fields_completed_wrong_error()
         if self.check_all_fields_retVal == False and self.check_all_fields_completed_retVal == False:
+            self.debugging(".. all went good ", 0)
             self.refresh_time()
             self.get_frame_data()
             self.que_listbox.insert(self.position, self.string_max)
             self.initial_interface_state()
+        else:
+            self.debugging("Something went wrong !", 1)
     
     def backend_module(self):
         if self.module_sender.get_can_status() == True:
+            self.debugging(" User wants to set CAN UP", 0)
             self.module_sender.set_module_name(self.can_sender_var.get())
             self.module_receiver.set_module_name(self.can_receiver_var.get())
             self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
@@ -561,6 +617,7 @@ class CANGui():
             self.module_receiver.can_dump()
             print("Can_dump was made")
         else:
+            self.debugging(" User wants to set CAN DOWN", 0)
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
 
@@ -570,15 +627,22 @@ class CANGui():
         self.frame.brs_list.clear()
         self.frame.payload_list.clear()
         for message in self.backend_list:
+            rtr_mode = "disabled"
             index = 0
             for element in message:
                 if element == "#":
+                    if message[index+1] == "R":
+                        rtr_mode = "active"
                     break
                 index += 1
-            
-            self.frame.set_id(message[10:index])
-            self.frame.set_brs(message[index+2:index+3])
-            self.frame.set_payload(message[index+3:])
+            if rtr_mode == "disabled":
+                self.frame.set_id(message[10:index])
+                self.frame.set_brs(message[index+2:index+3])
+                self.frame.set_payload(message[index+3:])
+            else:
+                self.frame.set_id(message[10:index])
+                self.frame.set_brs("")
+                self.frame.set_payload(message[index+1:])
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
