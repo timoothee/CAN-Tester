@@ -252,6 +252,8 @@ class CANGui():
         self.status_listbox.insert('end', status_message)
         if color == 1:
             self.status_listbox.itemconfig('end', {'fg': 'red'})
+        if color == 2:
+            self.status_listbox.itemconfig('end', {'fg': 'green'})
         self.status_listbox.see(END)
 
     def rtr_function(self):
@@ -300,17 +302,17 @@ class CANGui():
     def up_down_button_command(self):
         self.debugging("-- Inside up_down_button_command function --", 0)
         if self.module_sender.get_can_status() == False:
-            self.debugging(" Status is UP", 0)
             self.module_sender.set_can_status(True)
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
+            self.debugging(" Status is UP", 2)
         else:
-            self.debugging(" Status is DOWN", 0)
             self.module_sender.set_can_status(False)
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
+            self.debugging(" Status is DOWN", 1)
         self.debugging("-- Leaving up_down_button_command function --", 0)
 
     def id_baudrate_option_changed(self, *args):
@@ -519,6 +521,7 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
+            self.debugging(".. getting frame data", 0)
             if self.RTR_box.get() == 1:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
             else:
@@ -527,7 +530,7 @@ class CANGui():
 
     def save(self, mode):
         first_one = False
-
+        self.debugging(".. saving data to file", 0)
         if mode == "input":
             if self.que_listbox.size() != 0:
                 files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
@@ -566,6 +569,7 @@ class CANGui():
                 messagebox.showerror("Status", "List is empty")
 
     def initial_interface_state(self):
+        self.debugging("setting all to default", 0)
         self.ok_button.config(state="disable")
         self.Error_label.config(text="")
         self.RTR_box.set(0)
@@ -587,13 +591,17 @@ class CANGui():
         self.fields_uncompleted_error()
         self.fields_completed_wrong_error()
         if self.check_all_fields_retVal == False and self.check_all_fields_completed_retVal == False:
+            self.debugging(".. all went good ", 0)
             self.refresh_time()
             self.get_frame_data()
             self.que_listbox.insert(self.position, self.string_max)
             self.initial_interface_state()
+        else:
+            self.debugging("Something went wrong !", 1)
     
     def backend_module(self):
         if self.module_sender.get_can_status() == True:
+            self.debugging(" User wants to set CAN UP", 0)
             self.module_sender.set_module_name(self.can_sender_var.get())
             self.module_receiver.set_module_name(self.can_receiver_var.get())
             self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
@@ -609,6 +617,7 @@ class CANGui():
             self.module_receiver.can_dump()
             print("Can_dump was made")
         else:
+            self.debugging(" User wants to set CAN DOWN", 0)
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
 
