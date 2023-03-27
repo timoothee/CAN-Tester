@@ -103,28 +103,28 @@ class CANGui():
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
         self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
-        self.can_interface_sender_label = Label(self.can_frame1, text = "Can Sender")
+        self.can_interface_sender_label = Label(self.can_frame1, text = "CAN Sender")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
         self.sender_drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
         self.sender_drop_down_menu.config(width=5)
         self.sender_drop_down_menu.grid(row = 1, column = 0)
 
-        self.can_interface_receiver_label = Label(self.can_frame1, text = "Can Receiver")
+        self.can_interface_receiver_label = Label(self.can_frame1, text = "CAN Receiver")
         self.can_interface_receiver_label.grid(row=2, column=0)
 
         self.receiver_drop_down_menu = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
         self.receiver_drop_down_menu.config(width=5)
         self.receiver_drop_down_menu.grid(row = 3, column = 0)
 
-        self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
+        self.id_baudrate_Label = Label(self.can_frame1, text = "ID Baudrate")
         self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
 
         self.drop_down_id_baudrate = OptionMenu(self.can_frame1,  self.drop_down_id_baudrate_var, *self.baudrate_list)
         self.drop_down_id_baudrate.config(width=5)
         self.drop_down_id_baudrate.grid(row = 1, column=1)
 
-        self.data_baudrate_Label = Label(self.can_frame1, text = "Data Baudrate")
+        self.data_baudrate_Label = Label(self.can_frame1, text = "DATA Baudrate")
         self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
@@ -149,19 +149,19 @@ class CANGui():
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
-        self.brs_Label = Label(self.can_frame2, text="Brs")
+        self.brs_Label = Label(self.can_frame2, text="BRS")
         self.brs_Label.grid(row= 0, column =1)
 
         self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box)
         self.brs_CkBt.grid(row = 1, column=1)
 
-        self.ext_flag_Label = Label(self.can_frame2, text="Ext")
+        self.ext_flag_Label = Label(self.can_frame2, text="EXT")
         self.ext_flag_Label.grid(row =0 ,column=2)
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=2)
 
-        self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
+        self.frame_id_Label = Label(self.can_frame2, text="ID (0x)")
         self.frame_id_Label.grid(row = 0, column=3, padx=(5,0), sticky='w')
         self.default_label_color = self.frame_id_Label.cget('fg')
 
@@ -169,13 +169,13 @@ class CANGui():
         self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
 
-        self.payload_Label = Label(self.can_frame2, text="Payload")
+        self.payload_Label = Label(self.can_frame2, text="PAYLOAD")
         self.payload_Label.grid(row = 0, column=5, sticky='w')
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
+        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
         self.que_listbox.grid(row=1, column=0, padx=20)
@@ -201,7 +201,7 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.send_button = Button(self.can_frame4, text="Send que", command=self.send_que, state="normal")
+        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
 
         self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
