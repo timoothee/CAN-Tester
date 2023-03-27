@@ -128,8 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# My ignore
+# my ignore
 test.*
 *.txt
 *.log
 test/
+
+# dont't ignore
+!License.txt
