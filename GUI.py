@@ -19,11 +19,7 @@ class CANGui():
 
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root_dev = Toplevel(self.root)
         self.root.geometry("600x800")
-        self.root_dev.geometry("500x600")
-        self.build2()
-        self.root_dev.withdraw()
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -75,9 +71,12 @@ class CANGui():
         self.list_mem = []
         with open('can.log', 'w') as f:
                 pass
+        with open('status.txt', 'w') as f:
+                pass
 
         self.dmessage = StringVar
-        self.dev_status = True
+        self.dev_status = False
+        self.root_dev = None
     
 
 
@@ -252,14 +251,21 @@ class CANGui():
 
 
     def debugging(self, message, color):
-        self.refresh_time()
-        status_message = self.current_time + " " + message
-        self.status_listbox.insert('end', status_message)
-        if color == 1:
-            self.status_listbox.itemconfig('end', {'fg': 'red'})
-        if color == 2:
-            self.status_listbox.itemconfig('end', {'fg': 'green'})
-        self.status_listbox.see(END)
+        if self.root_dev is None or not self.root_dev.winfo_exists():
+            self.refresh_time()
+            status_message = self.current_time + " " + message
+            with open('status.txt', 'a+') as f:
+                f.write(status_message+'\n')
+        else:
+            self.refresh_time()
+            status_message = self.current_time + " " + message
+            self.status_listbox.insert('end', status_message)
+            if color == 1:
+                self.status_listbox.itemconfig('end', {'fg': 'red'})
+            if color == 2:
+                self.status_listbox.itemconfig('end', {'fg': 'green'})
+            self.status_listbox.see(END)
+            
 
     def rtr_function(self):
         if self.RTR_box.get() == 1:
@@ -274,8 +280,12 @@ class CANGui():
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
+        self.root_dev = Toplevel(self.root)
+        self.root_dev.geometry("500x600+650+0")
+        self.build2()
+        self.dev_status = True
         self.root_dev.bind('<Return>', self.dsend_func)
-        self.root_dev.mainloop()
+        self.dev_status = False
     
     def default_message_func(self):
         self.module_sender.default_message_func()
