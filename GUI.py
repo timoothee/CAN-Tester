@@ -19,9 +19,13 @@ class CANGui():
 
         self.gui_revision = gui_revision
         self.root = Tk()
+        self.root_dev = Toplevel(self.root)
+        self.root.geometry("600x800")
+        self.root_dev.geometry("500x600")
+        self.build2()
+        self.root_dev.withdraw()
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
-        self.root.geometry("600x800")
         self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
@@ -73,6 +77,7 @@ class CANGui():
                 pass
 
         self.dmessage = StringVar
+        self.dev_status = True
     
 
 
@@ -269,9 +274,6 @@ class CANGui():
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
-        self.root_dev = Toplevel(self.root)
-        self.root_dev.geometry("500x600")
-        self.build2()
         self.root_dev.bind('<Return>', self.dsend_func)
         self.root_dev.mainloop()
     
