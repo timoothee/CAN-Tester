@@ -133,6 +133,7 @@ test.*
 *.txt
 *.log
 test/
+*.png
 
 # dont't ignore
 !License.txt

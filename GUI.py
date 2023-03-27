@@ -19,9 +19,9 @@ class CANGui():
 
         self.gui_revision = gui_revision
         self.root = Tk()
+        self.root.geometry("600x800")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
-        self.root.geometry("600x800")
         self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
@@ -71,8 +71,12 @@ class CANGui():
         self.list_mem = []
         with open('can.log', 'w') as f:
                 pass
+        with open('status.txt', 'w') as f:
+                pass
 
         self.dmessage = StringVar
+        self.dev_status = False
+        self.root_dev = None
     
 
 
@@ -99,28 +103,28 @@ class CANGui():
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
         self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
 
-        self.can_interface_sender_label = Label(self.can_frame1, text = "Can Sender")
+        self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
         self.sender_drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
         self.sender_drop_down_menu.config(width=5)
         self.sender_drop_down_menu.grid(row = 1, column = 0)
 
-        self.can_interface_receiver_label = Label(self.can_frame1, text = "Can Receiver")
+        self.can_interface_receiver_label = Label(self.can_frame1, text = "CAN RECEIVER")
         self.can_interface_receiver_label.grid(row=2, column=0)
 
         self.receiver_drop_down_menu = OptionMenu(self.can_frame1, self.can_receiver_var, *self.can_receive_module_optionmenu)
         self.receiver_drop_down_menu.config(width=5)
         self.receiver_drop_down_menu.grid(row = 3, column = 0)
 
-        self.id_baudrate_Label = Label(self.can_frame1, text = "Id Baudrate")
+        self.id_baudrate_Label = Label(self.can_frame1, text = "ID Baudrate")
         self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
 
         self.drop_down_id_baudrate = OptionMenu(self.can_frame1,  self.drop_down_id_baudrate_var, *self.baudrate_list)
         self.drop_down_id_baudrate.config(width=5)
         self.drop_down_id_baudrate.grid(row = 1, column=1)
 
-        self.data_baudrate_Label = Label(self.can_frame1, text = "Data Baudrate")
+        self.data_baudrate_Label = Label(self.can_frame1, text = "DATA Baudrate")
         self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
@@ -145,19 +149,19 @@ class CANGui():
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
-        self.brs_Label = Label(self.can_frame2, text="Brs")
+        self.brs_Label = Label(self.can_frame2, text="BRS")
         self.brs_Label.grid(row= 0, column =1)
 
         self.brs_CkBt = Checkbutton(self.can_frame2, variable=self.brs_box)
         self.brs_CkBt.grid(row = 1, column=1)
 
-        self.ext_flag_Label = Label(self.can_frame2, text="Ext")
+        self.ext_flag_Label = Label(self.can_frame2, text="EXT")
         self.ext_flag_Label.grid(row =0 ,column=2)
 
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=2)
 
-        self.frame_id_Label = Label(self.can_frame2, text="Id (0x)")
+        self.frame_id_Label = Label(self.can_frame2, text="ID (0x)")
         self.frame_id_Label.grid(row = 0, column=3, padx=(5,0), sticky='w')
         self.default_label_color = self.frame_id_Label.cget('fg')
 
@@ -165,13 +169,13 @@ class CANGui():
         self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
 
-        self.payload_Label = Label(self.can_frame2, text="Payload")
+        self.payload_Label = Label(self.can_frame2, text="PAYLOAD")
         self.payload_Label.grid(row = 0, column=5, sticky='w')
 
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5)
 
-        self.add_to_q = Button(self.can_frame2, text="Add to que", command= self.add_to_Q)
+        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
         self.que_listbox.grid(row=1, column=0, padx=20)
@@ -197,7 +201,7 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.send_button = Button(self.can_frame4, text="Send que", command=self.send_que, state="normal")
+        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
 
         self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
@@ -221,40 +225,83 @@ class CANGui():
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
     def build2(self):
-        self.message_label = Label(self.root_dev, text="Message")
-        self.message_label.grid(row=0, column=0, sticky='w')
 
-        self.message_entry = Entry(self.root_dev, textvariable=self.dmessage)
-        self.message_entry.grid(row=1, column=0)
+        self.dev_can_frame_1 = Frame(self.root_dev)
+        self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
 
-        self.program_running_status_label = Label(self.root_dev, text= "Program STATUS")
-        self.program_running_status_label.grid(row=2, column=0)
+        self.dev_can_frame_2 = Frame(self.root_dev)
+        self.dev_can_frame_2.grid(row=1, column=0, padx=[5,0], pady=10, sticky="nsew")
 
-        self.program_running_status = Label(self.root_dev, text=self.program_running)
-        self.program_running_status.grid(row=2, column=1)
+        self.dev_can_frame_3 = Frame(self.root_dev)
+        self.dev_can_frame_3.grid(row=2, column=0,padx=[5,0], sticky="nsew")
 
-        self.default_up_button = Button(self.root_dev, text="Default canup", command=self.default_canup)
-        self.default_up_button.grid(row=0, column=2, padx=30)
+        self.top_label = Label(self.dev_can_frame_1, text="DEFAULT AREA")
+        self.top_label.grid(row=0, column=0, pady=[10,0])
+        self.top_label.config(font=('Helvetica bold', 13))
 
-        self.default_message = Button(self.root_dev, text="1 message", command=self.default_message_func)
-        self.default_message.grid(row=1, column=2, padx=30, sticky='w')
+        self.default_up_button = Button(self.dev_can_frame_1, text="Default canup", command=self.default_canup, width=10)
+        self.default_up_button.grid(row=1, column=0, padx=[5,0], pady=[10,0], sticky='w')
 
-        self.default_candump_button = Button(self.root_dev, text="Default candump", command=self.default_candump)
-        self.default_candump_button.grid(row=2, column=2, padx=30, sticky='w')
+        self.default_candump_button = Button(self.dev_can_frame_1, text="Default candump", command=self.default_candump, width=10)
+        self.default_candump_button.grid(row=2, column=0, padx=[5,0], sticky='w')
 
-        self.status_listbox = Listbox(self.root_dev, width = 40)
-        self.status_listbox.grid(row=3, column=0)
+        self.default_settings = Button(self.dev_can_frame_1, text="Modules settings", command=self.default_module_settings, width=10)
+        self.default_settings.grid(row=3, column=0, padx=[5,0], sticky='w')
 
+        self.default_message = Button(self.dev_can_frame_1, text="1 message", command=self.default_message_func, width=10)
+        self.default_message.grid(row=1, column=1, pady=[10,0],sticky='w')
+
+        self.top2_label = Label(self.dev_can_frame_2, text="MANUAL AREA")
+        self.top2_label.grid(row=0, column=0, sticky='w')
+        self.top2_label.config(font=('Helvetica bold', 13))
+
+        self.message_label = Label(self.dev_can_frame_2, text="Message")
+        self.message_label.grid(row=1, column=0, sticky='w')
+
+        self.message_entry = Entry(self.dev_can_frame_2, textvariable=self.dmessage)
+        self.message_entry.grid(row=2, column=0, sticky='w')
+
+        self.top3_label = Label(self.dev_can_frame_3, text="STATUS AREA")
+        self.top3_label.grid(row=0, column=0, sticky='w')
+        self.top3_label.config(font=('Helvetica bold', 13))
+
+        self.debugging_label = Label(self.dev_can_frame_3, text="DEBUGGING")
+        self.debugging_label.grid(row=1, column=0, pady=[5,0])
+
+        self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
+        self.status_listbox.grid(row=2, column=0, padx=10)
+
+        self.current_status_label = Label(self.dev_can_frame_3, text="CURRENT STATUS")
+        self.current_status_label.grid(row=3, column=0, pady=[5,0])
+
+        self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
+        self.status_listbox.grid(row=4, column=0, padx=10)
+
+
+
+
+    def default_module_settings(self):
+        self.can_sender_var.set("can0")
+        self.can_receiver_var.set("can1")
+        self.drop_down_id_baudrate_var.set("1M")
+        self.drop_down_data_baudrate_var.set("5M")
 
     def debugging(self, message, color):
-        self.refresh_time()
-        status_message = self.current_time + " " + message
-        self.status_listbox.insert('end', status_message)
-        if color == 1:
-            self.status_listbox.itemconfig('end', {'fg': 'red'})
-        if color == 2:
-            self.status_listbox.itemconfig('end', {'fg': 'green'})
-        self.status_listbox.see(END)
+        if self.root_dev is None or not self.root_dev.winfo_exists():
+            self.refresh_time()
+            status_message = self.current_time + " " + message
+            with open('status.txt', 'a+') as f:
+                f.write(status_message+'\n')
+        else:
+            self.refresh_time()
+            status_message = self.current_time + " " + message
+            self.status_listbox.insert('end', status_message)
+            if color == 1:
+                self.status_listbox.itemconfig('end', {'fg': 'red'})
+            if color == 2:
+                self.status_listbox.itemconfig('end', {'fg': 'green'})
+            self.status_listbox.see(END)
+            
 
     def rtr_function(self):
         if self.RTR_box.get() == 1:
@@ -270,10 +317,12 @@ class CANGui():
 
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
-        self.root_dev.geometry("500x600")
+        self.root_dev.title("Develop settings")
+        self.root_dev.geometry("500x600+650+0")
         self.build2()
+        self.dev_status = True
         self.root_dev.bind('<Return>', self.dsend_func)
-        self.root_dev.mainloop()
+        self.dev_status = False
     
     def default_message_func(self):
         self.module_sender.default_message_func()
