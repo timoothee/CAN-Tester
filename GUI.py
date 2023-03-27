@@ -225,6 +225,16 @@ class CANGui():
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
 
     def build2(self):
+
+        self.dev_can_frame_1 = Frame(self.root_dev)
+        self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
+
+        self.dev_can_frame_2 = Frame(self.root_dev)
+        self.dev_can_frame_2.grid(row=1, column=0, sticky="nsew")
+
+        self.dev_can_frame_3 = Frame(self.root_dev)
+        self.dev_can_frame_3.grid(row=2, column=0, sticky="nsew")
+
         self.message_label = Label(self.root_dev, text="Message")
         self.message_label.grid(row=0, column=0, sticky='w')
 
@@ -290,6 +300,7 @@ class CANGui():
 
     def developer_settings(self):
         self.root_dev = Toplevel(self.root)
+        self.root_dev.title("Develop settings")
         self.root_dev.geometry("500x600+650+0")
         self.build2()
         self.dev_status = True
