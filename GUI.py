@@ -249,6 +249,15 @@ class CANGui():
         self.status_listbox = Listbox(self.root_dev, width = 40)
         self.status_listbox.grid(row=3, column=0)
 
+        self.default_settings = Button(self.root_dev, text="Default settings", command=self.default_module_settings)
+        self.default_settings.grid()
+
+
+    def default_module_settings(self):
+        self.can_sender_var.set("can0")
+        self.can_receiver_var.set("can1")
+        self.drop_down_id_baudrate_var.set("1M")
+        self.drop_down_data_baudrate_var.set("5M")
 
     def debugging(self, message, color):
         if self.root_dev is None or not self.root_dev.winfo_exists():
