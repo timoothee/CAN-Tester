@@ -230,37 +230,54 @@ class CANGui():
         self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
 
         self.dev_can_frame_2 = Frame(self.root_dev)
-        self.dev_can_frame_2.grid(row=1, column=0, sticky="nsew")
+        self.dev_can_frame_2.grid(row=1, column=0, padx=[5,0], pady=10, sticky="nsew")
 
         self.dev_can_frame_3 = Frame(self.root_dev)
-        self.dev_can_frame_3.grid(row=2, column=0, sticky="nsew")
+        self.dev_can_frame_3.grid(row=2, column=0,padx=[5,0], sticky="nsew")
 
-        self.message_label = Label(self.root_dev, text="Message")
-        self.message_label.grid(row=0, column=0, sticky='w')
+        self.top_label = Label(self.dev_can_frame_1, text="DEFAULT AREA")
+        self.top_label.grid(row=0, column=0, pady=[10,0])
+        self.top_label.config(font=('Helvetica bold', 13))
 
-        self.message_entry = Entry(self.root_dev, textvariable=self.dmessage)
-        self.message_entry.grid(row=1, column=0)
+        self.default_up_button = Button(self.dev_can_frame_1, text="Default canup", command=self.default_canup, width=10)
+        self.default_up_button.grid(row=1, column=0, padx=[5,0], pady=[10,0], sticky='w')
 
-        self.program_running_status_label = Label(self.root_dev, text= "Program STATUS")
-        self.program_running_status_label.grid(row=2, column=0)
+        self.default_candump_button = Button(self.dev_can_frame_1, text="Default candump", command=self.default_candump, width=10)
+        self.default_candump_button.grid(row=2, column=0, padx=[5,0], sticky='w')
 
-        self.program_running_status = Label(self.root_dev, text=self.program_running)
-        self.program_running_status.grid(row=2, column=1)
+        self.default_settings = Button(self.dev_can_frame_1, text="Modules settings", command=self.default_module_settings, width=10)
+        self.default_settings.grid(row=3, column=0, padx=[5,0], sticky='w')
 
-        self.default_up_button = Button(self.root_dev, text="Default canup", command=self.default_canup)
-        self.default_up_button.grid(row=0, column=2, padx=30)
+        self.default_message = Button(self.dev_can_frame_1, text="1 message", command=self.default_message_func, width=10)
+        self.default_message.grid(row=1, column=1, pady=[10,0],sticky='w')
 
-        self.default_message = Button(self.root_dev, text="1 message", command=self.default_message_func)
-        self.default_message.grid(row=1, column=2, padx=30, sticky='w')
+        self.top2_label = Label(self.dev_can_frame_2, text="MANUAL AREA")
+        self.top2_label.grid(row=0, column=0, sticky='w')
+        self.top2_label.config(font=('Helvetica bold', 13))
 
-        self.default_candump_button = Button(self.root_dev, text="Default candump", command=self.default_candump)
-        self.default_candump_button.grid(row=2, column=2, padx=30, sticky='w')
+        self.message_label = Label(self.dev_can_frame_2, text="Message")
+        self.message_label.grid(row=1, column=0, sticky='w')
 
-        self.status_listbox = Listbox(self.root_dev, width = 40)
-        self.status_listbox.grid(row=3, column=0)
+        self.message_entry = Entry(self.dev_can_frame_2, textvariable=self.dmessage)
+        self.message_entry.grid(row=2, column=0, sticky='w')
 
-        self.default_settings = Button(self.root_dev, text="Default settings", command=self.default_module_settings)
-        self.default_settings.grid()
+        self.top3_label = Label(self.dev_can_frame_3, text="STATUS AREA")
+        self.top3_label.grid(row=0, column=0, sticky='w')
+        self.top3_label.config(font=('Helvetica bold', 13))
+
+        self.debugging_label = Label(self.dev_can_frame_3, text="DEBUGGING")
+        self.debugging_label.grid(row=1, column=0, pady=[5,0])
+
+        self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
+        self.status_listbox.grid(row=2, column=0, padx=10)
+
+        self.current_status_label = Label(self.dev_can_frame_3, text="CURRENT STATUS")
+        self.current_status_label.grid(row=3, column=0, pady=[5,0])
+
+        self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
+        self.status_listbox.grid(row=4, column=0, padx=10)
+
+
 
 
     def default_module_settings(self):
