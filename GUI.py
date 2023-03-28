@@ -330,32 +330,30 @@ class CANGui():
     def loop_section_button(self):
         while self.program_running:
             if self.loop_active == True:
-                print("x")
-                random_message = ""
-                bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
-
-                if random.choice(['normal', 'extended']) == "normal":
-                    random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
-                else:
-                    random_message = '1'
-                    for i in range(7):
-                        random_message = random_message + random.choice(bits_list)
-
-
-                random_message = random_message + "##" + str(random.randrange(0, 9))
-
-                for i in range(random.randrange(1,11,2)):
-                    random_message = random_message + random.choice(bits_list)
-
                 if self.default_status_label.cget("text") == "UP":
                     for i in range(self.messages_loop_var.get()):
+                        random_message = ""
+                        bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+
+                        if random.choice(['normal', 'extended']) == "normal":
+                            random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
+                        else:
+                            random_message = '1'
+                            for i in range(7):
+                                random_message = random_message + random.choice(bits_list)
+                        random_message = random_message + "##" + str(random.randrange(0, 9))
+
+                        for i in range(random.randrange(1,11,2)):
+                            random_message = random_message + random.choice(bits_list)
+
                         self.module_sender.random_message(random_message)
                         time.sleep(self.delay_optionmenu_dict[self.delay_var.get()])
+                    self.loop_active = False
                 else:
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
-
-                self.loop_active = False
+    
+                
 
     def loop_function(self):
         
