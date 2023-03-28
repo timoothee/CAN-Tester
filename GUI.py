@@ -74,9 +74,14 @@ class CANGui():
         with open('status.txt', 'w') as f:
                 pass
 
-        self.dmessage = StringVar
+        self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
+        self.delay_var = IntVar()
+        self.delay_optionmenu = ("1s","2s","3s","5s")
+        self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
+        self.messages_loop_var = IntVar()
+        self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
     
 
 
@@ -100,9 +105,7 @@ class CANGui():
         self.can_frame6 = Frame(self.root)
         self.can_frame6.grid(row=6, column=0, sticky="nsew")
 
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
-
+        # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
@@ -143,6 +146,7 @@ class CANGui():
         self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
         self.dev_button.grid(row=2, column=4, sticky='w')
 
+        # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
@@ -178,20 +182,15 @@ class CANGui():
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
-        self.que_listbox.grid(row=1, column=0, padx=20)
-
+        # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
+    
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 8,selectmode=EXTENDED)
+        self.que_listbox.grid(row=1, column=0, padx=20)
 
-        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
-        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
-        self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
-
-        self.error_listbox_label = Label(self.can_frame6, text='Error list')
-        self.error_listbox_label.grid(row=0, column=2, sticky='w', padx= 125,pady=(10,0))
-        self.error_listbox_label.config(font=('Helvetica bold', 13))
-
+        # frame 4
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
@@ -201,31 +200,52 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.loop_button = Button(self.can_frame4, text="LOOP", command=self.loop_function)
-        self.loop_button.grid(row=0, column=5)
-
-        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=6, sticky='e')
-
-        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
-
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
-
-        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
-        self.clear_button_output.grid(row=0, column=1, sticky='n')
-
-        self.Error_label = Label(self.can_frame2, text = "")
-        self.Error_label.grid(row = 0, column= 5)
-
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
+        self.loop_button = Button(self.can_frame4, text="LOOP", command=self.loop_function)
+        self.loop_button.grid(row=0, column=5)
+
+        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
+        self.send_button.grid(row = 0, column=6, sticky='e')
+
+        # frame 5
+        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
+        self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
+
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
+        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
+
+        self.save_button_output = Button(self.can_frame5, text="Save", command=lambda:self.save("output"))
+        self.save_button_output.grid(row=2, column=0, padx=(20,10), sticky='w')
+
+        self.clear_button_output = Button(self.can_frame5, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
+        self.clear_button_output.grid(row=2, column=0, sticky='w')
+
+        # frame 6
+        self.error_listbox_label = Label(self.can_frame6, text='Error list')
+        self.error_listbox_label.grid(row=0, column=2, sticky='w', padx= 125,pady=(10,0))
+        self.error_listbox_label.config(font=('Helvetica bold', 13))
+
         self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
+
+        self.delay_label = Label(self.can_frame6, text="DELAY")
+        self.delay_label.grid()
+
+        self.delay_option_menu = OptionMenu(self.can_frame6, self.delay_var, *self.delay_optionmenu)
+        self.delay_option_menu.grid(row=1, column=0)
+
+        self.loop_msg_label = Label(self.can_frame6, text="MESSAGES \n LOOP")
+        self.loop_msg_label.grid()
+
+        self.messages_option_menu = OptionMenu(self.can_frame6, self.messages_loop_var, *self.messages_optionmenu)
+        self.messages_option_menu.grid(row=1, column=2)
+
 
     def build2(self):
 
@@ -281,7 +301,14 @@ class CANGui():
         self.status_listbox.grid(row=4, column=0, padx=10)
 
     def loop_function(self):
-        pass
+        
+        if self.default_status_label.cget("text") == "UP":
+            for i in range():
+                self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
+                time.sleep()
+        else:
+            self.error_listbox.insert(END,"Error: CAN is DOWN")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
 
     def default_module_settings(self):
         self.can_sender_var.set("can0")
@@ -623,7 +650,6 @@ class CANGui():
     def initial_interface_state(self):
         self.debugging("setting all to default", 0)
         self.ok_button.config(state="disable")
-        self.Error_label.config(text="")
         self.RTR_box.set(0)
         self.brs_box.set(0)
         self.ext_box.set(0)   
