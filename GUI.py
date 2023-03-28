@@ -13,6 +13,7 @@ import psutil
 import platform
 import threading
 from tkinter.filedialog import asksaveasfile
+import random
 class CANGui():
 
     def __init__(self, gui_revision: str):
@@ -63,8 +64,6 @@ class CANGui():
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
         self.program_running = True
-        t1 = threading.Thread(target=self.threadfunc)
-        t1.start()
         self.chg_var = 0
         self.chg_var1 = 0
         self.list_read = []
@@ -77,11 +76,16 @@ class CANGui():
         self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
-        self.delay_var = IntVar()
+        self.delay_var = StringVar()
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
         self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
+        self.loop_active = False
+        t1 = threading.Thread(target=self.threadfunc)
+        t1.start()
+        t2 = threading.Thread(target=self.loop_section_button)
+        t2.start()
     
 
 
@@ -264,6 +268,8 @@ class CANGui():
         self.messages_option_menu.config(width=1)
         self.messages_option_menu.grid(row=1, column=1)
 
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=3)
+        self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
 
@@ -317,6 +323,39 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def start_func(self):
+        self.loop_active = True
+
+    def loop_section_button(self):
+        while self.program_running:
+            if self.loop_active == True:
+                print("x")
+                random_message = ""
+                bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+
+                if random.choice(['normal', 'extended']) == "normal":
+                    random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
+                else:
+                    random_message = '1'
+                    for i in range(7):
+                        random_message = random_message + random.choice(bits_list)
+
+
+                random_message = random_message + "##" + str(random.randrange(0, 9))
+
+                for i in range(random.randrange(1,11,2)):
+                    random_message = random_message + random.choice(bits_list)
+
+                if self.default_status_label.cget("text") == "UP":
+                    for i in range(self.messages_loop_var.get()):
+                        self.module_sender.random_message(random_message)
+                        time.sleep(self.delay_optionmenu_dict[self.delay_var.get()])
+                else:
+                    self.error_listbox.insert(END,"Error: CAN is DOWN")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+
+                self.loop_active = False
 
     def loop_function(self):
         
