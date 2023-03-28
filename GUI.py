@@ -108,8 +108,11 @@ class CANGui():
         self.can_frame7 = Frame(self.root)
         self.can_frame7.grid(row=6, column=0, sticky="nsew")
 
+        self.can_frame7_2 = Frame(self.can_frame7)
+        self.can_frame7_2.grid(row=0, column=1)
+
         self.can_frame8 = Frame(self.can_frame7)
-        self.can_frame8.grid(row=1, column=1, sticky="nsew")
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
 
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -241,17 +244,24 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame7, width = 30, height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
 
+        # frame 7_2
+        self.loop_section_label = Label(self.can_frame7_2, text='LOOP SECTION')
+        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
+        self.loop_section_label.config(font=('Helvetica bold', 13))
+
         # frame 8
         self.delay_label = Label(self.can_frame8, text="DELAY")
-        self.delay_label.grid(row=0, column=0)
+        self.delay_label.grid(row=0, column=0, padx=(120,0))
 
         self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.grid(row=1, column=0)
+        self.delay_option_menu.config(width=1)
+        self.delay_option_menu.grid(row=1, column=0, padx=(120,0))
 
-        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES \n LOOP")
+        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
 
         self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
+        self.messages_option_menu.config(width=1)
         self.messages_option_menu.grid(row=1, column=1)
 
 
