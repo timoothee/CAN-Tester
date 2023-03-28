@@ -100,13 +100,16 @@ class CANGui():
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
 
         self.can_frame5= Frame(self.root)
-        self.can_frame5.grid(row=5, column=0, sticky="nsew")
+        self.can_frame5.grid(row=4, column=0, sticky="nsew")
 
         self.can_frame6 = Frame(self.can_frame5)
-        self.can_frame6.grid(row=7, column=0, sticky="nsew")
+        self.can_frame6.grid(row=2, column=0, sticky="nsew")
 
         self.can_frame7 = Frame(self.root)
         self.can_frame7.grid(row=6, column=0, sticky="nsew")
+
+        self.can_frame8 = Frame(self.can_frame7)
+        self.can_frame8.grid(row=1, column=1, sticky="nsew")
 
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -238,17 +241,18 @@ class CANGui():
         self.error_listbox =Listbox(self.can_frame7, width = 30, height=4, selectmode=EXTENDED)
         self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
 
-        self.delay_label = Label(self.can_frame7, text="DELAY")
-        self.delay_label.grid(row=1, column=1)
+        # frame 8
+        self.delay_label = Label(self.can_frame8, text="DELAY")
+        self.delay_label.grid(row=0, column=0)
 
-        self.delay_option_menu = OptionMenu(self.can_frame7, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.grid(row=2, column=1)
+        self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
+        self.delay_option_menu.grid(row=1, column=0)
 
-        self.loop_msg_label = Label(self.can_frame7, text="MESSAGES \n LOOP")
-        self.loop_msg_label.grid(row=1, column=2)
+        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES \n LOOP")
+        self.loop_msg_label.grid(row=0, column=1)
 
-        self.messages_option_menu = OptionMenu(self.can_frame7, self.messages_loop_var, *self.messages_optionmenu)
-        self.messages_option_menu.grid(row=2, column=2)
+        self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
+        self.messages_option_menu.grid(row=1, column=1)
 
 
     def build2(self):
