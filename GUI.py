@@ -105,6 +105,9 @@ class CANGui():
         self.can_frame6 = Frame(self.root)
         self.can_frame6.grid(row=6, column=0, sticky="nsew")
 
+        self.can_frame7 = Frame(self.root)
+        self.can_frame7.grid(row=7, column=0, sticky="nsew")
+
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
