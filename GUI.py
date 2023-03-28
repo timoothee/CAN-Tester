@@ -201,8 +201,11 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
+        self.loop_button = Button(self.can_frame4, text="LOOP", command=self.loop_function)
+        self.loop_button.grid(row=0, column=5)
+
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
+        self.send_button.grid(row = 0, column=6, sticky='e')
 
         self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
 
@@ -277,8 +280,8 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
-
-
+    def loop_function(self):
+        pass
 
     def default_module_settings(self):
         self.can_sender_var.set("can0")
