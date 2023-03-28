@@ -13,6 +13,7 @@ import psutil
 import platform
 import threading
 from tkinter.filedialog import asksaveasfile
+import random
 class CANGui():
 
     def __init__(self, gui_revision: str):
@@ -65,6 +66,7 @@ class CANGui():
         self.program_running = True
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
+        self.t2 = threading.Thread(target=self.loop_section_button)
         self.chg_var = 0
         self.chg_var1 = 0
         self.list_read = []
@@ -264,7 +266,7 @@ class CANGui():
         self.messages_option_menu.config(width=1)
         self.messages_option_menu.grid(row=1, column=1)
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.loop_section_button, width=3)
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.t2.start(), width=3)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
@@ -321,7 +323,35 @@ class CANGui():
         self.status_listbox.grid(row=4, column=0, padx=10)
 
     def loop_section_button(self):
-        pass
+        id_list = []
+        brs_list = []
+        payload_list = []
+        random_message = ""
+        bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+
+        if random.choice(['normal', 'extended']) == "normal":
+            random_message = random.choice(['1','2','3','4','5','6','7']) + bits_list + bits_list
+        else:
+            random_message = '1'
+            for i in range(7):
+                random_message = random_message + random.choice(bits_list)
+
+
+        random_message = random_message + "##" + str(random.randrange(0, 9))
+
+        for i in range(random.randrange(1,11,2)):
+            random_message = random_message + random.choice(bits_list)
+
+
+        # 123##012
+
+        if self.default_status_label.cget("text") == "UP":
+            for i in range():
+                self.module_sender.send_q(id_list, brs_list, payload_list)
+                time.sleep()
+        else:
+            self.error_listbox.insert(END,"Error: CAN is DOWN")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
 
     def loop_function(self):
         
