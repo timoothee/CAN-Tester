@@ -481,7 +481,8 @@ class CANGui():
                 for i in range(len(self.list_mem) ,len(self.list_read)):
                     self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
                     self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
-                    self.can_bus_listbox.insert('end', self.list_read[i]) 
+                    self.can_bus_listbox.insert('end', self.list_read[i])
+                    self.can_bus_listbox.see(END) 
                 self.list_mem = self.list_read
     
 
