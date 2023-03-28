@@ -102,11 +102,11 @@ class CANGui():
         self.can_frame5= Frame(self.root)
         self.can_frame5.grid(row=5, column=0, sticky="nsew")
 
-        self.can_frame6 = Frame(self.root)
-        self.can_frame6.grid(row=6, column=0, sticky="nsew")
+        self.can_frame6 = Frame(self.can_frame5)
+        self.can_frame6.grid(row=7, column=0, sticky="nsew")
 
         self.can_frame7 = Frame(self.root)
-        self.can_frame7.grid(row=7, column=0, sticky="nsew")
+        self.can_frame7.grid(row=6, column=0, sticky="nsew")
 
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -221,33 +221,34 @@ class CANGui():
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
         self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
-        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
-
-        self.save_button_output = Button(self.can_frame5, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=2, column=0, padx=(20,10), sticky='w')
-
-        self.clear_button_output = Button(self.can_frame5, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
-        self.clear_button_output.grid(row=2, column=0, sticky='w')
+        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,3))
 
         # frame 6
-        self.error_listbox_label = Label(self.can_frame6, text='Error list')
-        self.error_listbox_label.grid(row=0, column=2, sticky='w', padx= 125,pady=(10,0))
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
+        self.save_button_output.grid(row=2, column=0, padx=(20,0), sticky='w')
+
+        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
+        self.clear_button_output.grid(row=2, column=1, sticky='w')
+
+        # frame 7
+        self.error_listbox_label = Label(self.can_frame7, text='Error list')
+        self.error_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0), pady=(10,0))
         self.error_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
+        self.error_listbox =Listbox(self.can_frame7, width = 30, height=4, selectmode=EXTENDED)
+        self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
 
-        self.delay_label = Label(self.can_frame6, text="DELAY")
-        self.delay_label.grid()
+        self.delay_label = Label(self.can_frame7, text="DELAY")
+        self.delay_label.grid(row=1, column=1)
 
-        self.delay_option_menu = OptionMenu(self.can_frame6, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.grid(row=1, column=0)
+        self.delay_option_menu = OptionMenu(self.can_frame7, self.delay_var, *self.delay_optionmenu)
+        self.delay_option_menu.grid(row=2, column=1)
 
-        self.loop_msg_label = Label(self.can_frame6, text="MESSAGES \n LOOP")
-        self.loop_msg_label.grid()
+        self.loop_msg_label = Label(self.can_frame7, text="MESSAGES \n LOOP")
+        self.loop_msg_label.grid(row=1, column=2)
 
-        self.messages_option_menu = OptionMenu(self.can_frame6, self.messages_loop_var, *self.messages_optionmenu)
-        self.messages_option_menu.grid(row=1, column=2)
+        self.messages_option_menu = OptionMenu(self.can_frame7, self.messages_loop_var, *self.messages_optionmenu)
+        self.messages_option_menu.grid(row=2, column=2)
 
 
     def build2(self):
