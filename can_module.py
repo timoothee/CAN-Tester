@@ -62,6 +62,9 @@ class CanModule():
     def dump_log(self, can_receiver):
         os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
 
+    def random_message(self, message):
+        os.popen(f"cansend {self.module_name} {message}")
+
     def defaul_canup(self):
         os.popen(f"sudo ip link set can0 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
         os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
