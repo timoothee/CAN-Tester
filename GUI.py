@@ -343,7 +343,7 @@ class CANGui():
                                 random_message = random_message + random.choice(bits_list)
                         random_message = random_message + "##" + str(random.randrange(0, 9))
 
-                        for i in range(random.randrange(1,11,2)):
+                        for i in range(random.randrange(1,11,2)+1):
                             random_message = random_message + random.choice(bits_list)
 
                         self.module_sender.random_message(random_message)
