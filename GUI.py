@@ -264,6 +264,8 @@ class CANGui():
         self.messages_option_menu.config(width=1)
         self.messages_option_menu.grid(row=1, column=1)
 
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.loop_section_button, width=3)
+        self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
 
@@ -317,6 +319,9 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def loop_section_button(self):
+        pass
 
     def loop_function(self):
         
