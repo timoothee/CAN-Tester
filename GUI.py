@@ -77,9 +77,11 @@ class CANGui():
         self.dev_status = False
         self.root_dev = None
         self.delay_var = StringVar()
+        self.delay_var.set('Select')
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
+        self.messages_loop_var.set('Select')
         self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
         self.loop_active = False
         t1 = threading.Thread(target=self.threadfunc)
@@ -219,11 +221,8 @@ class CANGui():
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
-        self.loop_button = Button(self.can_frame4, text="LOOP", command=self.loop_function)
-        self.loop_button.grid(row=0, column=5)
-
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=6, sticky='e')
+        self.send_button.grid(row = 0, column=6, sticky='e', padx=(50,0))
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
@@ -258,17 +257,17 @@ class CANGui():
         self.delay_label.grid(row=0, column=0, padx=(120,0))
 
         self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.config(width=1)
+        self.delay_option_menu.config(width=3)
         self.delay_option_menu.grid(row=1, column=0, padx=(120,0))
 
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
 
         self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
-        self.messages_option_menu.config(width=1)
+        self.messages_option_menu.config(width=3)
         self.messages_option_menu.grid(row=1, column=1)
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=3)
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
@@ -353,17 +352,6 @@ class CANGui():
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
     
-                
-
-    def loop_function(self):
-        
-        if self.default_status_label.cget("text") == "UP":
-            for i in range():
-                self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
-                time.sleep()
-        else:
-            self.error_listbox.insert(END,"Error: CAN is DOWN")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
 
     def default_module_settings(self):
         self.can_sender_var.set("can0")
