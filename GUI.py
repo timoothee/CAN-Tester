@@ -824,7 +824,7 @@ class SplashScreen:
         self.progressbar.grid(row=0, column=0, padx=5)
 
         self.text_label = Label(frame, text="...", font=("Arial", 11))
-        self.text_label.grid(row=0, column=1, padx=(210,0), sticky='e')
+        self.text_label.grid(row=0, column=1, padx=(200,0), sticky='e')
 
         self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
 
