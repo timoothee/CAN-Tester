@@ -13,13 +13,15 @@ import psutil
 import platform
 import threading
 from tkinter.filedialog import asksaveasfile
+import random
+from PIL import Image, ImageTk
 class CANGui():
 
     def __init__(self, gui_revision: str):
-
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.geometry("600x800")
+        self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -63,8 +65,6 @@ class CANGui():
         self.module_sender = CAN_module.CanModule()
         self.module_receiver = CAN_module.CanModule()
         self.program_running = True
-        t1 = threading.Thread(target=self.threadfunc)
-        t1.start()
         self.chg_var = 0
         self.chg_var1 = 0
         self.list_read = []
@@ -74,9 +74,21 @@ class CANGui():
         with open('status.txt', 'w') as f:
                 pass
 
-        self.dmessage = StringVar
+        self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
+        self.delay_var = StringVar()
+        self.delay_var.set('Select')
+        self.delay_optionmenu = ("1s","2s","3s","5s")
+        self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
+        self.messages_loop_var = IntVar()
+        self.messages_loop_var.set('Select')
+        self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
+        self.loop_active = False
+        t1 = threading.Thread(target=self.threadfunc)
+        t1.start()
+        t2 = threading.Thread(target=self.loop_section_button)
+        t2.start()
     
 
 
@@ -95,14 +107,21 @@ class CANGui():
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
 
         self.can_frame5= Frame(self.root)
-        self.can_frame5.grid(row=5, column=0, sticky="nsew")
+        self.can_frame5.grid(row=4, column=0, sticky="nsew")
 
-        self.can_frame6 = Frame(self.root)
-        self.can_frame6.grid(row=6, column=0, sticky="nsew")
+        self.can_frame6 = Frame(self.can_frame5)
+        self.can_frame6.grid(row=2, column=0, sticky="nsew")
 
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, selectmode=EXTENDED)
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
+        self.can_frame7 = Frame(self.root)
+        self.can_frame7.grid(row=6, column=0, sticky="nsew")
 
+        self.can_frame7_2 = Frame(self.can_frame7)
+        self.can_frame7_2.grid(row=0, column=1)
+
+        self.can_frame8 = Frame(self.can_frame7)
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
+
+        # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
 
@@ -143,6 +162,7 @@ class CANGui():
         self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
         self.dev_button.grid(row=2, column=4, sticky='w')
 
+        # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
@@ -178,20 +198,15 @@ class CANGui():
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=5)
 
-        self.que_listbox.grid(row=1, column=0, padx=20)
-
+        # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
+    
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 8,selectmode=EXTENDED)
+        self.que_listbox.grid(row=1, column=0, padx=20)
 
-        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
-        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
-        self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
-
-        self.error_listbox_label = Label(self.can_frame6, text='Error list')
-        self.error_listbox_label.grid(row=0, column=2, sticky='w', padx= 125,pady=(10,0))
-        self.error_listbox_label.config(font=('Helvetica bold', 13))
-
+        # frame 4
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
@@ -201,28 +216,60 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=5, padx=60, sticky='e')
-
-        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,10))
-
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=0, column=0, padx=(20,10), sticky='n')
-
-        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
-        self.clear_button_output.grid(row=0, column=1, sticky='n')
-
-        self.Error_label = Label(self.can_frame2, text = "")
-        self.Error_label.grid(row = 0, column= 5)
-
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,10))
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
-        self.error_listbox =Listbox(self.can_frame6, width = 30,height=4, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 2, padx=(127,0), pady=5)
+        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
+        self.send_button.grid(row = 0, column=6, sticky='e', padx=(50,0))
+
+        # frame 5
+        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
+        self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
+
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
+        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,3))
+
+        # frame 6
+        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
+        self.save_button_output.grid(row=2, column=0, padx=(20,0), sticky='w')
+
+        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
+        self.clear_button_output.grid(row=2, column=1, sticky='w')
+
+        # frame 7
+        self.error_listbox_label = Label(self.can_frame7, text='Error list')
+        self.error_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0), pady=(10,0))
+        self.error_listbox_label.config(font=('Helvetica bold', 13))
+
+        self.error_listbox =Listbox(self.can_frame7, width = 30, height=4, selectmode=EXTENDED)
+        self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
+
+        # frame 7_2
+        self.loop_section_label = Label(self.can_frame7_2, text='LOOP SECTION')
+        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
+        self.loop_section_label.config(font=('Helvetica bold', 13))
+
+        # frame 8
+        self.delay_label = Label(self.can_frame8, text="DELAY")
+        self.delay_label.grid(row=0, column=0, padx=(120,0))
+
+        self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
+        self.delay_option_menu.config(width=3)
+        self.delay_option_menu.grid(row=1, column=0, padx=(120,0))
+
+        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
+        self.loop_msg_label.grid(row=0, column=1)
+
+        self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
+        self.messages_option_menu.config(width=3)
+        self.messages_option_menu.grid(row=1, column=1)
+
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
+        self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
 
@@ -277,8 +324,47 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def splash(self):
+        root = Tk()
+        splash = SplashScreen(root)
+        for i in range(200):
+            if i % 10 == 0:
+                splash.abc()
+            root.update()
+            splash.progressbar.step(0.5)
+            time.sleep(0.01)
+        splash.destroy()
+        root.mainloop()
 
+    def start_func(self):
+        self.loop_active = True
 
+    def loop_section_button(self):
+        while self.program_running:
+            if self.loop_active == True:
+                if self.default_status_label.cget("text") == "UP":
+                    for i in range(self.messages_loop_var.get()):
+                        random_message = ""
+                        bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+
+                        if random.choice(['normal', 'extended']) == "normal":
+                            random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
+                        else:
+                            random_message = '1'
+                            for i in range(7):
+                                random_message = random_message + random.choice(bits_list)
+                        random_message = random_message + "##" + str(random.randrange(0, 9))
+
+                        for i in range(random.randrange(1,11,2)+1):
+                            random_message = random_message + random.choice(bits_list)
+
+                        self.module_sender.random_message(random_message)
+                        time.sleep(self.delay_optionmenu_dict[self.delay_var.get()])
+                    self.loop_active = False
+                else:
+                    self.error_listbox.insert(END,"Error: CAN is DOWN")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+    
 
     def default_module_settings(self):
         self.can_sender_var.set("can0")
@@ -396,7 +482,8 @@ class CANGui():
                 for i in range(len(self.list_mem) ,len(self.list_read)):
                     self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
                     self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
-                    self.can_bus_listbox.insert('end', self.list_read[i]) 
+                    self.can_bus_listbox.insert('end', self.list_read[i])
+                    self.can_bus_listbox.see(END) 
                 self.list_mem = self.list_read
     
 
@@ -620,7 +707,6 @@ class CANGui():
     def initial_interface_state(self):
         self.debugging("setting all to default", 0)
         self.ok_button.config(state="disable")
-        self.Error_label.config(text="")
         self.RTR_box.set(0)
         self.brs_box.set(0)
         self.ext_box.set(0)   
@@ -705,3 +791,48 @@ class CANGui():
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
+
+
+class SplashScreen:
+    def __init__(self, parent):
+        self.parent = parent
+
+        self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_animation = ImageTk.PhotoImage(self.logo_image)
+
+        self.parent.overrideredirect(True)
+
+        screen_width = self.parent.winfo_screenwidth()
+        screen_height = self.parent.winfo_screenheight()
+        logo_width = self.logo_animation.width()
+        logo_height = self.logo_animation.height()
+        x = (screen_width - logo_width) // 2
+        y = (screen_height - logo_height) // 2
+        self.parent.geometry("+{}+{}".format(x, y))
+
+        self.logo_frame = Frame(self.parent)
+        self.logo_frame.grid(row=0, column=0, sticky='nsew')
+
+        frame = Frame(self.parent)
+        frame.grid(row=1, column=0, sticky='nsew')
+
+        self.logo_label = Label(self.logo_frame, image=self.logo_animation)
+        self.logo_label.grid(row=0, column=0)
+
+        self.progressbar = Progressbar(frame, orient='horizontal', length=200)
+        self.progressbar.config()
+        self.progressbar.grid(row=0, column=0, padx=5)
+
+        self.text_label = Label(frame, text="...", font=("Arial", 11))
+        self.text_label.grid(row=0, column=1, padx=(200,0), sticky='e')
+
+        self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
+
+        self.parent.update()
+
+    def abc(self):
+        self.text_label.config(text = random.choice(self.list))
+
+    def destroy(self):
+        self.parent.overrideredirect(False)
+        self.parent.destroy()
