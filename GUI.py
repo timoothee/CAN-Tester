@@ -806,3 +806,7 @@ class SplashScreen:
         self.progressbar = Progressbar(self.parent, orient='horizontal', length=200)
         self.progressbar.config()
         self.progressbar.grid(sticky='w', padx=5)
+
+    def destroy(self):
+        self.parent.overrideredirect(False)
+        self.parent.destroy()
