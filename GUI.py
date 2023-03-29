@@ -14,6 +14,7 @@ import platform
 import threading
 from tkinter.filedialog import asksaveasfile
 import random
+from PIL import Image, ImageTk
 class CANGui():
 
     def __init__(self, gui_revision: str):
