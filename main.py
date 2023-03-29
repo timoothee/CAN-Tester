@@ -11,15 +11,6 @@ if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 if __name__ == "__main__":
-    root = Tk()
-    splash = SplashScreen(root)
-    for i in range(200):
-        root.update()
-        splash.progressbar.step(0.5)
-        time.sleep(0.01)
-    splash.destroy()
-    root.mainloop()
-
     gui = CANGui("v.1.8.0")
     # MAJOR.MINOR.PATCH
     gui.build()

@@ -18,7 +18,7 @@ from PIL import Image, ImageTk
 class CANGui():
 
     def __init__(self, gui_revision: str):
-
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("600x800")
@@ -323,6 +323,16 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def splash(self):
+        root = Tk()
+        splash = SplashScreen(root)
+        for i in range(200):
+            root.update()
+            splash.progressbar.step(0.5)
+            time.sleep(0.01)
+        splash.destroy()
+        root.mainloop()
 
     def start_func(self):
         self.loop_active = True
