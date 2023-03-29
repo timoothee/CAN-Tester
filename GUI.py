@@ -21,7 +21,7 @@ class CANGui():
         self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.geometry("600x800")
+        self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -823,8 +823,8 @@ class SplashScreen:
         self.progressbar.config()
         self.progressbar.grid(row=0, column=0, padx=5)
 
-        self.text_label = Label(frame, text="Cargando...", font=("Arial", 14))
-        self.text_label.grid(row=0, column=1, padx=(180,0), sticky='e')
+        self.text_label = Label(frame, text="...", font=("Arial", 11))
+        self.text_label.grid(row=0, column=1, padx=(220,0), sticky='e')
 
         self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
 
