@@ -137,3 +137,4 @@ test/
 
 # dont't ignore
 !License.txt
+!photo.png
