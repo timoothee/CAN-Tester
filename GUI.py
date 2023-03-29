@@ -328,6 +328,8 @@ class CANGui():
         root = Tk()
         splash = SplashScreen(root)
         for i in range(200):
+            if i % 10 == 0:
+                splash.abc()
             root.update()
             splash.progressbar.step(0.5)
             time.sleep(0.01)
@@ -808,14 +810,28 @@ class SplashScreen:
         y = (screen_height - logo_height) // 2
         self.parent.geometry("+{}+{}".format(x, y))
 
-        self.logo_label = Label(self.parent, image=self.logo_animation)
-        self.logo_label.grid()
+        self.logo_frame = Frame(self.parent)
+        self.logo_frame.grid(row=0, column=0, sticky='nsew')
+
+        frame = Frame(self.parent)
+        frame.grid(row=1, column=0, sticky='nsew')
+
+        self.logo_label = Label(self.logo_frame, image=self.logo_animation)
+        self.logo_label.grid(row=0, column=0)
+
+        self.progressbar = Progressbar(frame, orient='horizontal', length=200)
+        self.progressbar.config()
+        self.progressbar.grid(row=0, column=0, padx=5)
+
+        self.text_label = Label(frame, text="Cargando...", font=("Arial", 14))
+        self.text_label.grid(row=0, column=1, padx=(180,0), sticky='e')
+
+        self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
 
         self.parent.update()
 
-        self.progressbar = Progressbar(self.parent, orient='horizontal', length=200)
-        self.progressbar.config()
-        self.progressbar.grid(sticky='w', padx=5)
+    def abc(self):
+        self.text_label.config(text = random.choice(self.list))
 
     def destroy(self):
         self.parent.overrideredirect(False)
