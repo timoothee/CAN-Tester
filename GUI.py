@@ -782,4 +782,27 @@ class CANGui():
 
 
 class SplashScreen:
-    pass
+    def __init__(self, parent):
+        self.parent = parent
+
+        self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_animation = ImageTk.PhotoImage(self.logo_image)
+
+        self.parent.overrideredirect(True)
+
+        screen_width = self.parent.winfo_screenwidth()
+        screen_height = self.parent.winfo_screenheight()
+        logo_width = self.logo_animation.width()
+        logo_height = self.logo_animation.height()
+        x = (screen_width - logo_width) // 2
+        y = (screen_height - logo_height) // 2
+        self.parent.geometry("+{}+{}".format(x, y))
+
+        self.logo_label = Label(self.parent, image=self.logo_animation)
+        self.logo_label.grid()
+
+        self.parent.update()
+
+        self.progressbar = Progressbar(self.parent, orient='horizontal', length=200)
+        self.progressbar.config()
+        self.progressbar.grid(sticky='w', padx=5)
