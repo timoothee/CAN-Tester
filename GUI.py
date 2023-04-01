@@ -638,12 +638,12 @@ class CANGui():
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
-            if self.id_entry_error == True:
+            if self.id_entry_error == True or self.id_entry_over_error == True:
                 if self.ext_box.get() == 1 and self.id_entry_over_error == False:
                     self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
-                else:
+                elif self.ext_box.get() == 1 and self.id_entry_over_error == True:
                     self.error_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
