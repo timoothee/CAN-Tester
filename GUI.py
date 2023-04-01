@@ -573,6 +573,7 @@ class CANGui():
         self.id_entry_error = False
         self.payload_size_error = False
         self.payload_entry_error = False
+        self.id_entry_over_error = False
         if len(self.frame_id_entry.get()) != 0:
             pass
         else:
@@ -604,8 +605,9 @@ class CANGui():
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
                 if int(self.frame_id_entry.get(), 16) > 536870911:
-                    self.id_entry_error = True
+                    self.id_entry_over_error = True
                     self.check_all_fields_retVal = True
+
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
                     self.id_entry_error = True
@@ -637,8 +639,12 @@ class CANGui():
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True:
-                if self.ext_box.get() == 1:
+                if self.ext_box.get() == 1 and self.id_entry_over_error == False:
                     self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
+                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.frame_id_entry.config(fg= 'red')
+                else:
+                    self.error_listbox.insert(END,"Error: Ext selected, Id exceeds ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
                 if self.ext_box.get() == 0 and self.brs_box.get() == 0:
