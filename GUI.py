@@ -573,6 +573,7 @@ class CANGui():
         self.id_entry_error = False
         self.payload_size_error = False
         self.payload_entry_error = False
+        self.id_entry_over_error = False
         if len(self.frame_id_entry.get()) != 0:
             pass
         else:
@@ -603,8 +604,12 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) < 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+                if int(self.frame_id_entry.get(), 16) > 536870911:
+                    self.id_entry_over_error = True
+                    self.check_all_fields_retVal = True
+
             else:
-                if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
+                if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
         self.debugging(" checking finished! ...", 0)
@@ -633,17 +638,17 @@ class CANGui():
             self.error_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
-            if self.id_entry_error == True:
-                if self.ext_box.get() == 1:
+            if self.id_entry_error == True or self.id_entry_over_error == True:
+                if self.ext_box.get() == 1 and self.id_entry_over_error == False:
                     self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
-                if self.ext_box.get() == 0 and self.brs_box.get() == 0:
-                    self.error_listbox.insert(END,"Error: Id ext")
+                elif self.ext_box.get() == 1 and self.id_entry_over_error == True:
+                    self.error_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
-                if self.brs_box.get() == 1:
-                    self.error_listbox.insert(END,"Error: Fd selected, Id not ext")
+                if self.ext_box.get() == 0:
+                    self.error_listbox.insert(END,"Error: Id ext")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
             if self.payload_size_error == True or self.payload_entry_error == True:
