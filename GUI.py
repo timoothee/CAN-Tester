@@ -603,6 +603,9 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) < 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+                if int(self.frame_id_entry.get(), 16) > 536870911:
+                    self.id_entry_error = True
+                    self.check_all_fields_retVal = True
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047 and self.brs_box.get() != 1:
                     self.id_entry_error = True
