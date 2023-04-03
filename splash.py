@@ -1,30 +1,45 @@
+from tkinter import *
+from tkinter.ttk import Progressbar
+import time
+from tkinter import ttk
+import ast
+import os
+from tkinter import messagebox
+import sys
+#from tkmacosx import Button
+import can_module as CAN_module
+import can_frame as CAN_frame
+import psutil
+import platform
+import threading
+from tkinter.filedialog import asksaveasfile
+import random
 from PIL import Image, ImageTk
 
-
 class SplashScreen:
-    def __init__(self, parent):
-        pass
+    def __init__(self):
+        t1 = threading.Thread(target=self.splash)
+        t1.start()
 
-    def build(self):
-        self.parent = parent
-
+    def splash(self):
+        self.root = Tk()
         self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
-        self.parent.overrideredirect(True)
+        self.root.overrideredirect(True)
 
-        screen_width = self.parent.winfo_screenwidth()
-        screen_height = self.parent.winfo_screenheight()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
         logo_width = self.logo_animation.width()
         logo_height = self.logo_animation.height()
         x = (screen_width - logo_width) // 2
         y = (screen_height - logo_height) // 2
-        self.parent.geometry("+{}+{}".format(x, y))
+        self.root.geometry("+{}+{}".format(x, y))
 
-        self.logo_frame = Frame(self.parent)
+        self.logo_frame = Frame(self.root)
         self.logo_frame.grid(row=0, column=0, sticky='nsew')
 
-        frame = Frame(self.parent)
+        frame = Frame(self.root)
         frame.grid(row=1, column=0, sticky='nsew')
 
         self.logo_label = Label(self.logo_frame, image=self.logo_animation)
@@ -39,7 +54,16 @@ class SplashScreen:
 
         self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
 
-        self.parent.update()
+        self.root.update()
+
+        for i in range(200):
+            if i % 10 == 0:
+                self.abc()
+            self.root.update()
+            self.progressbar.step(0.5)
+            time.sleep(0.01)
+        self.destroy()
+        self.root.mainloop()
 
     def abc(self):
         self.text_label.config(text = random.choice(self.list))
