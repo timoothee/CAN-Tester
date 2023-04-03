@@ -15,11 +15,12 @@ import threading
 from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
+import tkinter as tk
 class CANGui():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
-        self.root = Tk()
+        self.root = tk.Tk()
         self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
