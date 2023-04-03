@@ -557,7 +557,8 @@ class CANGui():
             
             for item in self.lines:
                 self.string_import = self.current_time + "  " + item
-                self.que_listbox.insert(0, self.string_import)
+                self.string_import = self.string_import.replace(b'\n'.decode(),'')
+                self.que_listbox.insert('end', self.string_import)
 
 
     def btn_up_down_active(self, *args):
