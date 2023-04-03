@@ -3,6 +3,9 @@ from PIL import Image, ImageTk
 
 class SplashScreen:
     def __init__(self, parent):
+        pass
+
+    def build(self):
         self.parent = parent
 
         self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
