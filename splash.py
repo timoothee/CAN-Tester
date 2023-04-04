@@ -7,13 +7,29 @@ from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
 import tkinter as tk
-
+from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide6.QtGui import QPixmap
 class SplashScreen:
     def __init__(self):
+        pass
+    def threadfunc(self):
         t1 = threading.Thread(target=self.splash)
         t1.start()
 
     def splash(self):
+
+        app = QApplication([])
+        
+        splash = QSplashScreen()
+        splash.setPixmap(QPixmap("photo.png"))
+        splash.show()
+
+        time.sleep(5)
+
+        splash.close()
+        app.exec()
+        
+        '''
         self.root = tk.Tk()
         self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_image = ImageTk.PhotoImage(self.logo_image)
@@ -63,3 +79,4 @@ class SplashScreen:
     def destroy(self):
         self.root.overrideredirect(False)
         self.root.destroy()
+    '''
