@@ -16,11 +16,14 @@ from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
 import tkinter as tk
+from splash import SplashScreen
+
 class CANGui():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
         self.root = tk.Tk()
+        splaash = SplashScreen()
         self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
