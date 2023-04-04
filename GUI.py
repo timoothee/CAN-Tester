@@ -789,23 +789,6 @@ class CANGui():
             self.error_listbox.itemconfig(END, {'fg': 'red'})
 
     def splash(self):
-        from PySide6.QtWidgets import QApplication, QSplashScreen
-        from PySide6.QtGui import QPixmap
-
-        app = QApplication([])
-        app.exec()
-        '''
-        splash = QSplashScreen()
-        splash.setPixmap(QPixmap("photo.png"))
-        splash.show()
-
-        time.sleep(5)
-
-        splash.close()
-        '''
-
-        
-        '''
         self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_image = ImageTk.PhotoImage(self.logo_image)
 
@@ -854,4 +837,3 @@ class CANGui():
     def destroy(self):
         self.root.overrideredirect(False)
         self.root.destroy()
-    '''
