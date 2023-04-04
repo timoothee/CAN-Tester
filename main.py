@@ -12,10 +12,8 @@ if os.environ.get('DISPLAY','') == '':
 
 if __name__ == "__main__":
     gui = CANGui("v.1.8.0")
-    splaas = SplashScreen()
-    splaas.threadfunc()
     # MAJOR.MINOR.PATCH
     gui.build()
-    gui.root.mainloop()
+    gui.parent.mainloop()
 
     
