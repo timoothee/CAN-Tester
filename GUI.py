@@ -22,8 +22,8 @@ class CANGui():
 
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
-        self.root = tk.Tk()
-        splaash = SplashScreen()
+        self.root = Tk()
+        self.root_splash = Toplevel(self.root)
         self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
@@ -92,6 +92,8 @@ class CANGui():
         t1.start()
         t2 = threading.Thread(target=self.loop_section_button)
         t2.start()
+        tn1 = threading.Thread(target=self.splash)
+        tn1.start()
     
 
 
@@ -788,3 +790,54 @@ class CANGui():
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
+
+    def splash(self):
+        self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_image = ImageTk.PhotoImage(self.logo_image)
+
+        self.root_splash.overrideredirect(True)
+
+        screen_width = self.root_splash.winfo_screenwidth()
+        screen_height = self.root_splash.winfo_screenheight()
+        logo_width = self.logo_image.width()
+        logo_height = self.logo_image.height()
+        x = (screen_width - logo_width) // 2
+        y = (screen_height - logo_height) // 2
+        self.root_splash.geometry("+{}+{}".format(x, y))
+
+        self.logo_frame = Frame(self.root_splash)
+        self.logo_frame.grid(row=0, column=0, sticky='nsew')
+
+        frame = Frame(self.root_splash)
+        frame.grid(row=1, column=0, sticky='nsew')
+
+        self.logo_label = Label(self.logo_frame, image=self.logo_image)
+        self.logo_label.grid(row=0, column=0)
+
+        self.progressbar = Progressbar(frame, orient='horizontal', length=200)
+        self.progressbar.config()
+        self.progressbar.grid(row=0, column=0, padx=5)
+
+        self.text_label = Label(frame, text="...", font=("Arial", 11))
+        self.text_label.grid(row=0, column=1, padx=(200,0), sticky='e')
+
+        self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
+
+        self.root_splash.update()
+
+        for i in range(200):
+            if i % 10 == 0:
+                self.abc()
+            self.root.update()
+            self.progressbar.step(0.5)
+            time.sleep(0.01)
+        self.destroy()
+        self.root.mainloop()
+
+    def abc(self):
+        self.text_label.config(text = random.choice(self.list))
+
+    def destroy(self):
+        self.root.overrideredirect(False)
+        self.root.destroy()
+    
