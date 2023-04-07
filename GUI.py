@@ -15,15 +15,11 @@ import threading
 from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
-import tkinter as tk
-
 class CANGui():
-
     def __init__(self, gui_revision: str):
+        self.splash()
         self.gui_revision = gui_revision
-        tt2 = threading.Thread(target=self.splaaaash)
-        tt2.start()
-        self.root = tk.Tk()
+        self.root = Tk()
         self.root.geometry("600x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
@@ -326,6 +322,18 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def splash(self):
+        root = Tk()
+        splash = SplashScreen(root)
+        for i in range(200):
+            if i % 10 == 0:
+                splash.abc()
+            root.update()
+            splash.progressbar.step(0.5)
+            time.sleep(0.01)
+        splash.destroy()
+        root.mainloop()
 
     def start_func(self):
         self.loop_active = True
@@ -789,28 +797,31 @@ class CANGui():
             self.error_listbox.insert(END,"Error: CAN is DOWN")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
 
-    def splaaaash(self):
-        self.root_splash = tk.Tk()
+
+class SplashScreen:
+    def __init__(self, parent):
+        self.parent = parent
+
         self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
-        self.logo_image = ImageTk.PhotoImage(self.logo_image)
+        self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
-        self.root_splash.overrideredirect(True)
+        self.parent.overrideredirect(True)
 
-        screen_width = self.root_splash.winfo_screenwidth()
-        screen_height = self.root_splash.winfo_screenheight()
-        logo_width = self.logo_image.width()
-        logo_height = self.logo_image.height()
+        screen_width = self.parent.winfo_screenwidth()
+        screen_height = self.parent.winfo_screenheight()
+        logo_width = self.logo_animation.width()
+        logo_height = self.logo_animation.height()
         x = (screen_width - logo_width) // 2
         y = (screen_height - logo_height) // 2
-        self.root_splash.geometry("+{}+{}".format(x, y))
+        self.parent.geometry("+{}+{}".format(x, y))
 
-        self.logo_frame = Frame(self.root_splash)
+        self.logo_frame = Frame(self.parent)
         self.logo_frame.grid(row=0, column=0, sticky='nsew')
 
-        frame = Frame(self.root_splash)
+        frame = Frame(self.parent)
         frame.grid(row=1, column=0, sticky='nsew')
 
-        self.logo_label = Label(self.logo_frame, image=self.logo_image)
+        self.logo_label = Label(self.logo_frame, image=self.logo_animation)
         self.logo_label.grid(row=0, column=0)
 
         self.progressbar = Progressbar(frame, orient='horizontal', length=200)
@@ -822,19 +833,11 @@ class CANGui():
 
         self.list = ['.modules', 'CAN-HAT.sh' , 'continue', '.install','initialize','continue']
 
-        self.root_splash.update()
-
-        for i in range(50):
-            if i % 10 == 0:
-                self.abc()
-            self.root_splash.update()
-            self.progressbar.step(2)
-            time.sleep(0.01)
-        self.destroy()
+        self.parent.update()
 
     def abc(self):
         self.text_label.config(text = random.choice(self.list))
 
     def destroy(self):
-        self.root_splash.overrideredirect(False)
-        self.root_splash.destroy()
+        self.parent.overrideredirect(False)
+        self.parent.destroy()

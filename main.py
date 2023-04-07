@@ -14,6 +14,6 @@ if __name__ == "__main__":
     gui = CANGui("v.1.8.0")
     # MAJOR.MINOR.PATCH
     gui.build()
-    gui.parent.mainloop()
+    gui.root.mainloop()
 
     
