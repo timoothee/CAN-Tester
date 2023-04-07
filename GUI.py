@@ -17,7 +17,7 @@ import random
 from PIL import Image, ImageTk
 class CANGui():
     def __init__(self, gui_revision: str):
-        self.splash()
+        #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("600x850")
@@ -76,8 +76,7 @@ class CANGui():
         self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
-        self.delay_var = StringVar()
-        self.delay_var.set('Select')
+        self.delay_entry_var = IntVar()
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
@@ -248,17 +247,17 @@ class CANGui():
         self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
 
         # frame 7_2
-        self.loop_section_label = Label(self.can_frame7_2, text='LOOP SECTION')
+        self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
         self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
 
         # frame 8
-        self.delay_label = Label(self.can_frame8, text="DELAY")
+        self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
         self.delay_label.grid(row=0, column=0, padx=(120,0))
 
-        self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.config(width=3)
-        self.delay_option_menu.grid(row=1, column=0, padx=(120,0))
+        self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
+        self.delay_entry.config(width=6)
+        self.delay_entry.grid(row=1, column=0, padx=(120,0))
 
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
@@ -358,7 +357,7 @@ class CANGui():
                             random_message = random_message + random.choice(bits_list)
 
                         self.module_sender.random_message(random_message)
-                        time.sleep(self.delay_optionmenu_dict[self.delay_var.get()])
+                        time.sleep(self.delay_entry_var.get())
                     self.loop_active = False
                 else:
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
