@@ -80,8 +80,6 @@ class CANGui():
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
-        self.messages_loop_var.set('Select')
-        self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
         self.loop_active = False
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
@@ -262,9 +260,9 @@ class CANGui():
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
 
-        self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
-        self.messages_option_menu.config(width=3)
-        self.messages_option_menu.grid(row=1, column=1)
+        self.loop_messages_entry = Entry(self.can_frame8, textvariable=self.messages_loop_var)
+        self.loop_messages_entry.config(width=6)
+        self.loop_messages_entry.grid(row=1, column=1)
 
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
