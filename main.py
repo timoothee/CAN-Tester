@@ -3,7 +3,7 @@ from GUI import *
 from can_module import CanModule
 from tkinter import ttk
 import os
-
+from splash import SplashScreen
 
 
 if os.environ.get('DISPLAY','') == '':
@@ -15,3 +15,5 @@ if __name__ == "__main__":
     # MAJOR.MINOR.PATCH
     gui.build()
     gui.root.mainloop()
+
+    
