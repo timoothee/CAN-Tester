@@ -324,6 +324,10 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+
+    def que_loop (self):
+        pass
+
     def splash(self):
         root = Tk()
         splash = SplashScreen(root)
