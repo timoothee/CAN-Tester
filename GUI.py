@@ -327,8 +327,8 @@ class CANGui():
 
     def que_loop(self):
         while self.que_loop_var.get() == 1:
-            for item in self.que_listbox:
-                self.module_sender.random_message(item)
+            for item in list(self.que_listbox.get(0, 'end')):
+                self.module_sender.random_message(str(item[10:]))
                 time.sleep(1)
 
     def splash(self):
