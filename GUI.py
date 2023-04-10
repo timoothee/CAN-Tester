@@ -20,7 +20,7 @@ class CANGui():
         #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.geometry("600x850")
+        self.root.geometry("1200x850")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -105,14 +105,20 @@ class CANGui():
         self.can_frame4 = Frame(self.root)
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
 
-        self.can_frame5= Frame(self.root)
-        self.can_frame5.grid(row=4, column=0, sticky="nsew")
+        self.empty_can_frame = Frame(self.root)
+        self.empty_can_frame.grid(row=0, column=1)
 
-        self.can_frame6 = Frame(self.can_frame5)
-        self.can_frame6.grid(row=2, column=0, sticky="nsew")
+        self.empty_can_frame1 = Frame(self.root)
+        self.empty_can_frame.grid(row=1, column=1)
+
+        self.can_frame5= Frame(self.root)
+        self.can_frame5.grid(row=2, column=1, sticky="nsew")
+
+        self.can_frame6 = Frame(self.root)
+        self.can_frame6.grid(row=3, column=1, sticky="nsew")
 
         self.can_frame7 = Frame(self.root)
-        self.can_frame7.grid(row=6, column=0, sticky="nsew")
+        self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
 
         self.can_frame7_2 = Frame(self.can_frame7)
         self.can_frame7_2.grid(row=0, column=1)
@@ -202,7 +208,7 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 8,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 10,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
@@ -229,18 +235,18 @@ class CANGui():
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
-        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20 ,pady=(15,0))
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
         self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
-        self.can_bus_listbox.grid(row=1, column=0, padx=20, pady=(5,3))
+        self.can_bus_listbox.grid(row=1, column=0, padx=20)
 
         # frame 6
         self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=2, column=0, padx=(20,0), sticky='w')
+        self.save_button_output.grid(row=0, column=0, padx=(20,0), sticky='w')
 
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
-        self.clear_button_output.grid(row=2, column=1, sticky='w')
+        self.clear_button_output.grid(row=0, column=1, sticky='w')
 
         # frame 7
         self.error_listbox_label = Label(self.can_frame7, text='Error list')
