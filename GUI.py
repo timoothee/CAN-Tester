@@ -17,7 +17,7 @@ import random
 from PIL import Image, ImageTk
 class CANGui():
     def __init__(self, gui_revision: str):
-        self.splash()
+        #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("600x850")
@@ -27,6 +27,7 @@ class CANGui():
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
+        self.que_loop_var = IntVar()
         self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.can_sender_var = StringVar()
@@ -76,18 +77,17 @@ class CANGui():
         self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
-        self.delay_var = StringVar()
-        self.delay_var.set('Select')
+        self.delay_entry_var = IntVar()
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
-        self.messages_loop_var.set('Select')
-        self.messages_optionmenu = ("1", "10", "20", "30", "60", "120")
         self.loop_active = False
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
         t2 = threading.Thread(target=self.loop_section_button)
         t2.start()
+        t3 = threading.Thread(target=self.que_loop)
+        t3.start()
     
 
 
@@ -222,7 +222,10 @@ class CANGui():
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=6, sticky='e', padx=(50,0))
+        self.send_button.grid(row = 0, column=5, sticky='e', padx=(50,0))
+
+        self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
+        self.loop_checkbox.grid(row = 0, column=6, sticky='e', padx=(10,0))
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
@@ -248,24 +251,24 @@ class CANGui():
         self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
 
         # frame 7_2
-        self.loop_section_label = Label(self.can_frame7_2, text='LOOP SECTION')
+        self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
         self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
 
         # frame 8
-        self.delay_label = Label(self.can_frame8, text="DELAY")
+        self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
         self.delay_label.grid(row=0, column=0, padx=(120,0))
 
-        self.delay_option_menu = OptionMenu(self.can_frame8, self.delay_var, *self.delay_optionmenu)
-        self.delay_option_menu.config(width=3)
-        self.delay_option_menu.grid(row=1, column=0, padx=(120,0))
+        self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
+        self.delay_entry.config(width=6)
+        self.delay_entry.grid(row=1, column=0, padx=(120,0))
 
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
 
-        self.messages_option_menu = OptionMenu(self.can_frame8, self.messages_loop_var, *self.messages_optionmenu)
-        self.messages_option_menu.config(width=3)
-        self.messages_option_menu.grid(row=1, column=1)
+        self.loop_messages_entry = Entry(self.can_frame8, textvariable=self.messages_loop_var)
+        self.loop_messages_entry.config(width=6)
+        self.loop_messages_entry.grid(row=1, column=1)
 
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
@@ -323,6 +326,13 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def que_loop(self):
+        while self.program_running:
+            while self.que_loop_var.get() == 1:
+                for item in list(self.que_listbox.get(0, 'end')):
+                    self.module_sender.random_message(str(item[10:]))
+                time.sleep(1)
+
     def splash(self):
         root = Tk()
         splash = SplashScreen(root)
@@ -358,7 +368,7 @@ class CANGui():
                             random_message = random_message + random.choice(bits_list)
 
                         self.module_sender.random_message(random_message)
-                        time.sleep(self.delay_optionmenu_dict[self.delay_var.get()])
+                        time.sleep(self.delay_entry_var.get()/1000)
                     self.loop_active = False
                 else:
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
