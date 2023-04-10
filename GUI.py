@@ -86,6 +86,8 @@ class CANGui():
         t1.start()
         t2 = threading.Thread(target=self.loop_section_button)
         t2.start()
+        t3 = threading.Thread(target=self.que_loop)
+        t3.start()
     
 
 
@@ -222,7 +224,7 @@ class CANGui():
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=5, sticky='e', padx=(50,0))
 
-        self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var, command=self.que_loop)
+        self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6, sticky='e', padx=(10,0))
 
         # frame 5
@@ -323,7 +325,6 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
-
 
     def que_loop(self):
         while self.que_loop_var.get() == 1:
