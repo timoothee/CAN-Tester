@@ -27,6 +27,7 @@ class CANGui():
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
+        self.que_loop_var = IntVar
         self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.can_sender_var = StringVar()
@@ -219,7 +220,10 @@ class CANGui():
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=6, sticky='e', padx=(50,0))
+        self.send_button.grid(row = 0, column=5, sticky='e', padx=(50,0))
+
+        self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
+        self.loop_checkbox.grid(row = 0, column=6, sticky='e', padx=(10,0))
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
@@ -355,7 +359,7 @@ class CANGui():
                             random_message = random_message + random.choice(bits_list)
 
                         self.module_sender.random_message(random_message)
-                        time.sleep(self.delay_entry_var.get())
+                        time.sleep(self.delay_entry_var.get()/1000)
                     self.loop_active = False
                 else:
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
