@@ -118,7 +118,7 @@ class CANGui():
         self.can_frame6.grid(row=3, column=1, sticky="nsew")
 
         self.can_frame7 = Frame(self.root)
-        self.can_frame7.grid(row=4, column=1, sticky="nsew")
+        self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
 
         self.can_frame7_2 = Frame(self.can_frame7)
         self.can_frame7_2.grid(row=0, column=1)
@@ -208,7 +208,7 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 8,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 10,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
