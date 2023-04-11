@@ -20,7 +20,7 @@ class CANGui():
         #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.geometry("1500x850")
+        self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
