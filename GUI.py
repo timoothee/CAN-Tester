@@ -20,7 +20,7 @@ class CANGui():
         #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
-        self.root.geometry("1200x850")
+        self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -96,6 +96,9 @@ class CANGui():
         self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
+        self.can_frame1_2 = Frame(self.root)
+        self.can_frame1_2.grid(row=0, column=1, padx=20)
+
         self.can_frame2 = Frame(self.root)
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
 
@@ -105,11 +108,8 @@ class CANGui():
         self.can_frame4 = Frame(self.root)
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
 
-        self.empty_can_frame = Frame(self.root)
-        self.empty_can_frame.grid(row=0, column=1)
-
         self.empty_can_frame1 = Frame(self.root)
-        self.empty_can_frame.grid(row=1, column=1)
+        self.empty_can_frame1.grid(row=1, column=1)
 
         self.can_frame5= Frame(self.root)
         self.can_frame5.grid(row=2, column=1, sticky="nsew")
@@ -155,17 +155,17 @@ class CANGui():
         self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
-        self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=3, padx=(150,0), pady=(20,0))
+        self.status_label = Label(self.can_frame1_2, text="STATUS")
+        self.status_label.grid(row=0, column=0, padx=(600,0), pady=(20,0))
 
-        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=0, column=4, pady=(20,0))
+        self.default_status_label = Label(self.can_frame1_2, text="DOWN", fg='red')
+        self.default_status_label.grid(row=0, column=1, pady=(20,0))
         
-        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=1, column=4, sticky='w')
+        self.up_down_button = Button(self.can_frame1_2, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
+        self.up_down_button.grid(row=1, column=1, sticky='w')
 
-        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=2, column=4, sticky='w')
+        self.dev_button = Button(self.can_frame1_2, text= "<  >", command=self.developer_settings)
+        self.dev_button.grid(row=2, column=1, sticky='w')
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -201,14 +201,14 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=5)
+        self.add_to_q.grid(row = 1, column=6, padx=(120,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 60, height= 10,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 70, height= 10,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
@@ -216,29 +216,32 @@ class CANGui():
         self.import_button.grid(row=0, column=0, padx=(20,0))
 
         self.save_button_input = Button(self.can_frame4, text="Save", command = lambda:self.save("input"))
-        self.save_button_input.grid(row=0, column=1, padx=10)
+        self.save_button_input.grid(row=0, column=1)
 
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
-        self.Edit_button.grid(row=0, column=3, padx=(30,10))
+        self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=5, sticky='e', padx=(50,0))
+        self.send_button.grid(row = 0, column=7, sticky='e')
+
+        self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
+        self.loop_checkbox_label.grid(row = 0, column=5, sticky='e', padx=(100,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
-        self.loop_checkbox.grid(row = 0, column=6, sticky='e', padx=(10,0))
+        self.loop_checkbox.grid(row = 0, column=6, sticky='e')
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
         self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 60, selectmode =EXTENDED)
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 70, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=20)
 
         # frame 6
