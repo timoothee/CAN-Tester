@@ -382,6 +382,7 @@ class CANGui():
                 else:
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.loop_active = False
     
 
     def default_module_settings(self):
