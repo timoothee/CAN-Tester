@@ -592,6 +592,7 @@ class CANGui():
         self.id_entry_error = False
         self.payload_size_error = False
         self.payload_entry_error = False
+        self.payload_entry_odd = False
         self.id_entry_over_error = False
         if len(self.frame_id_entry.get()) != 0:
             pass
@@ -631,6 +632,10 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+        if len(self.payload_entry.get())%2 != 0:
+            self.payload_entry_odd = True
+            self.check_all_fields_retVal = True
+
         self.debugging(" checking finished! ...", 0)
 
     def fields_uncompleted_error(self):
@@ -672,6 +677,10 @@ class CANGui():
                     self.frame_id_entry.config(fg= 'red')
             if self.payload_size_error == True or self.payload_entry_error == True:
                 self.error_listbox.insert(END,"Error: Payload not equal to payload size")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.payload_Entry.config(fg= 'red')
+            if self.payload_entry_odd:
+                self.error_listbox.insert(END,"Error: Payload odd")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_Entry.config(fg= 'red')
                 
