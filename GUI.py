@@ -460,6 +460,7 @@ class CANGui():
             self.default_status_label.config(fg='green',text='UP')
             self.up_down_button.config(fg="red", text="DOWN")
             self.backend_module()
+            self.initial_interface_state()
             self.debugging(" Status is UP", 2)
         else:
             self.module_sender.set_can_status(False)
