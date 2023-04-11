@@ -201,7 +201,7 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=5)
+        self.add_to_q.grid(row = 1, column=6, padx=(120,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
