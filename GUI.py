@@ -375,7 +375,8 @@ class CANGui():
         if isinstance(self.messages_loop_var.get(), int) == False:
             self.messages_entry_wrong = True
 
-        
+    def random_loop_error_list(self):
+        ...
 
     def loop_section_button(self):
         while self.program_running:
