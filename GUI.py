@@ -82,6 +82,7 @@ class CANGui():
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
         self.loop_active = False
+        self.active_loop_var = False
         t1 = threading.Thread(target=self.threadfunc)
         t1.start()
         t2 = threading.Thread(target=self.loop_section_button)
@@ -337,10 +338,12 @@ class CANGui():
 
     def que_loop(self):
         while self.program_running:
-            while self.que_loop_var.get() == 1:
+            while self.que_loop_var.get() == 1 and self.active_loop_var == True:
                 for item in list(self.que_listbox.get(0, 'end')):
                     self.module_sender.random_message(str(item[10:]))
                 time.sleep(1)
+                if self.que_loop_var.get() != 1:
+                    self.active_loop_var = False
 
     def splash(self):
         root = Tk()
@@ -822,6 +825,9 @@ class CANGui():
             print(self.frame.brs_list)
             print(self.frame.payload_list)
             self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
+            if self.que_loop_var.get() == 1:
+                self.active_loop_var = True
+                    
         else:
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
