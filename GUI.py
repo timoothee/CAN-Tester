@@ -357,6 +357,9 @@ class CANGui():
     def start_func(self):
         self.loop_active = True
 
+    def check_random_loop(self):
+        ...
+
     def loop_section_button(self):
         while self.program_running:
             if self.loop_active == True:
