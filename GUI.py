@@ -358,7 +358,10 @@ class CANGui():
         self.loop_active = True
 
     def check_random_loop(self):
-        ...
+        self.delay_entry_incomplete = False
+        self.messages_entry_incomplete = False
+        self.delay_entry_wrong = False
+        self.messages_entry_wrong = False
 
     def loop_section_button(self):
         while self.program_running:
