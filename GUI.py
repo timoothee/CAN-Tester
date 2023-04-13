@@ -365,18 +365,22 @@ class CANGui():
 
         if self.delay_entry_var.get() == 0:
             self.delay_entry_incomplete = True
-
         if self.messages_loop_var.get() == 0:
             self.messages_entry_incomplete = True
-
         if isinstance(self.delay_entry_var.get(), int) == False:
             self.delay_entry_wrong = True
-
         if isinstance(self.messages_loop_var.get(), int) == False:
             self.messages_entry_wrong = True
 
     def random_loop_error_list(self):
-        ...
+        if self.delay_entry_incomplete == True:
+            ...
+        if self.messages_entry_incomplete == True:
+            ...
+        if self.delay_entry_wrong == True:
+            ...
+        if self.messages_entry_wrong == True:
+            ...
 
     def loop_section_button(self):
         while self.program_running:
