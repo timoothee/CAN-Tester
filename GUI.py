@@ -374,13 +374,21 @@ class CANGui():
 
     def random_loop_error_list(self):
         if self.delay_entry_incomplete == True:
-            ...
+            self.error_listbox.insert(END,"Error: Delay field uncompleted")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_incomplete == True:
-            ...
+            self.error_listbox.insert(END,"Error: Messages fild uncompleted")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
         if self.delay_entry_wrong == True:
-            ...
+            self.error_listbox.insert(END,"Error: Delay field")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_wrong == True:
-            ...
+            self.error_listbox.insert(END,"Error: Messages field")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
         while self.program_running:
