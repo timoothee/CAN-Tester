@@ -20,7 +20,7 @@ class rgb_fade():
         time.sleep(1)
 
 
-    def fade_out(self):
+    def fade_out(self, gpio):
         for i in range(int(self.modify/100)):
 
             GPIO.output(self.gpio,GPIO.LOW)
@@ -34,7 +34,7 @@ class rgb_fade():
             print(i, self.add_2, self.add_1)
 
 
-    def fade_in(self):
+    def fade_in(self, gpio):
         for i in range(int(self.modify/100)):
 
             GPIO.output(self.gpio,GPIO.LOW)
@@ -47,7 +47,7 @@ class rgb_fade():
 
             print(i, self.add_2, self.add_1)
 
-    def initial_state(self):
+    def initial_state(self, gpio):
         self.add_1 = 0.001
         self.add_2 = 0.01
 
