@@ -355,7 +355,42 @@ class CANGui():
         root.mainloop()
 
     def start_func(self):
+        self.check_random_loop()
+        self.random_loop_error_list()
         self.loop_active = True
+
+    def check_random_loop(self):
+        self.delay_entry_incomplete = False
+        self.messages_entry_incomplete = False
+        self.delay_entry_wrong = False
+        self.messages_entry_wrong = False
+
+        if isinstance(self.delay_entry_var.get(), int) == False:
+            self.delay_entry_wrong = True
+        if isinstance(self.messages_loop_var.get(), int) == False:
+            self.messages_entry_wrong = True
+        if self.delay_entry_var.get() == 0 and self.delay_entry_wrong == False:
+            self.delay_entry_incomplete = True
+        if self.messages_loop_var.get() == 0 and self.messages_entry_wrong == False:
+            self.messages_entry_incomplete = True
+
+    def random_loop_error_list(self):
+        if self.delay_entry_incomplete == True:
+            self.error_listbox.insert(END,"Error: Delay field uncompleted")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
+        if self.messages_entry_incomplete == True:
+            self.error_listbox.insert(END,"Error: Messages fild uncompleted")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
+        if self.delay_entry_wrong == True:
+            self.error_listbox.insert(END,"Error: Delay field")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
+        if self.messages_entry_wrong == True:
+            self.error_listbox.insert(END,"Error: Messages field")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
         while self.program_running:
