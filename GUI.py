@@ -355,6 +355,8 @@ class CANGui():
         root.mainloop()
 
     def start_func(self):
+        self.check_random_loop()
+        self.random_loop_error_list()
         self.loop_active = True
 
     def check_random_loop(self):
@@ -363,14 +365,14 @@ class CANGui():
         self.delay_entry_wrong = False
         self.messages_entry_wrong = False
 
-        if self.delay_entry_var.get() == 0:
-            self.delay_entry_incomplete = True
-        if self.messages_loop_var.get() == 0:
-            self.messages_entry_incomplete = True
         if isinstance(self.delay_entry_var.get(), int) == False:
             self.delay_entry_wrong = True
         if isinstance(self.messages_loop_var.get(), int) == False:
             self.messages_entry_wrong = True
+        if self.delay_entry_var.get() == 0 and self.delay_entry_wrong == False:
+            self.delay_entry_incomplete = True
+        if self.messages_loop_var.get() == 0 and self.messages_entry_wrong == False:
+            self.messages_entry_incomplete = True
 
     def random_loop_error_list(self):
         if self.delay_entry_incomplete == True:
