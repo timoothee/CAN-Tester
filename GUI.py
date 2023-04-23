@@ -222,7 +222,7 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
+        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button_fr4)
         self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
         self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command_fr4, state="disable")
@@ -561,7 +561,7 @@ class CANGui():
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
         
-    def edit_button(self):
+    def edit_button_fr4(self):
         if self.que_listbox.size() != 0:
             if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
