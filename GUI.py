@@ -383,7 +383,7 @@ class CANGui():
             self.error_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Messages fild uncompleted")
+            self.error_listbox.insert(END,"Error: Messages field uncompleted")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.delay_entry_wrong == True:
@@ -422,7 +422,6 @@ class CANGui():
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.loop_active = False
     
-
     def default_module_settings(self):
         self.can_sender_var.set("can0")
         self.can_receiver_var.set("can1")
@@ -444,7 +443,6 @@ class CANGui():
             if color == 2:
                 self.status_listbox.itemconfig('end', {'fg': 'green'})
             self.status_listbox.see(END)
-            
 
     def rtr_function(self):
         if self.RTR_box.get() == 1:
@@ -455,8 +453,6 @@ class CANGui():
             self.payload_Label.config(state="normal")
 
     def developer_send_func(self, event):
-
-        
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
@@ -472,7 +468,7 @@ class CANGui():
         self.module_sender.default_message_func()
 
     def default_canup(self):
-        self.module_sender.defaul_canup()
+        self.module_sender.default_canup()
 
     def default_candump(self):
         self.module_sender.default_candump()
