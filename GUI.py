@@ -225,7 +225,7 @@ class CANGui():
         self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
         self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command_fr4, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
@@ -545,8 +545,8 @@ class CANGui():
                 self.list_mem = self.list_read
     
 
-    def ok_command(self):
-        self.debugging("-- Inside ok_command function --", 0)
+    def ok_command_fr4(self):
+        self.debugging("-- Inside ok_command_fr4 function --", 0)
         self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
