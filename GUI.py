@@ -454,7 +454,7 @@ class CANGui():
             self.payload_Entry.config(state="normal")
             self.payload_Label.config(state="normal")
 
-    def dsend_func(self, event):
+    def developer_send_func(self, event):
         print(f"{self.message_entry.get()}")
         os.popen(self.message_entry.get())
 
@@ -464,7 +464,7 @@ class CANGui():
         self.root_dev.geometry("500x600+650+0")
         self.build2()
         self.dev_status = True
-        self.root_dev.bind('<Return>', self.dsend_func)
+        self.root_dev.bind('<Return>', self.developer_send_func)
         self.dev_status = False
     
     def default_message_func(self):
