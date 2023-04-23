@@ -280,7 +280,7 @@ class CANGui():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=1, column=1)
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
@@ -357,7 +357,7 @@ class CANGui():
         splash.destroy()
         root.mainloop()
 
-    def start_func(self):
+    def random_loop_start_func(self):
         self.check_random_loop()
         self.random_loop_error_list()
         self.loop_active = True
