@@ -222,10 +222,10 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
+        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button_fr4)
         self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command_fr4, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
@@ -280,7 +280,7 @@ class CANGui():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=1, column=1)
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
@@ -350,14 +350,14 @@ class CANGui():
         splash = SplashScreen(root)
         for i in range(200):
             if i % 10 == 0:
-                splash.abc()
+                splash.config_splash()
             root.update()
             splash.progressbar.step(0.5)
             time.sleep(0.01)
         splash.destroy()
         root.mainloop()
 
-    def start_func(self):
+    def random_loop_start_func(self):
         self.check_random_loop()
         self.random_loop_error_list()
         self.loop_active = True
@@ -454,7 +454,7 @@ class CANGui():
             self.payload_Entry.config(state="normal")
             self.payload_Label.config(state="normal")
 
-    def dsend_func(self, event):
+    def developer_send_func(self, event):
         print(f"{self.message_entry.get()}")
         os.popen(self.message_entry.get())
 
@@ -464,7 +464,7 @@ class CANGui():
         self.root_dev.geometry("500x600+650+0")
         self.build2()
         self.dev_status = True
-        self.root_dev.bind('<Return>', self.dsend_func)
+        self.root_dev.bind('<Return>', self.developer_send_func)
         self.dev_status = False
     
     def default_message_func(self):
@@ -545,8 +545,8 @@ class CANGui():
                 self.list_mem = self.list_read
     
 
-    def ok_command(self):
-        self.debugging("-- Inside ok_command function --", 0)
+    def ok_command_fr4(self):
+        self.debugging("-- Inside ok_command_fr4 function --", 0)
         self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
@@ -561,7 +561,7 @@ class CANGui():
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
         
-    def edit_button(self):
+    def edit_button_fr4(self):
         if self.que_listbox.size() != 0:
             if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
@@ -791,8 +791,6 @@ class CANGui():
         self.frame_id_entry.config(fg=self.default_entry_color)
         self.payload_Entry.config(fg=self.default_entry_color, state="normal")
         
-
-    
     def add_to_Q(self):
         self.check_all_fields_completed()
         self.check_all_fields()
@@ -906,7 +904,7 @@ class SplashScreen:
 
         self.parent.update()
 
-    def abc(self):
+    def config_splash(self):
         self.text_label.config(text = random.choice(self.list))
 
     def destroy(self):
