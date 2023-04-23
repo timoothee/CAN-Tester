@@ -455,7 +455,8 @@ class CANGui():
             self.payload_Label.config(state="normal")
 
     def developer_send_func(self, event):
-        print(f"{self.message_entry.get()}")
+
+        
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
@@ -477,7 +478,6 @@ class CANGui():
         self.module_sender.default_candump()
 
     def on_closing(self):
-        print("---")
         self.program_running = False
         self.root.destroy() 
 
@@ -573,14 +573,11 @@ class CANGui():
                     if element == "#":
                         break
                     self.index_element += 1
-                    
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
                 self.payload_Entry.insert(0, self.value[self.index_element+3:])
 
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.ext_flag_CkBt.select()
-
-                print(f"hereeee {self.value[self.index_element]}, {self.value[self.index_element+1]}, {self.value[self.index_element+1]}")
 
                 if self.value[self.index_element+1] != "R":
                     if self.value[self.index_element+2] == "1":
@@ -588,10 +585,8 @@ class CANGui():
                 else:
                     self.RTR_CkBtn.select()
                     self.payload_Entry.config(state="disabled")
-
             else:
                 messagebox.showerror("Status", "Select a message")
-                
         else:
             messagebox.showerror("Status", "Listbox empty")
 
@@ -609,15 +604,12 @@ class CANGui():
             self.textfile = os.path.join(r"", self.path)
             with open(self.textfile) as f:
                 self.lines = f.readlines()
-            print(self.lines)
 
             self.refresh_time()
-            
             for item in self.lines:
                 self.string_import = self.current_time + "  " + item
                 self.string_import = self.string_import.replace(b'\n'.decode(),'')
                 self.que_listbox.insert('end', self.string_import)
-
 
     def btn_up_down_active(self, *args):
         try:
@@ -821,7 +813,6 @@ class CANGui():
             self.module_receiver.interface_up()
             time.sleep(1)
             self.module_receiver.can_dump()
-            print("Can_dump was made")
         else:
             self.debugging(" User wants to set CAN DOWN", 0)
             self.module_sender.interface_down()
@@ -854,9 +845,6 @@ class CANGui():
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            print(self.frame.id_list)
-            print(self.frame.brs_list)
-            print(self.frame.payload_list)
             self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
             if self.que_loop_var.get() == 1:
                 self.active_loop_var = True
