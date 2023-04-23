@@ -350,7 +350,7 @@ class CANGui():
         splash = SplashScreen(root)
         for i in range(200):
             if i % 10 == 0:
-                splash.abc()
+                splash.config_splash()
             root.update()
             splash.progressbar.step(0.5)
             time.sleep(0.01)
@@ -791,8 +791,6 @@ class CANGui():
         self.frame_id_entry.config(fg=self.default_entry_color)
         self.payload_Entry.config(fg=self.default_entry_color, state="normal")
         
-
-    
     def add_to_Q(self):
         self.check_all_fields_completed()
         self.check_all_fields()
@@ -906,7 +904,7 @@ class SplashScreen:
 
         self.parent.update()
 
-    def abc(self):
+    def config_splash(self):
         self.text_label.config(text = random.choice(self.list))
 
     def destroy(self):
