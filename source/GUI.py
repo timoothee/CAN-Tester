@@ -69,9 +69,9 @@ class CANGui():
         self.chg_var1 = 0
         self.list_read = []
         self.list_mem = []
-        with open('can.log', 'w') as f:
+        with open('logs/can.log', 'w') as f:
                 pass
-        with open('status.txt', 'w') as f:
+        with open('logs/status.txt', 'w') as f:
                 pass
 
         self.dmessage = StringVar()
@@ -432,7 +432,7 @@ class CANGui():
         if self.root_dev is None or not self.root_dev.winfo_exists():
             self.refresh_time()
             status_message = self.current_time + " " + message
-            with open('status.txt', 'a+') as f:
+            with open('logs/status.txt', 'a+') as f:
                 f.write(status_message+'\n')
         else:
             self.refresh_time()
@@ -480,7 +480,7 @@ class CANGui():
     def CAN_BUS_log(self):
         self.infinite_condition = 2
         while self.infinite_condition >= 1:
-            with open(r'can.log') as f:
+            with open(r'logs/can.log') as f:
                 self.log_lines = f.readlines()
 
             for line in self.log_lines:
@@ -530,7 +530,7 @@ class CANGui():
 
     def threadfunc(self):
         while self.program_running:
-            with open('can.log', 'r') as f:
+            with open('logs/can.log', 'r') as f:
                 self.list_read = f.readlines()
             if len(self.list_read) != len(self.list_mem):
                 for i in range(len(self.list_mem) ,len(self.list_read)):
