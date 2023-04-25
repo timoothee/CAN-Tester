@@ -17,7 +17,7 @@ import random
 from PIL import Image, ImageTk
 class CANGui():
     def __init__(self, gui_revision: str):
-        #self.splash()
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
@@ -855,7 +855,7 @@ class SplashScreen:
     def __init__(self, parent):
         self.parent = parent
 
-        self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_image = Image.open("images/photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
         self.parent.overrideredirect(True)
