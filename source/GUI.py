@@ -17,7 +17,7 @@ import random
 from PIL import Image, ImageTk
 class CANGui():
     def __init__(self, gui_revision: str):
-        #self.splash()
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
@@ -69,9 +69,9 @@ class CANGui():
         self.chg_var1 = 0
         self.list_read = []
         self.list_mem = []
-        with open('can.log', 'w') as f:
+        with open('logs/can.log', 'w') as f:
                 pass
-        with open('status.txt', 'w') as f:
+        with open('logs/status.txt', 'w') as f:
                 pass
 
         self.dmessage = StringVar()
@@ -222,10 +222,10 @@ class CANGui():
         self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button)
+        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button_fr4)
         self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
-        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command, state="disable")
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command_fr4, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
@@ -280,7 +280,7 @@ class CANGui():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=1, column=1)
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.start_func, width=5)
+        self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(120,0))
 
     def build2(self):
@@ -350,14 +350,14 @@ class CANGui():
         splash = SplashScreen(root)
         for i in range(200):
             if i % 10 == 0:
-                splash.abc()
+                splash.config_splash()
             root.update()
             splash.progressbar.step(0.5)
             time.sleep(0.01)
         splash.destroy()
         root.mainloop()
 
-    def start_func(self):
+    def random_loop_start_func(self):
         self.check_random_loop()
         self.random_loop_error_list()
         self.loop_active = True
@@ -383,7 +383,7 @@ class CANGui():
             self.error_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Messages fild uncompleted")
+            self.error_listbox.insert(END,"Error: Messages field uncompleted")
             self.error_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.delay_entry_wrong == True:
@@ -422,7 +422,6 @@ class CANGui():
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.loop_active = False
     
-
     def default_module_settings(self):
         self.can_sender_var.set("can0")
         self.can_receiver_var.set("can1")
@@ -433,7 +432,7 @@ class CANGui():
         if self.root_dev is None or not self.root_dev.winfo_exists():
             self.refresh_time()
             status_message = self.current_time + " " + message
-            with open('status.txt', 'a+') as f:
+            with open('logs/status.txt', 'a+') as f:
                 f.write(status_message+'\n')
         else:
             self.refresh_time()
@@ -444,7 +443,6 @@ class CANGui():
             if color == 2:
                 self.status_listbox.itemconfig('end', {'fg': 'green'})
             self.status_listbox.see(END)
-            
 
     def rtr_function(self):
         if self.RTR_box.get() == 1:
@@ -454,8 +452,7 @@ class CANGui():
             self.payload_Entry.config(state="normal")
             self.payload_Label.config(state="normal")
 
-    def dsend_func(self, event):
-        print(f"{self.message_entry.get()}")
+    def developer_send_func(self, event):
         os.popen(self.message_entry.get())
 
     def developer_settings(self):
@@ -464,27 +461,26 @@ class CANGui():
         self.root_dev.geometry("500x600+650+0")
         self.build2()
         self.dev_status = True
-        self.root_dev.bind('<Return>', self.dsend_func)
+        self.root_dev.bind('<Return>', self.developer_send_func)
         self.dev_status = False
     
     def default_message_func(self):
         self.module_sender.default_message_func()
 
     def default_canup(self):
-        self.module_sender.defaul_canup()
+        self.module_sender.default_canup()
 
     def default_candump(self):
         self.module_sender.default_candump()
 
     def on_closing(self):
-        print("---")
         self.program_running = False
         self.root.destroy() 
 
     def CAN_BUS_log(self):
         self.infinite_condition = 2
         while self.infinite_condition >= 1:
-            with open(r'can.log') as f:
+            with open(r'logs/can.log') as f:
                 self.log_lines = f.readlines()
 
             for line in self.log_lines:
@@ -534,7 +530,7 @@ class CANGui():
 
     def threadfunc(self):
         while self.program_running:
-            with open('can.log', 'r') as f:
+            with open('logs/can.log', 'r') as f:
                 self.list_read = f.readlines()
             if len(self.list_read) != len(self.list_mem):
                 for i in range(len(self.list_mem) ,len(self.list_read)):
@@ -545,8 +541,8 @@ class CANGui():
                 self.list_mem = self.list_read
     
 
-    def ok_command(self):
-        self.debugging("-- Inside ok_command function --", 0)
+    def ok_command_fr4(self):
+        self.debugging("-- Inside ok_command_fr4 function --", 0)
         self.check_all_fields_completed()
         self.check_all_fields()
         if self.check_all_fields_retVal:
@@ -561,7 +557,7 @@ class CANGui():
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
         
-    def edit_button(self):
+    def edit_button_fr4(self):
         if self.que_listbox.size() != 0:
             if len(self.que_listbox.curselection()) != 0:
                 self.initial_interface_state()
@@ -573,14 +569,11 @@ class CANGui():
                     if element == "#":
                         break
                     self.index_element += 1
-                    
                 self.frame_id_entry.insert(0,self.value[0:self.index_element])
                 self.payload_Entry.insert(0, self.value[self.index_element+3:])
 
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.ext_flag_CkBt.select()
-
-                print(f"hereeee {self.value[self.index_element]}, {self.value[self.index_element+1]}, {self.value[self.index_element+1]}")
 
                 if self.value[self.index_element+1] != "R":
                     if self.value[self.index_element+2] == "1":
@@ -588,10 +581,8 @@ class CANGui():
                 else:
                     self.RTR_CkBtn.select()
                     self.payload_Entry.config(state="disabled")
-
             else:
                 messagebox.showerror("Status", "Select a message")
-                
         else:
             messagebox.showerror("Status", "Listbox empty")
 
@@ -609,15 +600,12 @@ class CANGui():
             self.textfile = os.path.join(r"", self.path)
             with open(self.textfile) as f:
                 self.lines = f.readlines()
-            print(self.lines)
 
             self.refresh_time()
-            
             for item in self.lines:
                 self.string_import = self.current_time + "  " + item
                 self.string_import = self.string_import.replace(b'\n'.decode(),'')
                 self.que_listbox.insert('end', self.string_import)
-
 
     def btn_up_down_active(self, *args):
         try:
@@ -791,8 +779,6 @@ class CANGui():
         self.frame_id_entry.config(fg=self.default_entry_color)
         self.payload_Entry.config(fg=self.default_entry_color, state="normal")
         
-
-    
     def add_to_Q(self):
         self.check_all_fields_completed()
         self.check_all_fields()
@@ -823,7 +809,6 @@ class CANGui():
             self.module_receiver.interface_up()
             time.sleep(1)
             self.module_receiver.can_dump()
-            print("Can_dump was made")
         else:
             self.debugging(" User wants to set CAN DOWN", 0)
             self.module_sender.interface_down()
@@ -856,9 +841,6 @@ class CANGui():
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            print(self.frame.id_list)
-            print(self.frame.brs_list)
-            print(self.frame.payload_list)
             self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
             if self.que_loop_var.get() == 1:
                 self.active_loop_var = True
@@ -873,7 +855,7 @@ class SplashScreen:
     def __init__(self, parent):
         self.parent = parent
 
-        self.logo_image = Image.open("photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_image = Image.open("images/photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
         self.parent.overrideredirect(True)
@@ -906,7 +888,7 @@ class SplashScreen:
 
         self.parent.update()
 
-    def abc(self):
+    def config_splash(self):
         self.text_label.config(text = random.choice(self.list))
 
     def destroy(self):
