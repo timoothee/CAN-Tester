@@ -44,7 +44,7 @@ class CanModule():
     
     def can_dump(self):
         os.popen(f"cat can.log")
-        os.popen(f"candump {self.module_name} > can.log", "w", 128)
+        os.popen(f"candump {self.module_name} > ../logs/can.log", "w", 128)
         print("---")
 
     def interface_down(self):
@@ -60,7 +60,7 @@ class CanModule():
                 print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
 
     def dump_log(self, can_receiver):
-        os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
+        os.popen(f"candump {can_receiver} > ../logs/can.log")
 
     def random_message(self, message):
         os.popen(f"cansend {self.module_name} {message}")
@@ -72,7 +72,7 @@ class CanModule():
         os.popen(f"sudo ifconfig can1 txqueuelen 65536", 'w')
 
     def default_candump(self):
-        os.popen(f"candump can1 > can.log", 'w')
+        os.popen(f"candump can1 > ../logs/can.log", 'w')
 
     def default_message_func(self):
         os.popen(f"cansend can0 123#1223", 'w')
