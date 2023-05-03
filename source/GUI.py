@@ -154,16 +154,16 @@ class CANGui():
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=0, pady=(20,0))
+        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(150,0) , sticky='e')
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=0, column=1, pady=(20,0))
+        self.default_status_label.grid(row=0, column=4, pady=(20,0), sticky='e')
         
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=1, column=1)
+        self.up_down_button.grid(row=0, column=5, sticky='e', padx=(10,0), pady= (10,0))
 
         self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=2, column=1)
+        self.dev_button.grid(row=1, column=5, sticky='e')
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
