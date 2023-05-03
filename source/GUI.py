@@ -28,7 +28,7 @@ class CANGui():
         self.general = Menu(self.menu_bar, tearoff = 0)
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
-        self.view.add_command(label="Vertical")
+        self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal")
         self.help.add_command(label="Welcome")
         self.help.add_command(label="Contact")
@@ -347,7 +347,18 @@ class CANGui():
         self.status_listbox.grid(row=4, column=0, padx=10)
 
     def vertical_view(self):
-        pass
+        self.can_frame1.grid(row=0, column=0, sticky="nsew")
+        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
+        self.can_frame3.grid(row=2, column=0, sticky="nsew")
+        self.can_frame4.grid(row=3, column=0, sticky="nsew")
+        self.can_frame5.grid(row=4, column=0, sticky="nsew")
+        self.can_frame6.grid(row=5, column=0, sticky="nsew")
+        self.can_frame7.grid(row=6, column=0, sticky="nsew", pady=(30))
+        self.can_frame7_2.grid(row=0, column=1)
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
+        self.que_listbox.configure(width=75, height=10)
+        self.can_bus_listbox.configure(width=75, height=10)
+        self.root.geometry("750x1200")
 
     def horizontal_view(self):
         pass
