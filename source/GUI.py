@@ -30,6 +30,8 @@ class CANGui():
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.view.add_command(label="Vertical")
         self.view.add_command(label="Horizontal")
+        self.help.add_command(label="Welcome")
+        self.help.add_command(label="Contact")
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
