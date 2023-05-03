@@ -349,6 +349,8 @@ class CANGui():
     def vertical_view(self):
         pass
 
+    def horizontal_view(self):
+        pass
 
     def que_loop(self):
         while self.program_running:
