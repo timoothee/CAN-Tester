@@ -346,6 +346,9 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def welcome_user(self):
+        pass
+
     def vertical_view(self):
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
