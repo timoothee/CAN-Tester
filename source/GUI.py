@@ -346,6 +346,10 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def vertical_view(self):
+        pass
+
+
     def que_loop(self):
         while self.program_running:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
