@@ -167,7 +167,7 @@ class CANGui():
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(150,0) , sticky='e')
+        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(300,0) , sticky='e')
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.grid(row=0, column=4, pady=(20,0), sticky='e')
@@ -212,7 +212,7 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=(120,0))
+        self.add_to_q.grid(row = 1, column=6, padx=(280,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
@@ -242,7 +242,7 @@ class CANGui():
         self.send_button.grid(row = 0, column=7, sticky='e')
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
-        self.loop_checkbox_label.grid(row = 0, column=5, sticky='e', padx=(100,0))
+        self.loop_checkbox_label.grid(row = 0, column=5, sticky='e', padx=(277,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6, sticky='e')
@@ -272,16 +272,16 @@ class CANGui():
 
         # frame 7_2
         self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
-        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
+        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(270,0), pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
 
         # frame 8
         self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
-        self.delay_label.grid(row=0, column=0, padx=(120,0))
+        self.delay_label.grid(row=0, column=0, padx=(300,0))
 
         self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
         self.delay_entry.config(width=6)
-        self.delay_entry.grid(row=1, column=0, padx=(120,0))
+        self.delay_entry.grid(row=1, column=0, padx=(300,0))
 
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
@@ -291,7 +291,7 @@ class CANGui():
         self.loop_messages_entry.grid(row=1, column=1)
 
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
-        self.loop_start_button.grid(row=2, column=0, padx=(120,0))
+        self.loop_start_button.grid(row=2, column=0, padx=(300,0))
 
     def build2(self):
 
@@ -359,6 +359,13 @@ class CANGui():
         self.que_listbox.configure(width=75, height=10)
         self.can_bus_listbox.configure(width=75, height=10)
         self.root.geometry("750x1200")
+        self.status_label.grid(padx=(250,0))
+        self.add_to_q.grid(padx=(190,0))
+        self.loop_checkbox_label.grid(padx=(187,0))
+        self.loop_section_label.grid(padx=(170,0))
+        self.delay_label.grid(padx=(200,0))
+        self.delay_entry.grid(padx=(200,0))
+        self.loop_start_button.grid(padx=(200,0))
 
     def horizontal_view(self):
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
@@ -374,6 +381,13 @@ class CANGui():
         self.que_listbox.configure(width=85, height=15)
         self.can_bus_listbox.configure(width=85, height=15)
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
+        self.status_label.grid(padx=(300,0))
+        self.add_to_q.grid(padx=(280,0))
+        self.loop_checkbox_label.grid(padx=(277,0))
+        self.loop_section_label.grid(padx=(270,0))
+        self.delay_label.grid(padx=(300,0))
+        self.delay_entry.grid(padx=(300,0))
+        self.loop_start_button.grid(padx=(300,0))
 
     def que_loop(self):
         while self.program_running:
