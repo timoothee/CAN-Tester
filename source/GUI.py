@@ -752,18 +752,23 @@ class CANGui():
         else:
             if self.can_bus_listbox.size() != 0:
                 files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
-                file = asksaveasfile(filetypes = files, defaultextension = files)
+                filename = asksaveasfile(filetypes = files, defaultextension = files)
                 lista = list(self.can_bus_listbox.get(0, END))
-                for item in lista:
-                    if first_one == False:
-                        first_one = True
-                        file.write(item)
-                        continue
-                    file.write('\n')
-                    file.write(item)
-                file.close()
+                if filename:
+                    f = open(filename.name, 'w')
+                    for item in lista:
+                        if first_one == False:
+                            first_one = True
+                            f.write(item)
+                            continue
+                        f.write('\n')
+                        f.write(item)
+                    f.close()
+                else:
+                    messagebox.showerror("Status", "Error with filename")
             else:
                 messagebox.showerror("Status", "List is empty")
+
 
     def initial_interface_state(self):
         self.debugging("setting all to default", 0)
