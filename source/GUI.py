@@ -17,10 +17,11 @@ import random
 from PIL import Image, ImageTk
 class CANGui():
     def __init__(self, gui_revision: str):
-        self.splash()
+        #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
+        #self.root.geometry("1350x800")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         self.brs_box = IntVar()
@@ -206,7 +207,7 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 70, height= 15,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 85, height= 15,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
@@ -236,10 +237,10 @@ class CANGui():
 
         # frame 5
         self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
-        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20)
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 70, height=15, selectmode =EXTENDED)
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=20)
 
         # frame 6
