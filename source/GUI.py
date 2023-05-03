@@ -30,7 +30,7 @@ class CANGui():
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
-        self.help.add_command(label="Welcome")
+        self.help.add_command(label="Welcome", command = self.welcome_user)
         self.help.add_command(label="Contact")
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
@@ -347,7 +347,27 @@ class CANGui():
         self.status_listbox.grid(row=4, column=0, padx=10)
 
     def welcome_user(self):
-        pass
+        self.case = 0
+        self.welcome_root = Toplevel(self.root)
+        self.welcome_root.geometry("400x400")
+        self.welcome_label = Label(self.welcome_root, text="Welcome")
+        self.welcome_label.grid(row=0,column=0)
+        self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
+        self.next_button.grid(row=1, column=0, sticky='se')
+
+        self.welcome_root.mainloop()
+
+    def case_scenario(self):
+        self.case += 1
+        if self.case == 1:
+            self.welcome_label.destroy()
+            self.image = PhotoImage(file="../images/Welcome_user_photos/module_prf.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+        if self.case == 2:
+            print("pass")
+                
+        
 
     def vertical_view(self):
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
