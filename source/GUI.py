@@ -29,7 +29,7 @@ class CANGui():
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.view.add_command(label="Vertical", command=self.vertical_view)
-        self.view.add_command(label="Horizontal")
+        self.view.add_command(label="Horizontal", command = self.horizontal_view)
         self.help.add_command(label="Welcome")
         self.help.add_command(label="Contact")
         self.menu_bar.add_cascade(label="General", menu=self.general)
@@ -361,7 +361,19 @@ class CANGui():
         self.root.geometry("750x1200")
 
     def horizontal_view(self):
-        pass
+        self.can_frame1.grid(row=0, column=0, sticky="nsew")
+        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
+        self.can_frame3.grid(row=2, column=0, sticky="nsew")
+        self.can_frame4.grid(row=3, column=0, sticky="nsew")
+        self.empty_can_frame1.grid(row=1, column=1)
+        self.can_frame5.grid(row=2, column=1, sticky="nsew")
+        self.can_frame6.grid(row=3, column=1, sticky="nsew")
+        self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
+        self.can_frame7_2.grid(row=0, column=1)
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
+        self.que_listbox.configure(width=85, height=15)
+        self.can_bus_listbox.configure(width=85, height=15)
+        self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
 
     def que_loop(self):
         while self.program_running:
