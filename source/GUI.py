@@ -97,9 +97,6 @@ class CANGui():
         self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
-        self.can_frame1_2 = Frame(self.root)
-        self.can_frame1_2.grid(row=0, column=1, padx=20)
-
         self.can_frame2 = Frame(self.root)
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
 
@@ -156,17 +153,17 @@ class CANGui():
         self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
-        self.status_label = Label(self.can_frame1_2, text="STATUS")
-        self.status_label.grid(row=0, column=0, padx=(600,0), pady=(20,0))
+        self.status_label = Label(self.can_frame1, text="STATUS")
+        self.status_label.grid(row=0, column=0, pady=(20,0))
 
-        self.default_status_label = Label(self.can_frame1_2, text="DOWN", fg='red')
+        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.grid(row=0, column=1, pady=(20,0))
         
-        self.up_down_button = Button(self.can_frame1_2, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=1, column=1, sticky='w')
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
+        self.up_down_button.grid(row=1, column=1)
 
-        self.dev_button = Button(self.can_frame1_2, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=2, column=1, sticky='w')
+        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
+        self.dev_button.grid(row=2, column=1)
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -209,7 +206,7 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 70, height= 10,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 70, height= 15,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
@@ -242,7 +239,7 @@ class CANGui():
         self.can_bus_listbox_label.grid(row=0, column=0, sticky='w',padx=20)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 70, selectmode =EXTENDED)
+        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 70, height=15, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=20)
 
         # frame 6
