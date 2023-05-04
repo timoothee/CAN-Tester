@@ -31,7 +31,7 @@ class CANGui():
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
         self.help.add_command(label="Welcome", command = self.welcome_user)
-        self.help.add_command(label="Contact")
+        self.help.add_command(label="Contact", command = self.contact_msg)
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
@@ -346,6 +346,9 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def contact_msg(self):
+        messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
+
     def welcome_user(self):
         self.case = 0
         self.welcome_root = Toplevel(self.root)
@@ -354,7 +357,6 @@ class CANGui():
         self.welcome_label.grid(row=0,column=0)
         self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
         self.next_button.grid(row=1, column=0, sticky='nw')
-
         self.welcome_root.mainloop()
 
     def case_scenario(self):
