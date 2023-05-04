@@ -349,25 +349,54 @@ class CANGui():
     def welcome_user(self):
         self.case = 0
         self.welcome_root = Toplevel(self.root)
-        self.welcome_root.geometry("400x400")
+        self.welcome_root.geometry("700x400")
         self.welcome_label = Label(self.welcome_root, text="Welcome")
         self.welcome_label.grid(row=0,column=0)
         self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
-        self.next_button.grid(row=1, column=0, sticky='se')
+        self.next_button.grid(row=1, column=0, sticky='nw')
 
         self.welcome_root.mainloop()
 
     def case_scenario(self):
+        print(self.case)
         self.case += 1
         if self.case == 1:
             self.welcome_label.destroy()
-            self.image = PhotoImage(file="../images/Welcome_user_photos/module_prf.png")
+            self.image = PhotoImage(file="../images/welcome/one.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("500x300")
         if self.case == 2:
-            print("pass")
-                
-        
+            self.image = PhotoImage(file="../images/welcome/two.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 3:
+            self.image = PhotoImage(file="../images/welcome/three.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 4:
+            self.image = PhotoImage(file="../images/welcome/four.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 5:
+            self.image = PhotoImage(file="../images/welcome/five.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x520")
+        if self.case == 6:
+            self.image = PhotoImage(file="../images/welcome/six.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x550")
+        if self.case == 7:
+            self.image = PhotoImage(file="../images/welcome/seven.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x530")
+
 
     def vertical_view(self):
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
