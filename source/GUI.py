@@ -24,6 +24,18 @@ class CANGui():
         #self.root.geometry("1350x800")
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
+        self.menu_bar = Menu(self.root, bg="grey")
+        self.general = Menu(self.menu_bar, tearoff = 0)
+        self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
+        self.help = Menu(self.menu_bar, tearoff = 0)
+        self.view.add_command(label="Vertical", command=self.vertical_view)
+        self.view.add_command(label="Horizontal", command = self.horizontal_view)
+        self.help.add_command(label="Welcome", command = self.welcome_user)
+        self.help.add_command(label="Contact", command = self.contact_msg)
+        self.menu_bar.add_cascade(label="General", menu=self.general)
+        self.menu_bar.add_cascade(label="View", menu=self.view)
+        self.menu_bar.add_cascade(label="Help", menu=self.help)
+        self.root.config(menu=self.menu_bar)
         self.brs_box = IntVar()
         self.ext_box = IntVar()
         self.id_text = StringVar()
@@ -155,7 +167,7 @@ class CANGui():
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(150,0) , sticky='e')
+        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(300,0) , sticky='e')
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.grid(row=0, column=4, pady=(20,0), sticky='e')
@@ -200,7 +212,7 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=(120,0))
+        self.add_to_q.grid(row = 1, column=6, padx=(280,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
@@ -230,7 +242,7 @@ class CANGui():
         self.send_button.grid(row = 0, column=7, sticky='e')
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
-        self.loop_checkbox_label.grid(row = 0, column=5, sticky='e', padx=(100,0))
+        self.loop_checkbox_label.grid(row = 0, column=5, sticky='e', padx=(277,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6, sticky='e')
@@ -260,16 +272,16 @@ class CANGui():
 
         # frame 7_2
         self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
-        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(120,0), pady=(10,0))
+        self.loop_section_label.grid(row=0, column=0, sticky='e', padx=(270,0), pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
 
         # frame 8
         self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
-        self.delay_label.grid(row=0, column=0, padx=(120,0))
+        self.delay_label.grid(row=0, column=0, padx=(300,0))
 
         self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
         self.delay_entry.config(width=6)
-        self.delay_entry.grid(row=1, column=0, padx=(120,0))
+        self.delay_entry.grid(row=1, column=0, padx=(300,0))
 
         self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
         self.loop_msg_label.grid(row=0, column=1)
@@ -279,7 +291,7 @@ class CANGui():
         self.loop_messages_entry.grid(row=1, column=1)
 
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
-        self.loop_start_button.grid(row=2, column=0, padx=(120,0))
+        self.loop_start_button.grid(row=2, column=0, padx=(300,0))
 
     def build2(self):
 
@@ -333,6 +345,103 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def contact_msg(self):
+        messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
+
+    def welcome_user(self):
+        self.case = 0
+        self.welcome_root = Toplevel(self.root)
+        self.welcome_root.geometry("700x400")
+        self.welcome_label = Label(self.welcome_root, text="Welcome")
+        self.welcome_label.grid(row=0,column=0)
+        self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
+        self.next_button.grid(row=1, column=0, sticky='nw')
+        self.welcome_root.mainloop()
+
+    def case_scenario(self):
+        print(self.case)
+        self.case += 1
+        if self.case == 1:
+            self.welcome_label.destroy()
+            self.image = PhotoImage(file="../images/welcome/one.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("500x300")
+        if self.case == 2:
+            self.image = PhotoImage(file="../images/welcome/two.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 3:
+            self.image = PhotoImage(file="../images/welcome/three.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 4:
+            self.image = PhotoImage(file="../images/welcome/four.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("600x450")
+        if self.case == 5:
+            self.image = PhotoImage(file="../images/welcome/five.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x520")
+        if self.case == 6:
+            self.image = PhotoImage(file="../images/welcome/six.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x550")
+        if self.case == 7:
+            self.image = PhotoImage(file="../images/welcome/seven.png")
+            self.label1 = Label(self.welcome_root, image= self.image)
+            self.label1.grid(row=0, column=0)
+            self.welcome_root.geometry("800x530")
+
+
+    def vertical_view(self):
+        self.can_frame1.grid(row=0, column=0, sticky="nsew")
+        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
+        self.can_frame3.grid(row=2, column=0, sticky="nsew")
+        self.can_frame4.grid(row=3, column=0, sticky="nsew")
+        self.can_frame5.grid(row=4, column=0, sticky="nsew")
+        self.can_frame6.grid(row=5, column=0, sticky="nsew")
+        self.can_frame7.grid(row=6, column=0, sticky="nsew", pady=(30))
+        self.can_frame7_2.grid(row=0, column=1)
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
+        self.que_listbox.configure(width=75, height=10)
+        self.can_bus_listbox.configure(width=75, height=10)
+        self.root.geometry("750x1200")
+        self.status_label.grid(padx=(250,0))
+        self.add_to_q.grid(padx=(190,0))
+        self.loop_checkbox_label.grid(padx=(187,0))
+        self.loop_section_label.grid(padx=(170,0))
+        self.delay_label.grid(padx=(200,0))
+        self.delay_entry.grid(padx=(200,0))
+        self.loop_start_button.grid(padx=(200,0))
+
+    def horizontal_view(self):
+        self.can_frame1.grid(row=0, column=0, sticky="nsew")
+        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
+        self.can_frame3.grid(row=2, column=0, sticky="nsew")
+        self.can_frame4.grid(row=3, column=0, sticky="nsew")
+        self.empty_can_frame1.grid(row=1, column=1)
+        self.can_frame5.grid(row=2, column=1, sticky="nsew")
+        self.can_frame6.grid(row=3, column=1, sticky="nsew")
+        self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
+        self.can_frame7_2.grid(row=0, column=1)
+        self.can_frame8.grid(row=1, column=1, sticky="nw")
+        self.que_listbox.configure(width=85, height=15)
+        self.can_bus_listbox.configure(width=85, height=15)
+        self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
+        self.status_label.grid(padx=(300,0))
+        self.add_to_q.grid(padx=(280,0))
+        self.loop_checkbox_label.grid(padx=(277,0))
+        self.loop_section_label.grid(padx=(270,0))
+        self.delay_label.grid(padx=(300,0))
+        self.delay_entry.grid(padx=(300,0))
+        self.loop_start_button.grid(padx=(300,0))
 
     def que_loop(self):
         while self.program_running:
