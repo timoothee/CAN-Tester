@@ -31,6 +31,8 @@ class CANGui():
         self.help = Menu(self.menu_bar, tearoff = 0)
 
         self.general.add_command(label="About CANrasp")
+        self.general.add_command(label="Check for Updates...")
+        self.general.add_separator()
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
         self.general.add_separator()
