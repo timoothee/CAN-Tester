@@ -15,6 +15,7 @@ import threading
 from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
+import subprocess
 class CANGui():
     def __init__(self, gui_revision: str):
         #self.splash()
@@ -28,13 +29,19 @@ class CANGui():
         self.general = Menu(self.menu_bar, tearoff = 0)
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
+
+        self.cpu_sensor = Menu(self.general, tearoff=0)
+        self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
+
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
         self.help.add_command(label="Welcome", command = self.welcome_user)
         self.help.add_command(label="Contact", command = self.contact_msg)
+
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
+
         self.root.config(menu=self.menu_bar)
         self.brs_box = IntVar()
         self.ext_box = IntVar()
@@ -102,7 +109,9 @@ class CANGui():
         t2.start()
         t3 = threading.Thread(target=self.que_loop)
         t3.start()
-    
+        t4 = threading.Thread(target=self.sensor_temp)
+        t4.start()
+
 
 
     def build(self):
@@ -345,6 +354,14 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def sensor_temp(self):
+        self.cpu_sensor.add_command(label="CPU")
+        while self.program_running:
+            output = subprocess.check_output(['sensors'])
+            cpu_temp = "CPU "+output.decode().split('\n')[2].split()[1]
+            self.cpu_sensor.entryconfig(0,label=cpu_temp)
+            time.sleep(0.5)
 
     def contact_msg(self):
         messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
