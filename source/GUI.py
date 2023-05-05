@@ -38,7 +38,7 @@ class CANGui():
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
         self.general.add_separator()
-        self.general.add_command(label="Quit")
+        self.general.add_command(label="Quit", command=self.root.destroy)
 
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
