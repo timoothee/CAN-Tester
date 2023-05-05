@@ -30,8 +30,11 @@ class CANGui():
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
 
+        self.general.add_command(label="About CANrasp")
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
+        self.general.add_separator()
+        self.general.add_command(label="Quit")
 
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
