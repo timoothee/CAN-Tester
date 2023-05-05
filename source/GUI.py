@@ -16,6 +16,8 @@ from tkinter.filedialog import asksaveasfile
 import random
 from PIL import Image, ImageTk
 import subprocess
+import webbrowser
+
 class CANGui():
     def __init__(self, gui_revision: str):
         #self.splash()
@@ -31,7 +33,7 @@ class CANGui():
         self.help = Menu(self.menu_bar, tearoff = 0)
 
         self.general.add_command(label="About CANrasp")
-        self.general.add_command(label="Check for Updates...")
+        self.general.add_command(label="Check for Updates...", command=self.open_url)
         self.general.add_separator()
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
@@ -359,6 +361,9 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
+
+    def open_url(self):
+        webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
     def sensor_temp(self):
         self.cpu_sensor.add_command(label="CPU")
