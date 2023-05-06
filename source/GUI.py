@@ -32,8 +32,8 @@ class CANGui():
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
 
-        self.general.add_command(label="About CANrasp")
-        self.general.add_command(label="Check for Updates...", command=self.open_url)
+        self.general.add_command(label="About CANrasp", command=self.open_git_url)
+        self.general.add_command(label="Check for Updates...", command=self.open_release_url)
         self.general.add_separator()
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
@@ -362,7 +362,10 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
-    def open_url(self):
+    def open_git_url(self):
+        webbrowser.open("https://github.com/timoothee/CAN-Tester")
+
+    def open_release_url(self):
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
     def sensor_temp(self):
