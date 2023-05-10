@@ -481,6 +481,7 @@ class CANGui():
                 time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
+            self.module_sender.default_led()
 
     def splash(self):
         root = Tk()
@@ -558,6 +559,7 @@ class CANGui():
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.loop_active = False
+            self.module_sender.default_led()
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
