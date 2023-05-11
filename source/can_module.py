@@ -51,8 +51,8 @@ class CanModule():
         print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     
     def can_dump(self):
-        os.popen(f"cat can.log")
-        os.popen(f"candump {self.module_name} > ../logs/can.log", "w", 128)
+        os.popen(f"cat /home/raspberry/CAN-Tester/logs/can.log")
+        os.popen(f"candump {self.module_name} > /home/raspberry/CAN-Tester/logs/can.log", "w", 128)
         print("---")
 
     def interface_down(self):
