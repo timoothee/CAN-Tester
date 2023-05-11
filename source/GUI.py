@@ -96,9 +96,9 @@ class CANGui():
         self.chg_var1 = 0
         self.list_read = []
         self.list_mem = []
-        with open('../logs/can.log', 'w') as f:
+        with open('/home/raspberry/CAN-Tester/logs/can.log', 'w') as f:
                 pass
-        with open('../logs/status.txt', 'w') as f:
+        with open('/home/raspberry/CAN-Tester/logs/status.txt', 'w') as f:
                 pass
 
         self.dmessage = StringVar()
@@ -369,6 +369,7 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
     def sensor_temp(self):
+        time.sleep(10)
         self.cpu_sensor.add_command(label="CPU")
         output = subprocess.check_output(['sensors'])
         if output.decode().split('\n')[2].split()[1] == 'N/A':
@@ -479,6 +480,7 @@ class CANGui():
         self.loop_start_button.grid(padx=(300,0))
 
     def que_loop(self):
+        time.sleep(10)
         while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
                 for item in list(self.que_listbox.get(0, 'end')):
@@ -674,7 +676,7 @@ class CANGui():
 
     def threadfunc(self):
         while True:
-            with open('../logs/can.log', 'r') as f:
+            with open('/home/raspberry/CAN-Tester/logs/can.log', 'r') as f:
                 self.list_read = f.readlines()
             if len(self.list_read) != len(self.list_mem):
                 for i in range(len(self.list_mem) ,len(self.list_read)):
@@ -873,12 +875,15 @@ class CANGui():
         first_one = False
         self.debugging(".. saving data to file", 0)
         if mode == "input":
+            self.debugging("input mode", 0)
             if self.que_listbox.size() != 0:
                 files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
-                file = asksaveasfile(filetypes = files, defaultextension = files)
+                file = asksaveasfile(filetypes = files, defaultextension = files, mode = 'w')
+                self.debugging(".. file asked", 0)
                 if not file:
                     pass
                 else:
+                    self.debugging("file selected", 0)
                     lista = list(self.que_listbox.get(0, END))
                     for item in lista:
                         item = item[10:]
@@ -894,6 +899,7 @@ class CANGui():
             
 
         else:
+            self.debugging("output mode", 0)
             if self.can_bus_listbox.size() != 0:
                 files = [('All Files', '*.*'), ('Python Files', '*.py'), ('Text Document', '*.txt')]
                 filename = asksaveasfile(filetypes = files, defaultextension = files)
