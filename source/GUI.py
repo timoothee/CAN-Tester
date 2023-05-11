@@ -370,9 +370,14 @@ class CANGui():
 
     def sensor_temp(self):
         self.cpu_sensor.add_command(label="CPU")
-        while self.program_running:
+        output = subprocess.check_output(['sensors'])
+        if output.decode().split('\n')[2].split()[1] == 'N/A':
+            x = 6
+        else:
+            x = 2
+        while True:
             output = subprocess.check_output(['sensors'])
-            cpu_temp = "CPU "+output.decode().split('\n')[2].split()[1]
+            cpu_temp = "CPU "+output.decode().split('\n')[x].split()[1]
             self.cpu_sensor.entryconfig(0,label=cpu_temp)
             time.sleep(0.5)
 
