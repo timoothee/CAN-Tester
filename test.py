@@ -12,6 +12,6 @@ def setup(gpio):
     GPIO.output(gpio,GPIO.LOW)
 
 setup(gpio)
+
 GPIO.output(gpio,GPIO.HIGH)
-time.sleep(1)
 GPIO.output(gpio,GPIO.LOW)

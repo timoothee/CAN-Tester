@@ -370,9 +370,14 @@ class CANGui():
 
     def sensor_temp(self):
         self.cpu_sensor.add_command(label="CPU")
-        while self.program_running:
+        output = subprocess.check_output(['sensors'])
+        if output.decode().split('\n')[2].split()[1] == 'N/A':
+            x = 6
+        else:
+            x = 2
+        while True:
             output = subprocess.check_output(['sensors'])
-            cpu_temp = "CPU "+output.decode().split('\n')[2].split()[1]
+            cpu_temp = "CPU "+output.decode().split('\n')[x].split()[1]
             self.cpu_sensor.entryconfig(0,label=cpu_temp)
             time.sleep(0.5)
 
@@ -481,6 +486,7 @@ class CANGui():
                 time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
+            self.module_sender.default_led()
 
     def splash(self):
         root = Tk()
@@ -558,6 +564,7 @@ class CANGui():
                     self.error_listbox.insert(END,"Error: CAN is DOWN")
                     self.error_listbox.itemconfig(END, {'fg': 'red'})
                     self.loop_active = False
+            self.module_sender.default_led()
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
