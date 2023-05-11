@@ -110,13 +110,13 @@ class CANGui():
         self.messages_loop_var = IntVar()
         self.loop_active = False
         self.active_loop_var = False
-        t1 = threading.Thread(target=self.threadfunc)
+        t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
-        t2 = threading.Thread(target=self.loop_section_button)
+        t2 = threading.Thread(target=self.loop_section_button, daemon=True)
         t2.start()
-        t3 = threading.Thread(target=self.que_loop)
+        t3 = threading.Thread(target=self.que_loop, daemon=True)
         t3.start()
-        t4 = threading.Thread(target=self.sensor_temp)
+        t4 = threading.Thread(target=self.sensor_temp, daemon=True)
         t4.start()
 
 
@@ -479,7 +479,7 @@ class CANGui():
         self.loop_start_button.grid(padx=(300,0))
 
     def que_loop(self):
-        while self.program_running:
+        while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
                 for item in list(self.que_listbox.get(0, 'end')):
                     self.module_sender.random_message(str(item[10:]))
@@ -539,7 +539,7 @@ class CANGui():
             self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
-        while self.program_running:
+        while True:
             if self.loop_active == True:
                 if self.default_status_label.cget("text") == "UP":
                     for i in range(self.messages_loop_var.get()):
@@ -673,7 +673,7 @@ class CANGui():
             listbox.delete(0, END)
 
     def threadfunc(self):
-        while self.program_running:
+        while True:
             with open('../logs/can.log', 'r') as f:
                 self.list_read = f.readlines()
             if len(self.list_read) != len(self.list_mem):
