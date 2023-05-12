@@ -396,7 +396,6 @@ class CANGui():
         self.welcome_root.mainloop()
 
     def case_scenario(self):
-        print(self.case)
         self.case += 1
         if self.case == 1:
             self.welcome_label.destroy()
