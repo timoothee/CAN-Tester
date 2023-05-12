@@ -1,4 +1,6 @@
 import os
+import time
+import RPi.GPIO as GPIO
 
 class CanModule():
     def __init__(self, txquelen = 1000, baudrate = 1000000, dbaudrate = 5000000):
@@ -8,6 +10,12 @@ class CanModule():
         self.frame_que = []
         self.module_name = ""
         self.can_status_var = False
+        gpio = 15
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False) 
+        GPIO.setup(gpio,GPIO.OUT)
+        GPIO.output(gpio,GPIO.LOW)
+
 
     def set_can_status(self, status):
         self.can_status_var = status
@@ -43,8 +51,8 @@ class CanModule():
         print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     
     def can_dump(self):
-        os.popen(f"cat can.log")
-        os.popen(f"candump {self.module_name} > can.log", "w", 128)
+        os.popen(f"cat /home/raspberry/CAN-Tester/logs/can.log")
+        os.popen(f"candump {self.module_name} > /home/raspberry/CAN-Tester/logs/can.log", "w", 128)
         print("---")
 
     def interface_down(self):
@@ -54,25 +62,35 @@ class CanModule():
         for i in range(len(id_list)):
             print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
             if payload_list[i] == "R":
+                GPIO.output(15,GPIO.HIGH)
                 os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
+                GPIO.output(15,GPIO.LOW)
             else:
+                GPIO.output(15,GPIO.HIGH)
                 os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
                 print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
+                GPIO.output(15,GPIO.LOW)
+        
+    def default_led(self):
+        pass
+        #GPIO.output(15,GPIO.HIGH)
 
     def dump_log(self, can_receiver):
-        os.popen(f"candump {can_receiver} > CAN-Tester/can.log")
+        os.popen(f"candump {can_receiver} > ../logs/can.log")
 
     def random_message(self, message):
+        GPIO.output(15,GPIO.HIGH)
         os.popen(f"cansend {self.module_name} {message}")
+        GPIO.output(15,GPIO.LOW)
 
-    def defaul_canup(self):
+    def default_canup(self):
         os.popen(f"sudo ip link set can0 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
         os.popen(f"sudo ip link set can1 up type can bitrate 1000000  dbitrate 5000000 restart-ms 1000 berr-reporting on fd on", 'w')
         os.popen(f"sudo ifconfig can0 txqueuelen 65536", 'w')
         os.popen(f"sudo ifconfig can1 txqueuelen 65536", 'w')
 
     def default_candump(self):
-        os.popen(f"candump can1 > can.log", 'w')
+        os.popen(f"candump can1 > ../logs/can.log", 'w')
 
     def default_message_func(self):
         os.popen(f"cansend can0 123#1223", 'w')
