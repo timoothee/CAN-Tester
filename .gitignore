@@ -129,10 +129,9 @@ dmypy.json
 .pyre/
 
 # my ignore
-test.*
 *.txt
 *.log
-test/
+test.py
 
 # dont't ignore
 !License.txt
