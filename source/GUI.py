@@ -20,7 +20,7 @@ import webbrowser
 
 class CANGui():
     def __init__(self, gui_revision: str):
-        #self.splash()
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
@@ -619,6 +619,8 @@ class CANGui():
         self.module_sender.default_candump()
 
     def on_closing(self):
+        self.module_sender.interface_down()
+        self.module_receiver.interface_down()
         self.program_running = False
         self.root.destroy() 
 
@@ -1009,7 +1011,7 @@ class SplashScreen:
     def __init__(self, parent):
         self.parent = parent
 
-        self.logo_image = Image.open(r"../images/photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_image = Image.open(r"/home/raspberry/CAN-Tester/images/photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
         self.parent.overrideredirect(True)
