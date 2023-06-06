@@ -20,7 +20,7 @@ import webbrowser
 
 class CANGui():
     def __init__(self, gui_revision: str):
-        self.splash()
+        #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
@@ -703,6 +703,9 @@ class CANGui():
             self.que_listbox.insert(self.our_item, self.string_max)
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
+        
+        print(self.module_sender.get_sample_point())
+
         
     def edit_button_fr4(self):
         if self.que_listbox.size() != 0:

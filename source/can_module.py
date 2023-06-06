@@ -3,12 +3,13 @@ import time
 import RPi.GPIO as GPIO
 
 class CanModule():
-    def __init__(self, txquelen = 1000, baudrate = 1000000, dbaudrate = 5000000):
+    def __init__(self, txquelen = 1000, baudrate = 1000000, dbaudrate = 5000000, sample_point = 0.750):
         self.txquelen = txquelen
         self.baudrate = ""
         self.dbaudrate = ""
         self.frame_que = []
         self.module_name = ""
+        self.sample_point = sample_point
         self.can_status_var = False
         gpio = 15
         GPIO.setmode(GPIO.BCM)
@@ -43,6 +44,20 @@ class CanModule():
 
     def get_dbaudrate(self):
         return self.dbaudrate
+    
+    #sample point
+    def set_sample_point(self, sample_point):
+        self.sample_point = sample_point
+    
+    def get_sample_point(self):
+        response = os.popen(f"ip -d -s link show {self.module_name}",  'r', 128)
+        response = response.read()
+        print("Hello")
+        print(type(response))
+        for line in response.split('\n'):
+            if 'sample-point' in line:
+                return line.split()[-1]
+
     
     def interface_up(self):
         os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w', 128)
