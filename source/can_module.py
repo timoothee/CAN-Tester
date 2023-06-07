@@ -10,14 +10,20 @@ class CanModule():
         self.frame_que = []
         self.module_name = ""
         self.sample_point = sample_point
-        self.dsample_point = dsample_point
+        self.dsample_point = ''
         self.can_status_var = False
         gpio = 15
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) 
         GPIO.setup(gpio,GPIO.OUT)
         GPIO.output(gpio,GPIO.LOW)
+        self.rasp_path = '/home/pi/CAN-Tester/logs/'
 
+    def set_rasp_path(self, path):
+        self.rasp_path = path
+
+    def get_rasp_path(self):
+        return self.rasp_path
 
     def set_can_status(self, status):
         self.can_status_var = status
@@ -59,7 +65,11 @@ class CanModule():
 
     #dsample-point
     def set_dsample_point(self, dsample_point):
+        if dsample_point == '':
+            dsample_point = '0.750'
+        print(type(dsample_point))
         self.dsample_point = dsample_point
+        print("here", self.dsample_point)
 
     def get_dsample_point(self):
         response = os.popen(f"ip -d -s link show {self.module_name}", 'r', 128)
@@ -70,15 +80,16 @@ class CanModule():
 
     
     def interface_up(self):
-        os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on", 'w', 128)
-        print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on")
+        os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on dsample-point {self.dsample_point}", 'w', 128)
+        print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on dsample-point {self.dsample_point}")
         os.popen(f"sudo ifconfig {self.module_name} txqueuelen 65536", 'w', 128)
         print(f"sudo ifconfig {self.module_name} txqueuelen 65536")        
     
     def can_dump(self):
-        os.popen(f"cat /home/raspberry/CAN-Tester/logs/can.log")
-        os.popen(f"candump {self.module_name} > /home/raspberry/CAN-Tester/logs/can.log", "w", 128)
-        print("---")
+        print("start")
+        os.popen(f"cat {self.rasp_path}can.log")
+        os.popen(f"candump {self.module_name} > {self.rasp_path}can.log", "w", 128)
+        print("end")
 
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)

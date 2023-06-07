@@ -98,10 +98,10 @@ class CANGui():
         self.chg_var1 = 0
         self.list_read = []
         self.list_mem = []
-        #with open('/home/raspberry/CAN-Tester/logs/can.log', 'w') as f:
-                #pass
-        #with open('/home/raspberry/CAN-Tester/logs/status.txt', 'w') as f:
-                #pass
+        with open(self.module_sender.get_rasp_path()+'can.log', 'w') as f:
+                pass
+        with open(self.module_sender.get_rasp_path()+'status.txt', 'w') as f:
+                pass
 
         self.dmessage = StringVar()
         self.dev_status = False
@@ -715,7 +715,7 @@ class CANGui():
 
     def threadfunc(self):
         while True:
-            with open('/home/raspberry/CAN-Tester/logs/can.log', 'r') as f:
+            with open(self.module_sender.get_rasp_path()+'can.log', 'r') as f:
                 self.list_read = f.readlines()
             if len(self.list_read) != len(self.list_mem):
                 for i in range(len(self.list_mem) ,len(self.list_read)):
@@ -1001,7 +1001,8 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
-            self.module_sender.set_dsample_point(self.text_variable_sp)
+            self.module_sender.set_dsample_point(self.dtext_variable_sp.get())
+            self.module_receiver.set_dsample_point(self.dtext_variable_sp.get())
             time.sleep(1)
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
@@ -1009,7 +1010,7 @@ class CANGui():
             self.module_receiver.can_dump()
             sample_point = self.module_sender.get_dsample_point()
             try:
-                self.actual_data_dlabel.config(text=sample_point)
+                self.sample_dpoint_data.config(text=sample_point)
             except:
                 pass
         else:
