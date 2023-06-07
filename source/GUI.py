@@ -121,8 +121,6 @@ class CANGui():
         t4 = threading.Thread(target=self.sensor_temp, daemon=True)
         t4.start()
 
-
-
     def build(self):
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.can_frame1 = Frame(self.root)
@@ -130,6 +128,12 @@ class CANGui():
 
         self.can_frame1_1 = Frame(self.can_frame1)
         self.can_frame1_1.grid(row=0, column=3, sticky="nsew")
+
+        self.can_frame1_2 = Frame(self.can_frame1)
+        self.can_frame1_2.grid(row=1, column=3, sticky="nsew")
+
+        self.can_frame1_3 = Frame(self.can_frame1)
+        self.can_frame1_3.grid(row=2, column=3, sticky="nsew")
 
         self.can_frame2 = Frame(self.root)
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
@@ -188,34 +192,46 @@ class CANGui():
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
         # frame_1_1
-        
         self.sample_point_label = Label(self.can_frame1_1, text = "ID SP")
-        self.sample_point_label.grid(row=0, column=0)
-        
-        
-        self.sample_point_entry = Entry(self.can_frame1_1, textvariable = self.text_variable_sp)
-        self.sample_point_entry.config(width=4)
-        self.sample_point_entry.grid(row=1, column=0, padx=(30,0))
+        self.sample_point_label.grid(row=0, column=0, padx=(30,0), pady=(20,0))
 
         self.dsample_point_label = Label(self.can_frame1_1, text = "DATA SP")
-        self.dsample_point_label.grid(row=0, column=1, pady=(20,0))
-
-        self.dsample_point_entry = Entry(self.can_frame1_1, textvariable = self.dtext_variable_sp)
-        self.dsample_point_entry.config(width=4)
-        self.dsample_point_entry.grid(row=1, column=1)
-
+        self.dsample_point_label.grid(row=0, column=1, padx=(40,0), pady=(20,0))
+        
         self.status_label = Label(self.can_frame1_1, text="STATUS")
         self.status_label.grid(row=0, column=2, pady=(20,0), padx=(200,0))
-
-        self.default_status_label = Label(self.can_frame1_1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=1, column=2, padx=(200,0))
         
         self.up_down_button = Button(self.can_frame1_1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=3, sticky='e', padx=(10,0), pady= (10,0))
+        self.up_down_button.grid(row=0, column=3, sticky='e', padx=(5,0), pady= (10,0))
 
-        self.dev_button = Button(self.can_frame1_1, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=1, column=3, padx=(10,0))
+        # frame 1_2
+        self.sample_point_entry = Entry(self.can_frame1_2, textvariable = self.text_variable_sp)
+        self.sample_point_entry.config(width=4)
+        self.sample_point_entry.grid(row=0, column=0, padx=(25,0))
+
+        self.dsample_point_entry = Entry(self.can_frame1_2, textvariable = self.dtext_variable_sp)
+        self.dsample_point_entry.config(width=4)
+        self.dsample_point_entry.grid(row=0, column=1, padx=(35,0))
+
+        self.default_status_label = Label(self.can_frame1_2, text="DOWN", fg='red')
+        self.default_status_label.grid(row=0, column=2, padx=(210,0))
         
+        self.dev_button = Button(self.can_frame1_2, text= "<  >", command=self.developer_settings)
+        self.dev_button.grid(row=0, column=3, padx=(10,0))
+
+        # frame 1_3
+        self.actual_data_label = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10)    )
+        self.actual_data_label.grid(row=0, column=0, padx=(15,0))
+
+        self.sample_point_data = Label(self.can_frame1_3, text = "--")
+        self.sample_point_data.grid(row=0, column=1)
+
+        self.actual_data_dlabel = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10) )
+        self.actual_data_dlabel.grid(row=0, column=2, padx=(15,0))
+
+        self.sample_dpoint_data = Label(self.can_frame1_3, text = "--")
+        self.sample_dpoint_data.grid(row=0, column=3)
+
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
@@ -976,7 +992,7 @@ class CANGui():
     
     def backend_module(self):
         if self.module_sender.get_can_status() == True:
-            self.debugging(" User wants to set CAN UP", 0)
+            self.debugging("User wants to set CAN UP", 0)
             self.module_sender.set_module_name(self.can_sender_var.get())
             self.module_receiver.set_module_name(self.can_receiver_var.get())
             self.module_sender.set_baudrate(self.baudrate_dict[self.drop_down_id_baudrate_var.get()])
@@ -985,11 +1001,17 @@ class CANGui():
             self.module_receiver.set_dbaudrate(self.baudrate_dict[self.drop_down_data_baudrate_var.get()])
             self.module_sender.interface_down()
             self.module_receiver.interface_down()
+            self.module_sender.set_dsample_point(self.text_variable_sp)
             time.sleep(1)
             self.module_sender.interface_up()
             self.module_receiver.interface_up()
             time.sleep(1)
             self.module_receiver.can_dump()
+            sample_point = self.module_sender.get_dsample_point()
+            try:
+                self.actual_data_dlabel.config(text=sample_point)
+            except:
+                pass
         else:
             self.debugging(" User wants to set CAN DOWN", 0)
             self.module_sender.interface_down()
@@ -1075,5 +1097,4 @@ class SplashScreen:
     def destroy(self):
         self.parent.overrideredirect(False)
         self.parent.destroy()
-
 
