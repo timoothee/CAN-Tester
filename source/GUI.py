@@ -98,10 +98,10 @@ class CANGui():
         self.chg_var1 = 0
         self.list_read = []
         self.list_mem = []
-        with open('/home/raspberry/CAN-Tester/logs/can.log', 'w') as f:
-                pass
-        with open('/home/raspberry/CAN-Tester/logs/status.txt', 'w') as f:
-                pass
+        #with open('/home/raspberry/CAN-Tester/logs/can.log', 'w') as f:
+                #pass
+        #with open('/home/raspberry/CAN-Tester/logs/status.txt', 'w') as f:
+                #pass
 
         self.dmessage = StringVar()
         self.dev_status = False
@@ -127,6 +127,9 @@ class CANGui():
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.can_frame1 = Frame(self.root)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
+
+        self.can_frame1_1 = Frame(self.can_frame1)
+        self.can_frame1_1.grid(row=0, column=3, sticky="nsew")
 
         self.can_frame2 = Frame(self.root)
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
@@ -184,32 +187,35 @@ class CANGui():
         self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
-        self.sample_point_label = Label(self.can_frame1, text = "ID SP")
-        self.sample_point_label.grid(row=0, column=3, pady=(20,0), padx=(30,0))
-
-        self.sample_point_entry = Entry(self.can_frame1, textvariable = self.text_variable_sp)
-        self.sample_point_entry.config(width=4)
-        self.sample_point_entry.grid(row=1, column=3, padx=(30,0))
-
-        self.dsample_point_label = Label(self.can_frame1, text = "DATA SP")
-        self.dsample_point_label.grid(row=0, column=4, pady=(20,0))
-
-        self.dsample_point_entry = Entry(self.can_frame1, textvariable = self.dtext_variable_sp)
-        self.dsample_point_entry.config(width=4)
-        self.dsample_point_entry.grid(row=1, column=4)
-
-        self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=5, pady=(20,0), padx=(200,0))
-
-        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=1, column=5, padx=(200,0))
+        # frame_1_1
         
-        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=6, sticky='e', padx=(10,0), pady= (10,0))
+        self.sample_point_label = Label(self.can_frame1_1, text = "ID SP")
+        self.sample_point_label.grid(row=0, column=0)
+        
+        
+        self.sample_point_entry = Entry(self.can_frame1_1, textvariable = self.text_variable_sp)
+        self.sample_point_entry.config(width=4)
+        self.sample_point_entry.grid(row=1, column=0, padx=(30,0))
 
-        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=1, column=6, padx=(10,0))
+        self.dsample_point_label = Label(self.can_frame1_1, text = "DATA SP")
+        self.dsample_point_label.grid(row=0, column=1, pady=(20,0))
 
+        self.dsample_point_entry = Entry(self.can_frame1_1, textvariable = self.dtext_variable_sp)
+        self.dsample_point_entry.config(width=4)
+        self.dsample_point_entry.grid(row=1, column=1)
+
+        self.status_label = Label(self.can_frame1_1, text="STATUS")
+        self.status_label.grid(row=0, column=2, pady=(20,0), padx=(200,0))
+
+        self.default_status_label = Label(self.can_frame1_1, text="DOWN", fg='red')
+        self.default_status_label.grid(row=1, column=2, padx=(200,0))
+        
+        self.up_down_button = Button(self.can_frame1_1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
+        self.up_down_button.grid(row=0, column=3, sticky='e', padx=(10,0), pady= (10,0))
+
+        self.dev_button = Button(self.can_frame1_1, text= "<  >", command=self.developer_settings)
+        self.dev_button.grid(row=1, column=3, padx=(10,0))
+        
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
