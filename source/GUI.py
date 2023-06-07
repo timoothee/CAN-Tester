@@ -69,6 +69,8 @@ class CANGui():
         self.drop_down_data_baudrate_var = StringVar()
         self.drop_down_data_baudrate_var.set("Select")
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
+        self.text_variable_sp = StringVar()
+        self.dtext_variable_sp = StringVar()
         self.position = 0
         self.can_send_module_optionmenu = None
         self.can_receive_module_optionmenu = None
@@ -182,17 +184,31 @@ class CANGui():
         self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2)
 
+        self.sample_point_label = Label(self.can_frame1, text = "ID SP")
+        self.sample_point_label.grid(row=0, column=3, pady=(20,0), padx=(30,0))
+
+        self.sample_point_entry = Entry(self.can_frame1, textvariable = self.text_variable_sp)
+        self.sample_point_entry.config(width=4)
+        self.sample_point_entry.grid(row=1, column=3, padx=(30,0))
+
+        self.dsample_point_label = Label(self.can_frame1, text = "DATA SP")
+        self.dsample_point_label.grid(row=0, column=4, pady=(20,0))
+
+        self.dsample_point_entry = Entry(self.can_frame1, textvariable = self.dtext_variable_sp)
+        self.dsample_point_entry.config(width=4)
+        self.dsample_point_entry.grid(row=1, column=4)
+
         self.status_label = Label(self.can_frame1, text="STATUS")
-        self.status_label.grid(row=0, column=3, pady=(20,0), padx=(300,0) , sticky='e')
+        self.status_label.grid(row=0, column=5, pady=(20,0), padx=(200,0))
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
-        self.default_status_label.grid(row=0, column=4, pady=(20,0), sticky='e')
+        self.default_status_label.grid(row=1, column=5, padx=(200,0))
         
         self.up_down_button = Button(self.can_frame1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=5, sticky='e', padx=(10,0), pady= (10,0))
+        self.up_down_button.grid(row=0, column=6, sticky='e', padx=(10,0), pady= (10,0))
 
         self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings)
-        self.dev_button.grid(row=1, column=5, sticky='e')
+        self.dev_button.grid(row=1, column=6, padx=(10,0))
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -619,6 +635,8 @@ class CANGui():
         self.module_sender.default_candump()
 
     def on_closing(self):
+        self.module_sender.interface_down()
+        self.module_receiver.interface_down()
         self.program_running = False
         self.root.destroy() 
 
@@ -701,6 +719,9 @@ class CANGui():
             self.que_listbox.insert(self.our_item, self.string_max)
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
+        
+        print(self.module_sender.get_sample_point())
+
         
     def edit_button_fr4(self):
         if self.que_listbox.size() != 0:
@@ -1009,7 +1030,7 @@ class SplashScreen:
     def __init__(self, parent):
         self.parent = parent
 
-        self.logo_image = Image.open(r"../images/photo.png").resize((500, 250), Image.ANTIALIAS)
+        self.logo_image = Image.open(r"/home/raspberry/CAN-Tester/images/photo.png").resize((500, 250), Image.ANTIALIAS)
         self.logo_animation = ImageTk.PhotoImage(self.logo_image)
 
         self.parent.overrideredirect(True)
