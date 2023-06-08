@@ -54,6 +54,7 @@ class CANGui():
         self.ext_box = IntVar()
         self.id_text = StringVar()
         self.RTR_box = IntVar()
+        self.FD_box = IntVar()
         self.que_loop_var = IntVar()
         self.payload_entry = StringVar()
         self.payload_entry.set("")
@@ -238,6 +239,9 @@ class CANGui():
 
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
+
+        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
+        self.FD_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="BRS")
         self.brs_Label.grid(row= 0, column =1)
@@ -909,6 +913,9 @@ class CANGui():
             self.debugging(".. getting frame data", 0)
             if self.RTR_box.get() == 1:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
+                pass
+            if self.FD_box.get() == 1:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
             else:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
                 self.position += 1
