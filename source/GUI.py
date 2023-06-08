@@ -200,7 +200,7 @@ class CANGui():
         self.dsample_point_label.grid(row=0, column=1, padx=(40,0), pady=(20,0))
         
         self.status_label = Label(self.can_frame1_1, text="STATUS")
-        self.status_label.grid(row=0, column=2, pady=(20,0), padx=(200,0))
+        self.status_label.grid(row=0, column=2, pady=(20,0), padx=(120,0))
         
         self.up_down_button = Button(self.can_frame1_1, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=0, column=3, sticky='e', padx=(5,0), pady= (10,0))
@@ -215,7 +215,7 @@ class CANGui():
         self.dsample_point_entry.grid(row=0, column=1, padx=(35,0))
 
         self.default_status_label = Label(self.can_frame1_2, text="DOWN", fg='red')
-        self.default_status_label.grid(row=0, column=2, padx=(210,0))
+        self.default_status_label.grid(row=0, column=2, padx=(130,0))
         
         self.dev_button = Button(self.can_frame1_2, text= "<  >", command=self.developer_settings)
         self.dev_button.grid(row=0, column=3, padx=(10,0))
@@ -232,6 +232,8 @@ class CANGui():
 
         self.sample_dpoint_data = Label(self.can_frame1_3, text = "--")
         self.sample_dpoint_data.grid(row=0, column=3)
+
+        
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -926,9 +928,10 @@ class CANGui():
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
                 pass
             if self.FD_box.get() == 1:
-                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.brs_box.get()) + str(self.payload_entry.get())
-            else:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.position += 1
+            else:
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.payload_entry.get())
                 self.position += 1
 
     def save(self, mode):
@@ -1041,29 +1044,42 @@ class CANGui():
         self.frame.id_list.clear()
         self.frame.brs_list.clear()
         self.frame.payload_list.clear()
+        self.frame.fd_list.clear()
         for message in self.backend_list:
             rtr_mode = "disabled"
+            fd_mode = "active"
             index = 0
             for element in message:
                 if element == "#":
                     if message[index+1] == "R":
                         rtr_mode = "active"
+                    if message[index+1] != "#":
+                        fd_mode = "disabled"
                     break
                 index += 1
-            if rtr_mode == "disabled":
+            if rtr_mode == "active":
+                self.frame.set_id(message[10:index])
+                self.frame.set_brs("")
+                self.frame.set_payload(message[index+1:])
+                self.frame.set_fd_flag("0")
+            if fd_mode == 'active':
                 self.frame.set_id(message[10:index])
                 self.frame.set_brs(message[index+2:index+3])
                 self.frame.set_payload(message[index+3:])
+                self.frame.set_fd_flag("1")
             else:
                 self.frame.set_id(message[10:index])
                 self.frame.set_brs("")
                 self.frame.set_payload(message[index+1:])
+                self.frame.set_fd_flag("0")
+            
+            
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
             self.error_listbox.delete(0, END)
             self.backend_frame()
-            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list)
+            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
             if self.que_loop_var.get() == 1:
                 self.active_loop_var = True
                     
