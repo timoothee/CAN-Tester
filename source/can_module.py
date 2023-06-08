@@ -94,15 +94,23 @@ class CanModule():
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
 
-    def send_q(self, id_list, brs_list, payload_list):
+    def send_q(self, id_list, brs_list, payload_list, fd_list):
         for i in range(len(id_list)):
             print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
             if payload_list[i] == "R":
                 GPIO.output(15,GPIO.HIGH)
                 os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
                 GPIO.output(15,GPIO.LOW)
+            if fd_list[i] == "0":
+                GPIO.output(15,GPIO.HIGH)
+                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
+                GPIO.output(15,GPIO.LOW)
             else:
                 GPIO.output(15,GPIO.HIGH)
+                print(self.module_name)
+                print(id_list[i])
+                print(brs_list[i])
+                print(payload_list[i])
                 os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
                 print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
                 GPIO.output(15,GPIO.LOW)
