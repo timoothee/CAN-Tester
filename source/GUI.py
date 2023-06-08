@@ -710,14 +710,24 @@ class CANGui():
         self.drop_down_id_baudrate.config(state='disable')
         self.data_baudrate_Label.config(state='disable')
         self.drop_down_data_baudrate.config(state='disable')
-        self.sample_point_label.config(state='disable')
-        self.dsample_point_label.config(state='disable')
         self.sample_point_entry.config(state='disable')
         self.dsample_point_entry.config(state='disable')
-        self.actual_data_label.config(state='disable')
-        self.sample_point_data.config(state='disable')
-        self.actual_data_dlabel.config(state='disable')
-        self.sample_dpoint_data.config(state='disable')
+        time.sleep(1)
+
+
+    def interface_up_enable_user(self):
+        self.can_interface_sender_label.config(state='normal')
+        self.sender_drop_down_menu.config(state='normal')
+        self.can_interface_receiver_label.config(state='normal')
+        self.receiver_drop_down_menu.config(state='normal')
+        self.id_baudrate_Label.config(state='normal')
+        self.drop_down_id_baudrate.config(state='normal')
+        self.data_baudrate_Label.config(state='normal')
+        self.drop_down_data_baudrate.config(state='normal')
+        #self.sample_point_entry.config(state='normal')  # needs functionality
+        self.dsample_point_entry.config(state='normal')
+        time.sleep(1)
+
 
     def up_down_button_command(self):
         self.debugging("-- Inside up_down_button_command function --", 0)
@@ -728,12 +738,14 @@ class CANGui():
             self.backend_module()
             self.initial_interface_state()
             self.debugging(" Status is UP", 2)
+            self.interface_up_disable_user()
         else:
             self.module_sender.set_can_status(False)
             self.default_status_label.config(fg='red',text='DOWN')
             self.up_down_button.config(fg="green", text= "UP")
             self.backend_module()
             self.debugging(" Status is DOWN", 1)
+            self.interface_up_enable_user()
         self.debugging("-- Leaving up_down_button_command function --", 0)
 
     def id_baudrate_option_changed(self, *args):
