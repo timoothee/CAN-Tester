@@ -240,7 +240,7 @@ class CANGui():
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
-        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
+        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.fd_function)
         self.FD_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="BRS")
@@ -638,6 +638,14 @@ class CANGui():
         else:
             self.payload_Entry.config(state="normal")
             self.payload_Label.config(state="normal")
+
+    def fd_function(self):
+        if self.FD_box.get() == 1:
+            self.brs_Label.config(state="active")
+            self.brs_CkBt.config(state='active')
+        else:
+            self.brs_Label.config(state="disabled")
+            self.brs_CkBt.config(state='disabled')
 
     def developer_send_func(self, event):
         os.popen(self.message_entry.get())
