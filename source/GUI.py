@@ -701,7 +701,23 @@ class CANGui():
                 self.can_bus_listbox.insert(END, line)
                 self.can_bus_listbox.see(END)
 
-                
+    def interface_up_disable_user(self):
+        self.can_interface_sender_label.config(state='disable')
+        self.sender_drop_down_menu.config(state='disable')
+        self.can_interface_receiver_label.config(state='disable')
+        self.receiver_drop_down_menu.config(state='disable')
+        self.id_baudrate_Label.config(state='disable')
+        self.drop_down_id_baudrate.config(state='disable')
+        self.data_baudrate_Label.config(state='disable')
+        self.drop_down_data_baudrate.config(state='disable')
+        self.sample_point_label.config(state='disable')
+        self.dsample_point_label.config(state='disable')
+        self.sample_point_entry.config(state='disable')
+        self.dsample_point_entry.config(state='disable')
+        self.actual_data_label.config(state='disable')
+        self.sample_point_data.config(state='disable')
+        self.actual_data_dlabel.config(state='disable')
+        self.sample_dpoint_data.config(state='disable')
 
     def up_down_button_command(self):
         self.debugging("-- Inside up_down_button_command function --", 0)
