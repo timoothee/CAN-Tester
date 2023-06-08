@@ -240,9 +240,6 @@ class CANGui():
         self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
-        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.fd_function)
-        self.FD_CkBtn.grid(row = 1, column=0, padx=(20,0))
-
         self.brs_Label = Label(self.can_frame2, text="BRS")
         self.brs_Label.grid(row= 0, column =1)
 
@@ -255,12 +252,18 @@ class CANGui():
         self.ext_flag_CkBt = Checkbutton(self.can_frame2, variable=self.ext_box)
         self.ext_flag_CkBt.grid(row=1, column=2)
 
+        self.ext_flag_Label = Label(self.can_frame2, text="FD")
+        self.ext_flag_Label.grid(row= 0, column=3)
+
+        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.FD_box, command=self.fd_function)
+        self.FD_CkBtn.grid(row = 1, column=3)
+
         self.frame_id_Label = Label(self.can_frame2, text="ID (0x)")
-        self.frame_id_Label.grid(row = 0, column=3, padx=(5,0), sticky='w')
+        self.frame_id_Label.grid(row = 0, column=4, padx=(5,0), sticky='w')
         self.default_label_color = self.frame_id_Label.cget('fg')
 
         self.frame_id_entry = Entry(self.can_frame2, textvariable=self.id_text, width= 10)
-        self.frame_id_entry.grid(row = 1, column=3, padx=(5,0))
+        self.frame_id_entry.grid(row = 1, column=4, padx=(5,0))
         self.default_entry_color = self.frame_id_entry.cget('fg')
 
         self.payload_Label = Label(self.can_frame2, text="PAYLOAD")
@@ -270,7 +273,7 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=(280,0))
+        self.add_to_q.grid(row = 1, column=6, padx=(230,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
@@ -923,7 +926,7 @@ class CANGui():
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
                 pass
             if self.FD_box.get() == 1:
-                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.brs_box.get()) + str(self.payload_entry.get())
             else:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
                 self.position += 1
