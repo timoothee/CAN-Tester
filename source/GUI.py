@@ -714,7 +714,7 @@ class CANGui():
         self.dsample_point_entry.config(state='disable')
         time.sleep(1)
 
-
+ 
     def interface_up_enable_user(self):
         self.can_interface_sender_label.config(state='normal')
         self.sender_drop_down_menu.config(state='normal')
