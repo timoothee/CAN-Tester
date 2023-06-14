@@ -17,7 +17,7 @@ class CanModule():
         GPIO.setwarnings(False) 
         GPIO.setup(gpio,GPIO.OUT)
         GPIO.output(gpio,GPIO.LOW)
-        self.rasp_path = '/home/pi/CAN-Tester/logs/'
+        self.rasp_path = str((os.popen("pwd", 'r', 128)).read()).strip().replace('/source', '/logs/')
 
     def set_rasp_path(self, path):
         self.rasp_path = path
