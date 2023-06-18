@@ -103,7 +103,7 @@ class CANGui():
                 pass
         with open(self.module_sender.get_rasp_path()+'status.txt', 'w') as f:
                 pass
-
+        self.cpu_temp = '0'
         self.dmessage = StringVar()
         self.dev_status = False
         self.root_dev = None
@@ -168,6 +168,12 @@ class CANGui():
 
         self.can_frame8 = Frame(self.can_frame7)
         self.can_frame8.grid(row=1, column=1, sticky="nw")
+
+        self.empty_can_frame2 = Frame(self.root)
+        self.empty_can_frame2.grid(row=1, column=3)
+
+        self.can_frame9 = Frame(self.can_frame5)
+        self.can_frame9.grid(row=0, column=1)
 
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -368,6 +374,14 @@ class CANGui():
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(280,0))
 
+        # frame 9
+        self.temp_cpu_label= Label(self.can_frame9, text= self.cpu_temp)
+        self.temp_cpu_label.grid(row=0, column=0)
+
+        self.bytes_label = Label(self.can_frame9, text= '---')
+        self.bytes_label.grid(row=1, column=0)
+
+
     def build2(self):
 
         self.dev_can_frame_1 = Frame(self.root_dev)
@@ -428,7 +442,7 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
     def sensor_temp(self):
-        time.sleep(10)
+        time.sleep(2)
         self.cpu_sensor.add_command(label="CPU")
         output = subprocess.check_output(['sensors'])
         if output.decode().split('\n')[2].split()[1] == 'N/A':
@@ -437,8 +451,9 @@ class CANGui():
             x = 2
         while True:
             output = subprocess.check_output(['sensors'])
-            cpu_temp = "CPU "+output.decode().split('\n')[x].split()[1]
-            self.cpu_sensor.entryconfig(0,label=cpu_temp)
+            self.cpu_temp = "CPU "+output.decode().split('\n')[x].split()[1]
+            self.cpu_sensor.entryconfig(0,label=self.cpu_temp)
+            self.temp_cpu_label.config(text='Temp '+self.cpu_temp)
             time.sleep(0.5)
 
     def contact_msg(self):
@@ -515,16 +530,6 @@ class CANGui():
     
     def horizontal_view(self):
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
-        '''
-        self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
-        self.sender_drop_down_menu.grid(row = 1, column = 0)
-        self.can_interface_receiver_label.grid(row=2, column=0)
-        self.receiver_drop_down_menu.grid(row = 3, column = 0)
-        self.id_baudrate_Label.grid(row=0, column=1, pady=(20,0))
-        self.drop_down_id_baudrate.grid(row = 1, column=1)
-        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
-        self.drop_down_data_baudrate.grid(row = 1, column=2)
-        '''
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
         self.can_frame1_1.grid(row=0, column=3, sticky="nsew")
         self.can_frame1_2.grid(row=1, column=3, sticky="nsew")
