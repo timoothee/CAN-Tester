@@ -906,6 +906,7 @@ class CANGui():
     def check_all_fields(self):
         self.debugging("... checking if the fields are completed correctly", 0)
         self.check_all_fields_retVal = False
+        self.zero_size = 0
 
         if self.RTR_box.get() == 1:
             if self.check_all_fields_completed_retVal == False:
@@ -923,11 +924,16 @@ class CANGui():
                 if int(self.frame_id_entry.get(), 16) > 536870911:
                     self.id_entry_over_error = True
                     self.check_all_fields_retVal = True
+                if len(self.frame_id_entry.get())!= 8:
+                    self.zero_size = 8 - int(len(self.frame_id_entry.get()))
 
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
+                if len(self.frame_id_entry.get()) != 3:
+                    self.zero_size = 3 - int(len(self.frame_id_entry.get()))
+                    print(self.zero_size, '-----')
         if len(self.payload_entry.get())%2 != 0:
             self.payload_entry_odd = True
             self.check_all_fields_retVal = True
@@ -986,16 +992,28 @@ class CANGui():
         self.current_time = time.strftime("%H:%M:%S", self.t)
 
     def get_frame_data(self):
+            zero_var = ''
             self.debugging(".. getting frame data", 0)
             if self.RTR_box.get() == 1:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#R"
                 pass
-            if self.FD_box.get() == 1:
+            if self.FD_box.get() == 1 and self.zero_size == 0:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
                 self.position += 1
-            else:
+            elif self.FD_box.get() == 1 and self.zero_size != 0:
+                for i in range(self.zero_size):
+                    zero_var += '0'
+                self.string_max = self.current_time + "  " + zero_var + str(self.frame_id_entry.get()) + "##" + str(self.brs_box.get()) + str(self.payload_entry.get())
+                self.position += 1
+            if self.FD_box.get() == 0 and self.zero_size == 0:
                 self.string_max = self.current_time + "  " + str(self.frame_id_entry.get()) + "#" + str(self.payload_entry.get())
                 self.position += 1
+            elif self.FD_box.get() == 0 and self.zero_size != 0:
+                for i in range(self.zero_size):
+                    zero_var += '0'
+                self.string_max = self.current_time + "  " + zero_var +str(self.frame_id_entry.get()) + "#" + str(self.payload_entry.get())
+                self.position += 1
+
 
     def save(self, mode):
         first_one = False
