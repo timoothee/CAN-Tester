@@ -12,6 +12,7 @@ class CanFrame():
         self.id_list = []
         self.brs_list = []
         self.payload_list = []
+        self.fd_list = []
 
     # id
     def set_id(self, new_id):
@@ -22,11 +23,10 @@ class CanFrame():
 
     # fd flag
     def set_fd_flag(self, new_fd_flag):
-        self.fd_id_status = new_fd_flag
+        self.fd_list.append(new_fd_flag)
 
-    def get_fdflag(self):
-        print(self.fd_id_status)
-        return self.fd_id_status
+    def get_fdflag(self, index):
+        return self.fd_list[index]
 
     # ext id status
     def set_extflag(self, new_extented_id_status):
