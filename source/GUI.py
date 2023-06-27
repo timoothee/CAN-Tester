@@ -121,6 +121,8 @@ class CANGui():
         t3.start()
         t4 = threading.Thread(target=self.sensor_temp, daemon=True)
         t4.start()
+        t5 = threading.Thread(target=self.temp_var_color, daemon=True)
+        t5.start()
 
     def build(self):
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -451,10 +453,27 @@ class CANGui():
             x = 2
         while True:
             output = subprocess.check_output(['sensors'])
-            self.cpu_temp = "CPU "+output.decode().split('\n')[x].split()[1]
+            self.temp_int = output.decode().split('\n')[x].split()[1]
+            self.cpu_temp = "CPU "+ self.temp_int
             self.cpu_sensor.entryconfig(0,label=self.cpu_temp)
             self.temp_cpu_label.config(text='Temp '+self.cpu_temp)
             time.sleep(0.5)
+
+    def temp_var_color(self):
+        time.sleep(5)
+        while True:
+            temp_int = self.temp_int
+            for char in temp_int:
+                if char.isdigit() != True:
+                    temp_int = temp_int.replace(char, '')
+            temp_int = int(temp_int) / 10
+
+            if int(temp_int) < 50:
+                self.temp_cpu_label.config(fg=self.default_label_color)
+            if int(temp_int) >= 50:
+                self.temp_cpu_label.config(fg='#E39010')
+            if int(temp_int) > 70:
+                self.temp_cpu_label.config(fg='red')
 
     def contact_msg(self):
         messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
@@ -555,8 +574,6 @@ class CANGui():
         self.delay_label.grid(padx=(300,0))
         self.delay_entry.grid(padx=(300,0))
         self.loop_start_button.grid(padx=(300,0))
-        
-
 
     def que_loop(self):
         time.sleep(10)
