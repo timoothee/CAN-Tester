@@ -70,7 +70,11 @@ class CANGui():
         self.drop_down_data_baudrate_var = StringVar()
         self.drop_down_data_baudrate_var.set("Select")
         self.drop_down_data_baudrate_var.trace("w", self.data_baudrate_option_changed)
+        self.see_only_dropdown_var = StringVar()
+        self.see_only_dropdown_var.set('N/A')
+        self.see_only_dropdown_list = ('Option 1', 'Option 2', 'Option 3')
         self.text_variable_sp = StringVar()
+        self.text_variable_sp.set("N/A")
         self.dtext_variable_sp = StringVar()
         self.position = 0
         self.can_send_module_optionmenu = None
@@ -216,7 +220,7 @@ class CANGui():
 
         # frame 1_2
         self.sample_point_entry = Entry(self.can_frame1_2, textvariable = self.text_variable_sp)
-        self.sample_point_entry.config(width=5, state='disabled')
+        self.sample_point_entry.config(width=5, state='disable')
         self.sample_point_entry.grid(row=0, column=0, padx=(47,0))
 
         self.dsample_point_entry = Entry(self.can_frame1_2, textvariable = self.dtext_variable_sp)
@@ -345,6 +349,10 @@ class CANGui():
         self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
         self.clear_button_output.grid(row=0, column=1, sticky='w')
 
+        self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame6, self.see_only_dropdown_var, *self.see_only_dropdown_list)
+        self.can_bus_seeonly_optionemnu.config(width = 6, state='disabled')
+        self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
+
         # frame 7
         self.error_listbox_label = Label(self.can_frame7, text='Error list')
         self.error_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0), pady=(10,0))
@@ -381,7 +389,7 @@ class CANGui():
         self.temp_cpu_label.grid(row=0, column=0)
 
         self.bytes_label = Label(self.can_frame9, text= '---')
-        self.bytes_label.grid(row=1, column=0)
+        #self.bytes_label.grid(row=1, column=0)
 
 
     def build2(self):
