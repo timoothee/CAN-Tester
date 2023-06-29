@@ -737,16 +737,6 @@ class CANGui():
         self.program_running = False
         self.root.destroy() 
 
-    def CAN_BUS_log(self):
-        self.infinite_condition = 2
-        while self.infinite_condition >= 1:
-            with open('../CAN-Tester/logs/can.log') as f:
-                self.log_lines = f.readlines()
-
-            for line in self.log_lines:
-                self.can_bus_listbox.insert(END, line)
-                self.can_bus_listbox.see(END)
-
     def interface_up_disable_user(self):
         self.can_interface_sender_label.config(state='disable')
         self.sender_drop_down_menu.config(state='disable')
@@ -760,7 +750,6 @@ class CANGui():
         self.dsample_point_entry.config(state='disable')
         time.sleep(1)
 
- 
     def interface_up_enable_user(self):
         self.can_interface_sender_label.config(state='normal')
         self.sender_drop_down_menu.config(state='normal')
