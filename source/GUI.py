@@ -1079,7 +1079,7 @@ class CANGui():
             else:
                 messagebox.showerror("Status", "List is empty")
 
-
+    print("")
     def initial_interface_state(self):
         self.debugging("setting all to default", 0)
         self.ok_button.config(state="disable")
