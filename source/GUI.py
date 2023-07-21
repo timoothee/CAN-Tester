@@ -129,8 +129,6 @@ class CANGui():
         t4.start()
         t5 = threading.Thread(target=self.temp_var_color, daemon=True)
         t5.start()
-        #t6 = threading.Thread(target=self.testmode_error, daemon=True)
-        #t6.start()
         self.test_mode1 = StringVar()
         self.negate = StringVar()
         self.increment = StringVar()
@@ -227,7 +225,7 @@ class CANGui():
         self.sample_point_label.grid(row=0, column=0, padx=(50,0), pady=(20,0))
 
         self.dsample_point_label = Label(self.can_frame1_1, text = "DATA SP")
-        self.dsample_point_label.grid(row=0, column=1, padx=(80,0), pady=(20,0))
+        self.dsample_point_label.grid(row=0, column=1, padx=(75,0), pady=(20,0))
 
         # frame 1_2
         self.sample_point_entry = Entry(self.can_frame1_2, textvariable = self.text_variable_sp)
@@ -255,7 +253,7 @@ class CANGui():
 
         # frame 1_4
         self.status_label = Label(self.can_frame1_4, text="STATUS")
-        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(104,0))
+        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(25,0))
 
         self.up_down_button = Button(self.can_frame1_4, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
         self.up_down_button.grid(row=0, column=1, sticky='e', padx=(5,0), pady= (10,0))
@@ -263,10 +261,10 @@ class CANGui():
         # frame 1_5
         self.default_status_label = Label(self.can_frame1_5, text="DOWN", fg='red')
         self.default_status_label.config(width=5)
-        self.default_status_label.grid(row=0, column=0, padx=(107,0), sticky='e')
+        self.default_status_label.grid(row=0, column=0, padx=(30,0), sticky='e')
         
         self.dev_button = Button(self.can_frame1_5, text= "<  >", command=self.developer_settings, width = 3)
-        self.dev_button.grid(row=0, column=1, padx=(8,0))
+        self.dev_button.grid(row=0, column=1, padx=(10,0))
 
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
@@ -310,14 +308,14 @@ class CANGui():
         self.payload_Entry.grid(row = 1, column=5)
 
         self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=(250,0))
+        self.add_to_q.grid(row = 1, column=6, padx=(238,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 85, height= 15,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 90, height= 15,selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=20)
 
         # frame 4
@@ -337,7 +335,7 @@ class CANGui():
         self.ok_button.grid(row=0, column=4)
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
-        self.loop_checkbox_label.grid(row = 0, column=5, padx=(276,0))
+        self.loop_checkbox_label.grid(row = 0, column=5, padx=(240,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6)
@@ -364,22 +362,9 @@ class CANGui():
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        '''
-        self.can_bus_seeonly_optionemnu=  Menubutton (self.can_frame6, text="Test", relief=RAISED)
-        self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
-        self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
-
-        self.can_bus_seeonly_optionemnu.menu  = Menu(self.can_bus_seeonly_optionemnu, tearoff = 1)
-        self.can_bus_seeonly_optionemnu["menu"]  =  self.can_bus_seeonly_optionemnu.menu
-
-        self.can_bus_seeonly_optionemnu.menu.add_checkbutton(label="Echo", variable=self.echo)
-        self.can_bus_seeonly_optionemnu.menu.add_checkbutton(label="Negate", variable=self.negate)
-        self.can_bus_seeonly_optionemnu.menu.add_checkbutton(label="Increment", variable=self.increment)
-        self.can_bus_seeonly_optionemnu.menu.add_checkbutton(label="Decrement", variable=self.decrement)
-        '''
-
         self.start_test_button = Button(self.can_frame6, text="Start Test", command = self.test_starter)
         self.start_test_button.grid(row=0, column=3, sticky='w')
+        
 
         # frame 7
         self.error_listbox_label = Label(self.can_frame7, text='Info list')
