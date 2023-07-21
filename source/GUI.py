@@ -18,7 +18,7 @@ import random
 from PIL import Image, ImageTk
 import subprocess
 import webbrowser
-
+from collections import Counter
 class CANGui():
     def __init__(self, gui_revision: str):
         #self.splash()
@@ -490,7 +490,9 @@ class CANGui():
         index = 0
         self.pass_test_list = []
         self.error_test_list = []
-
+        bytes_list = []
+        count = Counter(x)
+        
         can_test_mode = Can_Test.Test_Module()
         test_mode = self.see_only_dropdown_var.get()
         
@@ -504,7 +506,17 @@ class CANGui():
                 index+=2
             if test_mode ==  'Increment':
                 if id_list[index] == id_list[index+1]:
-                    if can_test_mode.increment_payload(payload_list[index]) == payload_list[index+1]:
+                    space_count = count[' ']
+                    len = len(payload_list[index])
+                    nr_bytes = (len - space_count)//2
+                    payload_list[index] = payload_list[index].replace(' ', '')
+                    for i in range(nr_bytes*2):
+                        if i % 2 !=0:
+                            if i == 1:
+                                bytes_list.append(payload_list[index][:i+1])
+                            else:
+                                bytes_list.append(payload_list[index][i-1:i+1])
+                    if can_test_mode.increment_payload(bytes_list) == payload_list[index+1]:
                         self.pass_test_list.append(index)
                     else:
                         self.error_test_list.append(index)
