@@ -455,7 +455,6 @@ class CANGui():
         simplified_id_list = []
         simplified_payload_list = []
         can_bus_list = list(self.can_bus_listbox.get(0, 'end'))
-        print(can_bus_list)
         for item in can_bus_list:
             left_sb_index = item.find('[')
             right_sb_index = item.find(']')
@@ -463,8 +462,8 @@ class CANGui():
             sf_payload = item[right_sb_index+1:].strip()
             simplified_id_list.append(sf_id)
             simplified_payload_list.append(sf_payload)
-            print(simplified_id_list)
-            print(simplified_payload_list)
+            #print(simplified_id_list)
+            #print(simplified_payload_list)
         return simplified_id_list, simplified_payload_list
 
     def info_listbox_testmode(self):
@@ -477,26 +476,29 @@ class CANGui():
         self.error_listbox.insert(END,'Failed ' + str(len(self.error_test_list)))
         self.error_listbox.itemconfig(END, {'fg': 'red'})
 
+        for i in range(len(test_number)):
+            self.can_bus_listbox.itemconfig(i, {'fg': 'black'})
+
         if len(self.error_test_list) != 0:
             for i in range (len(self.error_test_list)):
                 self.can_bus_listbox.itemconfig(self.error_test_list[i], {'fg': 'red'})
         else:
             for i in range(len(test_number)):
                 self.can_bus_listbox.itemconfig(i, {'fg': 'black'})
+            for i in range(len(self.pass_test_list)):
+                self.can_bus_listbox.itemconfig(self.pass_test_list[i], {'fg': 'green'})
 
     def test_starter(self):
         id_list, payload_list = self.find_bus_payload()
-        print(id_list, payload_list)
         index = 0
         self.pass_test_list = []
         self.error_test_list = []
-        bytes_list = []
-        count = Counter(x)
         
         can_test_mode = Can_Test.Test_Module()
         test_mode = self.see_only_dropdown_var.get()
         
         for i in range(len(id_list)//2):
+            bytes_list = []
             if test_mode == 'Echo':
                 if id_list[index] == id_list[index+1]:
                     if can_test_mode.echo(payload_list[index]) == payload_list[index+1]:
@@ -506,9 +508,10 @@ class CANGui():
                 index+=2
             if test_mode ==  'Increment':
                 if id_list[index] == id_list[index+1]:
+                    count = Counter(payload_list[index])
                     space_count = count[' ']
-                    len = len(payload_list[index])
-                    nr_bytes = (len - space_count)//2
+                    payload_len = len(payload_list[index])
+                    nr_bytes = (payload_len  - space_count)//2
                     payload_list[index] = payload_list[index].replace(' ', '')
                     for i in range(nr_bytes*2):
                         if i % 2 !=0:
@@ -516,22 +519,43 @@ class CANGui():
                                 bytes_list.append(payload_list[index][:i+1])
                             else:
                                 bytes_list.append(payload_list[index][i-1:i+1])
-                    if can_test_mode.increment_payload(bytes_list) == payload_list[index+1]:
+                    print(can_test_mode.increment_payload(bytes_list))
+                    print((payload_list[index+1].lower()).replace(' ',''))
+                    if payload_list[index+1][0] == '0':
+                        payload_list[index+1] = payload_list[index+1][1:]
+                    if can_test_mode.increment_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
                     else:
                         self.error_test_list.append(index)
                 index+=2
             if test_mode ==  'Decrement':
                 if id_list[index] == id_list[index+1]:
-                    if can_test_mode.decrement_payload(payload_list[index]) == payload_list[index+1]:
+                    count = Counter(payload_list[index])
+                    space_count = count[' ']
+                    payload_len = len(payload_list[index])
+                    nr_bytes = (payload_len - space_count)//2
+                    payload_list[index] = payload_list[index].replace(' ', '')
+                    for i in range(nr_bytes*2):
+                        if i % 2 !=0:
+                            if i == 1:
+                                bytes_list.append(payload_list[index][:i+1])
+                            else:
+                                bytes_list.append(payload_list[index][i-1:i+1])
+                    print('bytes_list',can_test_mode.decrement_payload(bytes_list))
+                    print('next index',(payload_list[index+1].lower()).replace(' ',''))
+                    time.sleep(2)
+                    if payload_list[index+1][0] == '0':
+                        print("here")
+                        payload_list[index+1] = payload_list[index+1][1:]
+                    if can_test_mode.decrement_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
                     else:
                         self.error_test_list.append(index)
                 index+=2
-            if test_mode ==  'Negate':
+            if test_mode == 'Negate':
                 if id_list[index] == id_list[index+1]:
-                    print('-', can_test_mode.negate_payload(payload_list[index].replace(' ','')) )
-                    print('--', payload_list[index+1].lower())
+                    #print('-', can_test_mode.negate_payload(payload_list[index].replace(' ','')) )
+                    #print('--', payload_list[index+1].lower())
                     if can_test_mode.negate_payload(payload_list[index].replace(' ','')) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
                     else:
@@ -546,7 +570,7 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
     def sensor_temp(self):
-        time.sleep(0.2)
+        time.sleep(0.5)
         self.cpu_sensor.add_command(label="CPU")
         output = subprocess.check_output(['sensors'])
         if output.decode().split('\n')[2].split()[1] == 'N/A':
@@ -910,8 +934,8 @@ class CANGui():
                 for i in range(len(self.list_mem) ,len(self.list_read)):
                     self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
                     self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
-                    print("---", self.list_read)
-                    print("++",self.list_read[i].strip())
+                    #print("---", self.list_read)
+                    #print("++",self.list_read[i].strip())
                     self.can_bus_listbox.insert('end', self.list_read[i])
                     self.can_bus_listbox.see(END) 
                 self.list_mem = self.list_read
@@ -931,8 +955,6 @@ class CANGui():
             self.que_listbox.insert(self.our_item, self.string_max)
             self.que_listbox.itemconfig(self.our_item, {'fg': 'green'})
             self.initial_interface_state()
-        
-        print(self.module_sender.get_sample_point())
 
         
     def edit_button_fr4(self):
@@ -1036,14 +1058,12 @@ class CANGui():
                     self.check_all_fields_retVal = True
                 if len(self.frame_id_entry.get())!= 8:
                     self.zero_size = 8 - int(len(self.frame_id_entry.get()))
-
             else:
                 if int(self.frame_id_entry.get(), 16) > 2047:
                     self.id_entry_error = True
                     self.check_all_fields_retVal = True
                 if len(self.frame_id_entry.get()) != 3:
                     self.zero_size = 3 - int(len(self.frame_id_entry.get()))
-                    print(self.zero_size, '-----')
         if len(self.payload_entry.get())%2 != 0:
             self.payload_entry_odd = True
             self.check_all_fields_retVal = True

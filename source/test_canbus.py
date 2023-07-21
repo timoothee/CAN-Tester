@@ -6,19 +6,25 @@ class Test_Module():
     def negate_payload(self, payload):
         self.paylod_lenght = len(payload)
         self.negated_payload = int(payload, 16) ^ 0xffffffffffffffff
-        return (hex(self.negated_payload)[-self.paylod_lenght:])
+        return(hex(self.negated_payload)[-self.paylod_lenght:])
 
     def increment_payload(self, payload: list):
         num = ''
-        for item in list:
+        for item in payload:
             item = int(item, 16) + 1
-            num += str(item)
-        return (hex(item))
+            num += str(hex(item)[2:])
+        return(num)
 
     def decrement_payload(self, payload: list):
-        payload_lenght = len(payload)
-        number = int(payload, 16) - 1
-        return (hex(number)[-payload_lenght:])
-
+        num = ''
+        print(payload)
+        for item in payload:
+            print(item)
+            item = int(item, 16) - 1
+            print(item)
+            print(hex(item))
+            num += str(hex(item)[2:])
+            print('num', num)
+        return(num)
     def echo(self, payload):
         return payload
