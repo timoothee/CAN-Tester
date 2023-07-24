@@ -18,6 +18,7 @@ class rgb_fade():
         time.sleep(0.5)
         GPIO.output(self.gpio,GPIO.HIGH)
         time.sleep(1)
+        print("")
 
 
     def fade_out(self, gpio):
