@@ -129,6 +129,8 @@ class CANGui():
         t4.start()
         t5 = threading.Thread(target=self.temp_var_color, daemon=True)
         t5.start()
+        t6 = threading.Thread(target=self.credential_offset, daemon=True)
+        t6.start()
         self.test_mode1 = StringVar()
         self.negate = StringVar()
         self.increment = StringVar()
@@ -186,6 +188,9 @@ class CANGui():
 
         self.can_frame9 = Frame(self.can_frame5)
         self.can_frame9.grid(row=0, column=1)
+
+        self.can_frame12 = Frame(self.root)
+        self.can_frame12.grid(row=0, column=2, sticky='nsew')
 
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -397,9 +402,19 @@ class CANGui():
         self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
         self.loop_start_button.grid(row=2, column=0, padx=(110,0))
 
+        # frame 12
+        try:
+            self.image_dimenion = PhotoImage(file="../images/Continental-Logo.png")
+            continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
+            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+130, continental_logo_height+30), Image.ANTIALIAS)
+            self.imagee = ImageTk.PhotoImage(self.imagee)
+            self.label1 = Label(self.can_frame12, image= self.imagee)
+            self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
+        except:
+            self.label1 = Label(self.can_frame12, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
+            self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
 
     def build2(self):
-
         self.dev_can_frame_1 = Frame(self.root_dev)
         self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
 
@@ -569,6 +584,30 @@ class CANGui():
     def open_release_url(self):
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
 
+    def credential_offset(self):
+        time.sleep(3)
+        try:
+            screen_height = self.root.winfo_screenheight()
+            powered_offsety = (screen_height - self.error_listbox.winfo_rooty()) - 200
+            print(powered_offsety)
+            mail_offsety = (screen_height - self.save_button_output.winfo_rooty()) -310
+            print(mail_offsety)
+        except:
+            time.sleep(1)
+
+        self.can_frame10 = Frame(self.root, height=powered_offsety)
+        self.can_frame10.grid(row=5, column=0, sticky='w')
+        
+        self.can_frame11 = Frame(self.root)
+        self.can_frame11.grid(row=5, column=2, sticky='e')
+        
+        self.label = Label(self.can_frame10, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.label.grid(row=0, column=0, padx=(10,0),pady=(powered_offsety,0))
+        
+        self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        self.label2.grid(row=0, column=0, pady=(mail_offsety,0), sticky='e')
+        
+        
     def sensor_temp(self):
         time.sleep(0.5)
         self.cpu_sensor.add_command(label="CPU")
