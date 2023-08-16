@@ -13,6 +13,7 @@ class CanModule():
         self.dsample_point = ''
         self.can_status_var = False
         gpio = 15
+        self.mux_led_pos = [7, 11, 13, 15, 29, 31, 33, 37]
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) 
         GPIO.setup(gpio,GPIO.OUT)
@@ -115,6 +116,14 @@ class CanModule():
                 print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
                 GPIO.output(15,GPIO.LOW)
         
+    def mux_led_control_on(self, led_pin: int):
+        GPIO.setup(self.mux_led_pos[led_pin],GPIO.OUT)
+        GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
+
+    def mux_led_control_off(self, led_pin: int):
+        for item in self.mux_led_pos:
+            GPIO.output(item,GPIO.LOW)
+
     def default_led(self):
         pass
         #GPIO.output(15,GPIO.HIGH)
