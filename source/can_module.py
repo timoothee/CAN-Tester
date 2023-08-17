@@ -13,7 +13,8 @@ class CanModule():
         self.dsample_point = ''
         self.can_status_var = False
         gpio = 15
-        self.mux_led_pos = [7, 11, 13, 15, 29, 31, 33, 37]
+        self.mux_led_pos = [4, 17, 27, 22, 5, 6, 13, 26]
+        self.sel_pins = [23, 16, 7]
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False) 
         GPIO.setup(gpio,GPIO.OUT)
@@ -95,33 +96,67 @@ class CanModule():
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
 
-    def send_q(self, id_list, brs_list, payload_list, fd_list):
-        for i in range(len(id_list)):
-            print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
-            if payload_list[i] == "R":
-                GPIO.output(15,GPIO.HIGH)
-                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
-                GPIO.output(15,GPIO.LOW)
-            if fd_list[i] == "0":
-                GPIO.output(15,GPIO.HIGH)
-                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
-                GPIO.output(15,GPIO.LOW)
-            else:
-                GPIO.output(15,GPIO.HIGH)
-                print(self.module_name)
-                print(id_list[i])
-                print(brs_list[i])
-                print(payload_list[i])
-                os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
-                print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
-                GPIO.output(15,GPIO.LOW)
+    def send_q(self, id_list, brs_list, payload_list, fd_list, mux_list: list):   
+        for i in range(len(mux_list)):
+            self.select_switch(mux_list[i])
+            for i in range(len(id_list)):
+                print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
+                if payload_list[i] == "R":
+                    GPIO.output(15,GPIO.HIGH)
+                    os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
+                    GPIO.output(15,GPIO.LOW)
+                if fd_list[i] == "0":
+                    GPIO.output(15,GPIO.HIGH)
+                    os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
+                    GPIO.output(15,GPIO.LOW)
+                else:
+                    GPIO.output(15,GPIO.HIGH)
+                    print(self.module_name)
+                    print(id_list[i])
+                    print(brs_list[i])
+                    print(payload_list[i])
+                    os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
+                    print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
+                    GPIO.output(15,GPIO.LOW)
+            time.sleep(1)  
+
+    def select_switch(self, can_channel: int):
+        for item in self.sel_pins:
+            GPIO.setup(item,GPIO.OUT)
+            GPIO.output(item,GPIO.LOW)
+        #if can_channel == 0:
+            #GPIO.output(self.sel_pins[0],GPIO.HIGH)
+        if can_channel == 1:
+            GPIO.output(self.sel_pins[0],GPIO.HIGH)
+        if can_channel == 2:
+            GPIO.output(self.sel_pins[1],GPIO.HIGH)
+        if can_channel == 3:
+            GPIO.output(self.sel_pins[0],GPIO.HIGH)
+            GPIO.output(self.sel_pins[1],GPIO.HIGH)
+        if can_channel == 4:
+            GPIO.output(self.sel_pins[2],GPIO.HIGH)
+        if can_channel == 5:
+            GPIO.output(self.sel_pins[0],GPIO.HIGH)
+            GPIO.output(self.sel_pins[2],GPIO.HIGH)
+        if can_channel == 6:
+            GPIO.output(self.sel_pins[1],GPIO.HIGH)
+            GPIO.output(self.sel_pins[2],GPIO.HIGH)
+        if can_channel == 7:
+            GPIO.output(self.sel_pins[0],GPIO.HIGH)
+            GPIO.output(self.sel_pins[1],GPIO.HIGH)
+            GPIO.output(self.sel_pins[2],GPIO.HIGH)
+    
         
     def mux_led_control_on(self, led_pin: int):
         GPIO.setup(self.mux_led_pos[led_pin],GPIO.OUT)
         GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
+        #self.select_switch(led_pin)
 
     def mux_led_control_off(self, led_pin: int):
-        for item in self.mux_led_pos:
+        GPIO.setup(self.mux_led_pos[led_pin],GPIO.OUT)
+        GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
+        for item in self.sel_pins:
+            GPIO.setup(item,GPIO.OUT)
             GPIO.output(item,GPIO.LOW)
 
     def default_led(self):

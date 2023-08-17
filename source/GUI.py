@@ -85,9 +85,11 @@ class CANGui():
             self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_dict = {'anpi0':"anpi0", 'anpi1':"anpi1", 'en0':"en0"}
         elif platform.system() == "Linux":
+            print('----')
             self.can_send_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
             self.can_receive_module_optionmenu = tuple(filter(lambda item: item[:3] == 'can', os.listdir('/sys/class/net/')))
             self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
+            print(self.can_send_module_optionmenu)
         else:
             self.can_send_module_optionmenu = ("CAN0", "CAN1")
             self.can_receive_module_optionmenu = ("CAN0","CAN1")
@@ -105,6 +107,7 @@ class CANGui():
         self.list_read = []
         self.list_mem = []
         self.thread_error = False
+        self.rb_ct = 0
         with open(self.module_sender.get_rasp_path()+'can.log', 'w') as f:
                 pass
         with open(self.module_sender.get_rasp_path()+'status.txt', 'w') as f:
@@ -365,49 +368,49 @@ class CANGui():
         self.mux_label.grid(row=1, column=0, padx=(20,0), pady=(15,0))
 
         # frame4_2
-        self.can0_ckBox = Checkbutton(self.can_frame4_2, variable = self.can0_ckBox_var, command=self.mux_control)
+        self.can0_ckBox = Checkbutton(self.can_frame4_2, variable = self.can0_ckBox_var, command= lambda: self.mux_control(0))
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
 
         self.can0_label = Label(self.can_frame4_2, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
 
-        self.can1_ckBox = Checkbutton(self.can_frame4_2, variable = self.can1_ckBox_var, command=self.mux_control)
+        self.can1_ckBox = Checkbutton(self.can_frame4_2, variable = self.can1_ckBox_var, command= lambda: self.mux_control(1))
         self.can1_ckBox.grid(row=1, column=1, padx=(10,0))
 
         self.can1_label = Label(self.can_frame4_2, text='CAN 1')
         self.can1_label.grid(row=2, column=1, padx=(10,0))
 
-        self.can2_ckBox = Checkbutton(self.can_frame4_2, variable = self.can2_ckBox_var, command=self.mux_control)
+        self.can2_ckBox = Checkbutton(self.can_frame4_2, variable = self.can2_ckBox_var, command= lambda: self.mux_control(2))
         self.can2_ckBox.grid(row=1, column=2, padx=(10,0))
 
         self.can2_label = Label(self.can_frame4_2, text='CAN 2')
         self.can2_label.grid(row=2, column=2, padx=(10,0))
 
-        self.can3_ckBox = Checkbutton(self.can_frame4_2, variable = self.can3_ckBox_var, command=self.mux_control)
+        self.can3_ckBox = Checkbutton(self.can_frame4_2, variable = self.can3_ckBox_var, command= lambda: self.mux_control(3))
         self.can3_ckBox.grid(row=1, column=3, padx=(10,0))
 
         self.can3_label = Label(self.can_frame4_2, text='CAN 3')
         self.can3_label.grid(row=2, column=3, padx=(10,0))
 
-        self.can4_ckBox = Checkbutton(self.can_frame4_2, variable = self.can4_ckBox_var, command=self.mux_control)
+        self.can4_ckBox = Checkbutton(self.can_frame4_2, variable = self.can4_ckBox_var, command= lambda: self.mux_control(4))
         self.can4_ckBox.grid(row=1, column=4, padx=(10,0))
 
         self.can4_label = Label(self.can_frame4_2, text='CAN 4')
         self.can4_label.grid(row=2, column=4, padx=(10,0))
 
-        self.can5_ckBox = Checkbutton(self.can_frame4_2, variable = self.can5_ckBox_var, command=self.mux_control)
+        self.can5_ckBox = Checkbutton(self.can_frame4_2, variable = self.can5_ckBox_var, command= lambda: self.mux_control(5))
         self.can5_ckBox.grid(row=1, column=5, padx=(10,0))
 
         self.can5_label = Label(self.can_frame4_2, text='CAN 5')
         self.can5_label.grid(row=2, column=5, padx=(10,0))
 
-        self.can6_ckBox = Checkbutton(self.can_frame4_2, variable = self.can6_ckBox_var, command=self.mux_control)
+        self.can6_ckBox = Checkbutton(self.can_frame4_2, variable = self.can6_ckBox_var, command= lambda: self.mux_control(6))
         self.can6_ckBox.grid(row=1, column=6, padx=(10,0))
 
         self.can6_label = Label(self.can_frame4_2, text='CAN 6')
         self.can6_label.grid(row=2, column=6, padx=(10,0))
 
-        self.can7_ckBox = Checkbutton(self.can_frame4_2, variable = self.can7_ckBox_var, command=self.mux_control)
+        self.can7_ckBox = Checkbutton(self.can_frame4_2, variable = self.can7_ckBox_var, command= lambda: self.mux_control(7))
         self.can7_ckBox.grid(row=1, column=7, padx=(10,0))
 
         self.can7_label = Label(self.can_frame4_2, text='CAN 7')
@@ -531,12 +534,14 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
-    def mux_control(self):
-        for item in self.mux_list:
-            if item.get() == 1:
-                print("-")
-                print(self.mux_list.index(item))
-                self.module_sender.mux_led_control(self.mux_list.index(item))
+    def mux_control(self, led_numb: int):
+        retVal = False
+
+        if self.mux_list[led_numb].get() == 1:
+            self.module_sender.mux_led_control_on(led_numb)
+
+        else:
+            self.module_sender.mux_led_control_off(led_numb)
 
 
 
@@ -663,9 +668,7 @@ class CANGui():
         try:
             screen_height = self.root.winfo_screenheight()
             powered_offsety = (screen_height - self.error_listbox.winfo_rooty()) - 200
-            print(powered_offsety)
             mail_offsety = (screen_height - self.save_button_output.winfo_rooty()) -310
-            print(mail_offsety)
         except:
             time.sleep(1)
 
@@ -1395,16 +1398,22 @@ class CANGui():
                 self.frame.set_brs("")
                 self.frame.set_payload(message[index+1:])
                 self.frame.set_fd_flag("0")
-            
-            
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
-            self.error_listbox.delete(0, END)
-            self.backend_frame()
-            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
-            if self.que_loop_var.get() == 1:
-                self.active_loop_var = True
+            mux_list_sendq = []
+            for i in range(len(self.mux_list)):
+                if self.mux_list[i].get() == 1: 
+                    mux_list_sendq.append(i)
+            if len(mux_list_sendq) != 0:
+                self.error_listbox.delete(0, END)
+                self.backend_frame()
+                self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list, mux_list_sendq)
+                if self.que_loop_var.get() == 1:
+                    self.active_loop_var = True 
+            else:
+                self.error_listbox.insert(END,"Error: Select at least one MUX_CAN")
+                self.error_listbox.itemconfig(END, {'fg': 'red'})
                     
         else:
             self.initial_interface_state()
