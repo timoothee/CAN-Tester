@@ -597,7 +597,7 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester")
 
     def open_release_url(self):
-        webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")
+        webbrowser.open("https://github.com/timoothee/CAN-Tester/releases", new=0)
 
     def credential_offset(self):
         time.sleep(3)
@@ -650,7 +650,7 @@ class CANGui():
         
 
     def temp_var_color(self):
-        time.sleep(10)
+        time.sleep(15)
         while True:
             temp_int = self.temp_int
             for char in temp_int:
@@ -669,60 +669,81 @@ class CANGui():
         messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
 
     def welcome_user(self):
-        self.case = 0
+        self.case = 1
         self.welcome_root = Toplevel(self.root)
         self.welcome_fr1 = Frame(self.welcome_root)
         self.welcome_fr1.grid(row=0, column=0, pady=(300,0))
         self.welcome_fr2 = Frame(self.welcome_root)
         self.welcome_fr2.grid(row=1, column=0)
         self.welcome_root.geometry("800x550")
-        self.welcome_label = Label(self.welcome_fr1, text="Welcome")
-        self.welcome_label.grid(row=0,column=0)
+        self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/one.png')
+        imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+        new_imagee = ImageTk.PhotoImage(imagee)
+        self.label1 = Label(self.welcome_root, image= new_imagee)
+        self.label.image=new_imagee
+        self.label1.grid(row=0, column=0)
+        self.welcome_root.geometry("800x550")
         self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
         self.next_button.grid(row=1, column=0, sticky='s')
         self.welcome_root.mainloop()
 
     def case_scenario(self):
         self.case += 1
-        if self.case == 1:
-            self.welcome_label.destroy()
-            self.image = PhotoImage(file="../images/welcome/one.png")
-            width, height = self.image.width(), self.image.height()
-            imagee = Image.open(r'/home/raspberry/CAN-Tester/images/welcome/one.png').resize((width-100, height-100), Image.ANTIALIAS)
-            imagee = ImageTk.PhotoImage(imagee)
-            self.label1 = Label(self.welcome_root, image= imagee)
+        if self.case == 10:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/one.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
             self.welcome_root.geometry("800x550")
         if self.case == 2:
-            self.image = PhotoImage(file="../images/welcome/two.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/two.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
+            
         if self.case == 3:
-            self.image = PhotoImage(file="../images/welcome/three.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/three.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
         if self.case == 4:
-            self.image = PhotoImage(file="../images/welcome/four.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/four.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
+            
         if self.case == 5:
-            self.image = PhotoImage(file="../images/welcome/five.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/five.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
+            
         if self.case == 6:
-            self.image = PhotoImage(file="../images/welcome/six.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/six.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
+            
         if self.case == 7:
-            self.image = PhotoImage(file="../images/welcome/seven.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/seven.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x550")
+           
             self.next_button.config(text='Close')
         if self.case == 8:
             self.welcome_root.destroy()
