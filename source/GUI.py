@@ -671,11 +671,15 @@ class CANGui():
     def welcome_user(self):
         self.case = 0
         self.welcome_root = Toplevel(self.root)
-        self.welcome_root.geometry("700x400")
-        self.welcome_label = Label(self.welcome_root, text="Welcome")
+        self.welcome_fr1 = Frame(self.welcome_root)
+        self.welcome_fr1.grid(row=0, column=0, pady=(300,0))
+        self.welcome_fr2 = Frame(self.welcome_root)
+        self.welcome_fr2.grid(row=1, column=0)
+        self.welcome_root.geometry("800x550")
+        self.welcome_label = Label(self.welcome_fr1, text="Welcome")
         self.welcome_label.grid(row=0,column=0)
-        self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
-        self.next_button.grid(row=1, column=0, sticky='nw')
+        self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
+        self.next_button.grid(row=1, column=0, sticky='s')
         self.welcome_root.mainloop()
 
     def case_scenario(self):
@@ -683,29 +687,32 @@ class CANGui():
         if self.case == 1:
             self.welcome_label.destroy()
             self.image = PhotoImage(file="../images/welcome/one.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+            width, height = self.image.width(), self.image.height()
+            imagee = Image.open(r'/home/raspberry/CAN-Tester/images/welcome/one.png').resize((width-100, height-100), Image.ANTIALIAS)
+            imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= imagee)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("500x300")
+            self.welcome_root.geometry("800x550")
         if self.case == 2:
             self.image = PhotoImage(file="../images/welcome/two.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
+            self.welcome_root.geometry("800x550")
         if self.case == 3:
             self.image = PhotoImage(file="../images/welcome/three.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
+            self.welcome_root.geometry("800x550")
         if self.case == 4:
             self.image = PhotoImage(file="../images/welcome/four.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
+            self.welcome_root.geometry("800x550")
         if self.case == 5:
             self.image = PhotoImage(file="../images/welcome/five.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x520")
+            self.welcome_root.geometry("800x550")
         if self.case == 6:
             self.image = PhotoImage(file="../images/welcome/six.png")
             self.label1 = Label(self.welcome_root, image= self.image)
@@ -715,7 +722,10 @@ class CANGui():
             self.image = PhotoImage(file="../images/welcome/seven.png")
             self.label1 = Label(self.welcome_root, image= self.image)
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x530")
+            self.welcome_root.geometry("800x550")
+            self.next_button.config(text='Close')
+        if self.case == 8:
+            self.welcome_root.destroy()
 
 
     def vertical_view(self):
