@@ -671,18 +671,18 @@ class CANGui():
             print(mail_offsety)
         except:
             time.sleep(1)
-
+        '''
         self.can_frame10 = Frame(self.root, height=powered_offsety)
-        self.can_frame10.grid(row=6, column=0, sticky='w')
+        self.can_frame10.grid(row=5, column=0, sticky='w')
         
         self.can_frame11 = Frame(self.root)
         self.can_frame11.grid(row=5, column=2, sticky='e')
+        '''
+        self.label = Label(self.root, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.label.grid(row=5, column=0, padx=(10,0),pady=(powered_offsety,0), sticky='w')
         
-        self.label = Label(self.can_frame10, text='Powered by: ICSolution', font='Helvetica 11 bold')
-        self.label.grid(row=0, column=0, padx=(10,0),pady=(powered_offsety,0))
-        
-        self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
-        self.label2.grid(row=0, column=0, pady=(mail_offsety,0), sticky='e')
+        self.label2 = Label(self.root, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        self.label2.grid(row=5, column=2, pady=(mail_offsety,0), sticky='e')
         
         
     def sensor_temp(self):
