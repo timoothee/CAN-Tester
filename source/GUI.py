@@ -145,6 +145,7 @@ class CANGui():
         self.can6_ckBox_var = IntVar()
         self.can7_ckBox_var = IntVar()
         self.mux_list = [self.can0_ckBox_var, self.can1_ckBox_var, self.can2_ckBox_var, self.can3_ckBox_var, self.can4_ckBox_var, self.can5_ckBox_var, self.can6_ckBox_var, self.can7_ckBox_var]
+        self.mux_sel = [23, 16, 7]
 
     def build(self):
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -533,12 +534,14 @@ class CANGui():
 
     def mux_control(self):
         for item in self.mux_list:
+            print('item val',item.get())
             if item.get() == 1:
                 print("-")
                 print(self.mux_list.index(item))
-                self.module_sender.mux_led_control(self.mux_list.index(item))
-
-
+                self.module_sender.mux_led_control_on(self.mux_list.index(item))
+                print(self.mux_list.index(item))
+            else:
+                self.module_sender.mux_led_control_off(self.mux_list.index(item))
 
     def find_bus_payload(self):
         simplified_id_list = []
@@ -1396,16 +1399,21 @@ class CANGui():
                 self.frame.set_payload(message[index+1:])
                 self.frame.set_fd_flag("0")
             
-            
+    def set_mux_sel(self, can_channel: int):
+        selection = bin(can_channel).replace('0b', '').zfill(3)
+        self.module_sender.set_mux_sel(selection)
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
-            self.error_listbox.delete(0, END)
-            self.backend_frame()
-            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
-            if self.que_loop_var.get() == 1:
-                self.active_loop_var = True
-                    
+            for item in self.mux_list:
+                if item.get() == 1:
+                    self.set_mux_sel(self.mux_list.index(item))
+                    self.error_listbox.delete(0, END)
+                    self.backend_frame()
+                    self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
+                    if self.que_loop_var.get() == 1:
+                        self.active_loop_var = True
+                
         else:
             self.initial_interface_state()
             self.error_listbox.insert(END,"Error: CAN is DOWN")
