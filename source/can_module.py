@@ -24,12 +24,10 @@ class CanModule():
 
     def set_mux_sel(self, selection: str):
         print(selection, type(selection))
-        for i in range(3):
+        for i in range(2, -1, -1):
             GPIO.setup(self.sel_pins[i], GPIO.OUT)
-            GPIO.output(self.sel_pins[i], int(selection[i]))
-
-            
-        
+            GPIO.output(self.sel_pins[i], int(selection[0]))
+            selection = selection[1:]
 
     def set_rasp_path(self, path):
         self.rasp_path = path
