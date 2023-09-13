@@ -19,5 +19,5 @@ if __name__ == "__main__":
    #gui.root.mainloop()
     itf = InterfaceTest("1")
     itf.build()
-    #itf.root.overrideredirect(True)
+    itf.root.overrideredirect(True)
     itf.root.mainloop()

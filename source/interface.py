@@ -5,19 +5,25 @@ import threading
 import time
 from PIL import Image, ImageTk
 import subprocess
+from tkinter import font
 
 class InterfaceTest():
     def __init__(self, gui_revision: str):
         self.gui_revision = gui_revision
         self.root = Tk()
+        self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
+        self.menu_bar1 = Menu(self.root, bg="grey", activebackground='#7f7e7f', activeborderwidth=0)
+        self.general = Menu(self.menu_bar1, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
         self.menu_bar = Menu(self.root, bg="grey")
-        self.general = Menu(self.menu_bar, tearoff = 0)
+        #self.general = Menu(self.menu_bar, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.blankenu = Menu(self.menu_bar, tearoff=0)
+
+        self.ico = PhotoImage(file="/home/raspberry/CAN-Tester/images/button.png")
 
         self.general.add_command(label="About CANrasp")
         self.general.add_command(label="Check for Updates...")
@@ -25,20 +31,25 @@ class InterfaceTest():
         self.cpu_sensor = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors")
         self.general.add_separator()
-        self.general.add_command(label="Quit")
+        self.general.add_command(label="Quit", command=self.root.destroy)
 
         self.view.add_command(label="Vertical")
         self.view.add_command(label="Horizontal")
         self.help.add_command(label="Welcome")
         self.help.add_command(label="Contact")
 
-        self.menu_bar.add_cascade(label="General", menu=self.general)
+
+        self.menu_bar.add_cascade(label="General", menu=self.general, activebackground='#7f7e7f')
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
-        self.menu_bar.add_cascade(label="".ljust(188), menu=self.help)
-        self.menu_bar.add_cascade(label='CANRasp', menu=self.help)
+        self.menu_bar.add_cascade(label="".ljust(188))
+        self.menu_bar.add_cascade(label='CANRASP', menu=self.help)
+        self.menu_bar.add_cascade(label="".ljust(219))
         self.menu_bar.entryconfig("".ljust(188),state='disabled')
-        self.menu_bar.entryconfig("CANRasp",state='disabled')
+        self.menu_bar.entryconfig("CANRASP",state='disabled')
+        self.menu_bar.entryconfig("".ljust(219),state='disabled')
+        
+        self.menu_bar.add_command(label="x", activebackground='red', command=self.root.destroy, font=font.Font(weight="bold"))
 
         self.root.config(menu=self.menu_bar)
         self.brs_box = IntVar()
