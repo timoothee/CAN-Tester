@@ -1,11 +1,11 @@
 '''
 from can_frame import CanFrame
-from GUI import *
 from can_module import CanModule
 from tkinter import ttk
 import os
 from splash import SplashScreen
 '''
+from GUI import *
 from interface import *  # for interface test
 
 if os.environ.get('DISPLAY','') == '':
@@ -14,11 +14,10 @@ if os.environ.get('DISPLAY','') == '':
 
 if __name__ == "__main__":
     # MAJOR.MINOR.PATCH
-    #gui = CANGui("v.1.10.0")
-    #gui.build()
-    #gui.root.mainloop()
+   #gui = CANGui("v.1.10.0")
+   #gui.build()
+   #gui.root.mainloop()
     itf = InterfaceTest("1")
     itf.build()
+    #itf.root.overrideredirect(True)
     itf.root.mainloop()
-
-    

@@ -106,63 +106,43 @@ class InterfaceTest():
 
     def build(self):
         #self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.can_frame1 = Frame(self.root)
+        self.can_frame1 = Frame(self.root, highlightbackground='red', highlightthickness=3)
         self.can_frame1.grid(row=0, column=0, sticky="nsew")
 
-        self.can_frame1_1 = Frame(self.can_frame1)
-        self.can_frame1_1.grid(row=0, column=3, sticky="nsew")
-
-        self.can_frame1_2 = Frame(self.can_frame1)
-        self.can_frame1_2.grid(row=1, column=3, sticky="nsew")
-
-        self.can_frame1_3 = Frame(self.can_frame1)
-        self.can_frame1_3.grid(row=2, column=3, sticky="nsew")
-
-        self.can_frame1_4 = Frame(self.can_frame1)
-        self.can_frame1_4.grid(row=0, column=4, sticky="nsew")
-
-        self.can_frame1_5 = Frame(self.can_frame1)
-        self.can_frame1_5.grid(row=1, column=4, sticky="nsew")
-
-        self.can_frame2 = Frame(self.root)
+        self.can_frame2 = Frame(self.root, highlightbackground='red', highlightthickness=3)
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
 
-        self.can_frame3 = Frame(self.root)
+        self.can_frame3 = Frame(self.root,  highlightbackground='red', highlightthickness=3)
         self.can_frame3.grid(row=2, column=0, sticky="nsew")
-
-        self.can_frame4 = Frame(self.root)
+        
+        self.can_frame4 = Frame(self.root, highlightbackground='red', highlightthickness=3)
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
+        
+        self.can_frame5 = Frame(self.root, highlightbackground='#a9a9a9', highlightthickness=3)
+        self.can_frame5.grid(row=6, column=0, sticky="w", pady=(5))
 
-        self.empty_can_frame1 = Frame(self.root)
-        self.empty_can_frame1.grid(row=1, column=1)
+        self.can_frame6= Frame(self.root, highlightbackground='red', highlightthickness=3)
+        self.can_frame6.grid(row=2, column=1)
+        
+        self.can_frame7 = Frame(self.root, highlightbackground='red', highlightthickness=3)
+        self.can_frame7.grid(row=3, column=1, sticky="w")
+        # Mux label has no frame, row 5 column 0 are reserved
+        self.can_frame8 = Frame(self.root, highlightbackground='red', highlightthickness=3)
+        self.can_frame8.grid(row=7, column=0, sticky='w')
 
-        self.can_frame5= Frame(self.root)
-        self.can_frame5.grid(row=2, column=1, sticky="nsew")
+        self.can_frame8_1 = Frame(self.can_frame8, highlightbackground='red', highlightthickness=3)
+        self.can_frame8_1.grid(row=0, column=0, padx=(20,0))
+        
+        self.can_frame8_2 = Frame(self.can_frame8, highlightbackground='red', highlightthickness=3)
+        self.can_frame8_2.grid(row=0, column=1, sticky='n')
 
-        self.can_frame6 = Frame(self.root)
-        self.can_frame6.grid(row=3, column=1, sticky="nsew")
-
-        self.can_frame4_2 = Frame(self.root, highlightbackground='#a9a9a9', highlightthickness=3)
-        self.can_frame4_2.grid(row=4, column=0, sticky="nsew", padx=(20,0), pady=(5))
-
-        self.can_frame7 = Frame(self.root)
-        self.can_frame7.grid(row=5, column=0, sticky="nsew", pady=(20))
-
-        self.can_frame7_2 = Frame(self.can_frame7)
-        self.can_frame7_2.grid(row=0, column=1)
-
-        self.can_frame8 = Frame(self.can_frame7)
-        self.can_frame8.grid(row=1, column=1, sticky="nw")
-
-        self.empty_can_frame2 = Frame(self.root)
-        self.empty_can_frame2.grid(row=1, column=3)
-
-        self.can_frame9 = Frame(self.can_frame5)
-        self.can_frame9.grid(row=0, column=1)
-
-        self.can_frame12 = Frame(self.root)
-        self.can_frame12.grid(row=0, column=2, sticky='nsew')
-
+        '''
+        self.empty_can_frame1 = Frame(self.root, highlightbackground='red', highlightthickness=3)
+        self.empty_can_frame1.grid(row=1, column=1, padx=20)
+        '''
+        self.can_frame9 = Frame(self.root)
+        self.can_frame9.grid(row=0, column=2, sticky='nsew')
+        
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
         self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
@@ -186,62 +166,63 @@ class InterfaceTest():
         self.drop_down_id_baudrate.grid(row = 1, column=1)
 
         self.data_baudrate_Label = Label(self.can_frame1, text = "DATA Baudrate")
-        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
+        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0), padx=(0,20))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
         self.drop_down_data_baudrate.config(width=5)
-        self.drop_down_data_baudrate.grid(row = 1, column=2)
+        self.drop_down_data_baudrate.grid(row = 1, column=2, padx=(0,20))
 
         self.temp_cpu_label= Label(self.can_frame1, text= self.cpu_temp)
         self.temp_cpu_label.grid(row=3, column=1)
 
-        # frame_1_1
-        self.sample_point_label = Label(self.can_frame1_1, text = "ID SP")
+        self.sample_point_label = Label(self.can_frame1, text = "ID SP")
         self.sample_point_label.config(state='disabled')
-        self.sample_point_label.grid(row=0, column=0, padx=(50,0), pady=(20,0))
+        self.sample_point_label.grid(row=0, column=3, pady=(20,0))
 
-        self.dsample_point_label = Label(self.can_frame1_1, text = "DATA SP")
-        self.dsample_point_label.grid(row=0, column=1, padx=(75,0), pady=(20,0))
+        self.empty_label = Label(self.can_frame1,text='   ')
+        self.empty_label.grid(row=0, column=4)
 
-        # frame 1_2
-        self.sample_point_entry = Entry(self.can_frame1_2, textvariable = self.text_variable_sp)
+        self.dsample_point_label = Label(self.can_frame1, text = "DATA SP")
+        self.dsample_point_label.grid(row=0, column=5, pady=(20,0))
+
+        self.sample_point_entry = Entry(self.can_frame1, textvariable = self.text_variable_sp)
         self.sample_point_entry.config(width=5, state='disable')
-        self.sample_point_entry.grid(row=0, column=0, padx=(47,0))
+        self.sample_point_entry.grid(row=1, column=3)
 
-        self.dsample_point_entry = Entry(self.can_frame1_2, textvariable = self.dtext_variable_sp)
+        self.dsample_point_entry = Entry(self.can_frame1, textvariable = self.dtext_variable_sp)
         self.dsample_point_entry.config(width=5)
-        self.dsample_point_entry.grid(row=0, column=1, padx=(74,0))
+        self.dsample_point_entry.grid(row=1, column=5)
 
-        # frame 1_3
-        self.actual_data_label = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10))
+        self.actual_data_label = Label(self.can_frame1, text="Actual Data", font=('Arial', 10))
         self.actual_data_label.config(state='disabled')
-        self.actual_data_label.grid(row=0, column=0, padx=(15,0))
+        self.actual_data_label.grid(row=2, column=3, padx=(0,35))
 
-        self.sample_point_data = Label(self.can_frame1_3, text = "0.750", font=('Arial', 10))
+        self.sample_point_data = Label(self.can_frame1, text = "0.750", font=('Arial', 10))
         self.sample_point_data.config(state='disabled')
-        self.sample_point_data.grid(row=0, column=1)
+        self.sample_point_data.grid(row=2, column=3, sticky='e')
 
-        self.actual_data_dlabel = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10))
-        self.actual_data_dlabel.grid(row=0, column=2, padx=(15,0))
+        self.actual_data_dlabel = Label(self.can_frame1, text="Actual Data", font=('Arial', 10))
+        self.actual_data_dlabel.grid(row=2, column=5, padx=(0,35))
 
-        self.sample_dpoint_data = Label(self.can_frame1_3, text = "0.750", font=('Arial', 10))
-        self.sample_dpoint_data.grid(row=0, column=3)
+        self.sample_dpoint_data = Label(self.can_frame1, text = "0.750", font=('Arial', 10))
+        self.sample_dpoint_data.grid(row=2, column=5, sticky='e')
 
-        # frame 1_4
-        self.status_label = Label(self.can_frame1_4, text="STATUS")
-        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(25,0))
+        self.empty_label2 = Label(self.can_frame1, text='   ')
+        self.empty_label2.grid(row=0, column=6, padx=(79,0))
 
-        self.up_down_button = Button(self.can_frame1_4, text="UP",fg="green", width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=1, sticky='e', padx=(5,0), pady= (10,0))
+        self.status_label = Label(self.can_frame1, text="STATUS")
+        self.status_label.grid(row=0, column=7, pady=(20,0))
 
-        # frame 1_5
-        self.default_status_label = Label(self.can_frame1_5, text="DOWN", fg='red')
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", width=3, state="disabled")
+        self.up_down_button.grid(row=0, column=8, sticky='e', padx=(5,0), pady= (10,0))
+
+        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.config(width=5)
-        self.default_status_label.grid(row=0, column=0, padx=(30,0), sticky='e')
+        self.default_status_label.grid(row=1, column=7)
         
-        self.dev_button = Button(self.can_frame1_5, text= "<  >", width = 3)
-        self.dev_button.grid(row=0, column=1, padx=(10,0))
-
+        self.dev_button = Button(self.can_frame1, text= "<  >", width=3)
+        self.dev_button.grid(row=1, column=8, padx=(10,0))
+        
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
@@ -283,16 +264,18 @@ class InterfaceTest():
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5)
 
-        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE")
-        self.add_to_q.grid(row = 1, column=6, padx=(238,0))
+        self.root.update()
+
+        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", width=10)
+        self.add_to_q.grid(row = 1, column=6, padx=(292,0))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
-        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
+        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0))
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 90, height= 15,selectmode=EXTENDED)
-        self.que_listbox.grid(row=1, column=0, padx=20)
+        self.que_listbox.grid(row=1, column=0, padx=(20,0))
 
         # frame 4
         self.import_button = Button(self.can_frame4, text="Import")
@@ -311,7 +294,7 @@ class InterfaceTest():
         self.ok_button.grid(row=0, column=4)
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
-        self.loop_checkbox_label.grid(row = 0, column=5, padx=(240,0))
+        self.loop_checkbox_label.grid(row = 0, column=5, padx=(322,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6)
@@ -319,122 +302,131 @@ class InterfaceTest():
         self.send_button = Button(self.can_frame4, text="SEND QUE")
         self.send_button.grid(row = 0, column=7)
 
-        self.mux_label = Label(self.can_frame4, text='MUX AREA', font=('13'))
-        self.mux_label.grid(row=1, column=0, padx=(20,0), pady=(15,0))
-
-        # frame4_2
-        self.can0_ckBox = Checkbutton(self.can_frame4_2, variable = self.can0_ckBox_var)
+        # This widget is not included in frame
+        self.mux_label = Label(self.root, text='MUX AREA', font=('13'))
+        self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(15,0), sticky='w')
+        
+        # frame 5
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var)
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
 
-        self.can0_label = Label(self.can_frame4_2, text='CAN 0')
+        self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
 
-        self.can1_ckBox = Checkbutton(self.can_frame4_2, variable = self.can1_ckBox_var)
+        self.can1_ckBox = Checkbutton(self.can_frame5, variable = self.can1_ckBox_var)
         self.can1_ckBox.grid(row=1, column=1, padx=(10,0))
 
-        self.can1_label = Label(self.can_frame4_2, text='CAN 1')
+        self.can1_label = Label(self.can_frame5, text='CAN 1')
         self.can1_label.grid(row=2, column=1, padx=(10,0))
 
-        self.can2_ckBox = Checkbutton(self.can_frame4_2, variable = self.can2_ckBox_var)
+        self.can2_ckBox = Checkbutton(self.can_frame5, variable = self.can2_ckBox_var)
         self.can2_ckBox.grid(row=1, column=2, padx=(10,0))
 
-        self.can2_label = Label(self.can_frame4_2, text='CAN 2')
+        self.can2_label = Label(self.can_frame5, text='CAN 2')
         self.can2_label.grid(row=2, column=2, padx=(10,0))
 
-        self.can3_ckBox = Checkbutton(self.can_frame4_2, variable = self.can3_ckBox_var)
+        self.can3_ckBox = Checkbutton(self.can_frame5, variable = self.can3_ckBox_var)
         self.can3_ckBox.grid(row=1, column=3, padx=(10,0))
 
-        self.can3_label = Label(self.can_frame4_2, text='CAN 3')
+        self.can3_label = Label(self.can_frame5, text='CAN 3')
         self.can3_label.grid(row=2, column=3, padx=(10,0))
 
-        self.can4_ckBox = Checkbutton(self.can_frame4_2, variable = self.can4_ckBox_var)
+        self.can4_ckBox = Checkbutton(self.can_frame5, variable = self.can4_ckBox_var)
         self.can4_ckBox.grid(row=1, column=4, padx=(10,0))
 
-        self.can4_label = Label(self.can_frame4_2, text='CAN 4')
+        self.can4_label = Label(self.can_frame5, text='CAN 4')
         self.can4_label.grid(row=2, column=4, padx=(10,0))
 
-        self.can5_ckBox = Checkbutton(self.can_frame4_2, variable = self.can5_ckBox_var)
+        self.can5_ckBox = Checkbutton(self.can_frame5, variable = self.can5_ckBox_var)
         self.can5_ckBox.grid(row=1, column=5, padx=(10,0))
 
-        self.can5_label = Label(self.can_frame4_2, text='CAN 5')
+        self.can5_label = Label(self.can_frame5, text='CAN 5')
         self.can5_label.grid(row=2, column=5, padx=(10,0))
 
-        self.can6_ckBox = Checkbutton(self.can_frame4_2, variable = self.can6_ckBox_var)
+        self.can6_ckBox = Checkbutton(self.can_frame5, variable = self.can6_ckBox_var)
         self.can6_ckBox.grid(row=1, column=6, padx=(10,0))
 
-        self.can6_label = Label(self.can_frame4_2, text='CAN 6')
+        self.can6_label = Label(self.can_frame5, text='CAN 6')
         self.can6_label.grid(row=2, column=6, padx=(10,0))
 
-        self.can7_ckBox = Checkbutton(self.can_frame4_2, variable = self.can7_ckBox_var)
+        self.can7_ckBox = Checkbutton(self.can_frame5, variable = self.can7_ckBox_var)
         self.can7_ckBox.grid(row=1, column=7, padx=(10,0))
 
-        self.can7_label = Label(self.can_frame4_2, text='CAN 7')
+        self.can7_label = Label(self.can_frame5, text='CAN 7')
         self.can7_label.grid(row=2, column=7, padx=(10,0))
-
-        # frame 5
-        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
+        
+        # frame 6
+        self.can_bus_listbox_label = Label(self.can_frame6, text="CAN BUS")
         self.can_bus_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
+        self.can_bus_listbox = Listbox(self.can_frame6, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=20)
 
-        # frame 6
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
+        # frame 7
+        self.save_button_output = Button(self.can_frame7, text="Save", command=lambda:self.save("output"))
         self.save_button_output.grid(row=0, column=0, padx=(20,0), sticky='w')
 
-        self.clear_button_output = Button(self.can_frame6, text="Clear")
+        self.clear_button_output = Button(self.can_frame7, text="Clear")
         self.clear_button_output.grid(row=0, column=1, sticky='w')
         
-        self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame6, self.see_only_dropdown_var, *self.see_only_dropdown_list)
+        self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame7, self.see_only_dropdown_var, *self.see_only_dropdown_list)
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        self.start_test_button = Button(self.can_frame6, text="Start Test")
+        self.start_test_button = Button(self.can_frame7, text="Start Test")
         self.start_test_button.grid(row=0, column=3, sticky='w')
         
-
-        # frame 7
-        self.error_listbox_label = Label(self.can_frame7, text='Info list')
-        self.error_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0), pady=(10,0))
+        # frame 8_1
+        self.error_listbox_label = Label(self.can_frame8_1, text='Info list')
+        self.error_listbox_label.grid(row=0, column=0, sticky='w', pady=(10,0))
         self.error_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.error_listbox =Listbox(self.can_frame7, width = 50, height=7, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
+        self.error_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
+        self.error_listbox.grid(row=1, column= 0, pady=5)
 
-        # frame 7_2
-        self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
-        self.loop_section_label.grid(row=0, column=0,padx=(80,0), pady=(10,0))
+        self.ep_label = Label(self.can_frame8_1, text='  ')
+        self.ep_label.grid(row=0, column=1, padx=(20,0))
+        
+        # frame 8_2
+        self.loop_section_label = Label(self.can_frame8_2, text='RANDOM LOOP SECTION')
+        self.loop_section_label.grid(row=0, column=0, pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
+        
+        self.delay_label = Label(self.can_frame8_2, text="DELAY (ms)")
+        self.delay_label.grid(row=1, column=0, padx=(25,0), sticky='w')
 
-        # frame 8
-        self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
-        self.delay_label.grid(row=0, column=0, padx=(110,0))
+        self.loop_msg_label = Label(self.can_frame8_2, text="MESSAGES")
+        self.loop_msg_label.grid(row=1, column=0, padx=(0,25), sticky='e')
 
-        self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
+        self.delay_entry = Entry(self.can_frame8_2, textvariable=self.delay_entry_var)
         self.delay_entry.config(width=6)
-        self.delay_entry.grid(row=1, column=0, padx=(110,0))
+        self.delay_entry.grid(row=2, column=0, padx=(30,0), sticky='w')
 
-        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
-        self.loop_msg_label.grid(row=0, column=1)
-
-        self.loop_messages_entry = Entry(self.can_frame8, textvariable=self.messages_loop_var)
+        self.loop_messages_entry = Entry(self.can_frame8_2, textvariable=self.messages_loop_var)
         self.loop_messages_entry.config(width=6)
-        self.loop_messages_entry.grid(row=1, column=1)
+        self.loop_messages_entry.grid(row=2, column=0, padx=(0,30), sticky='e')
 
-        self.loop_start_button = Button(self.can_frame8, text="START")
-        self.loop_start_button.grid(row=2, column=0, padx=(110,0))
+        self.loop_start_button = Button(self.can_frame8_2, text="START")
+        self.loop_start_button.grid(row=3, column=0, padx=(25,0), sticky='w')
 
+        #This widgets are not included in a frame
+        self.icsolution_label = Label(self.root, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.icsolution_label.grid(row=8, column=0, sticky='w', padx=(10,0), pady=(60,0))
+        
+        self.mail_label = Label(self.root, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        self.mail_label.grid(row=9, column=0, sticky='w', padx=(10,0), pady=(7,0))
+        
         # frame 12
         try:
-            self.image_dimenion = PhotoImage(file="../images/Continental-Logo.png")
+            self.image_dimenion = PhotoImage(file="/home/raspberry/CAN-Tester/images/Continental-Logo.png")
             continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
             self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+130, continental_logo_height+30), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
-            self.label1 = Label(self.can_frame12, image= self.imagee)
+            self.label1 = Label(self.can_frame9, image= self.imagee)
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
         except:
-            self.label1 = Label(self.can_frame12, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
+            self.label1 = Label(self.can_frame9, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
     
     def sensor_temp(self):
