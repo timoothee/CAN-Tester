@@ -17,6 +17,7 @@ class InterfaceTest():
         self.general = Menu(self.menu_bar, tearoff = 0)
         self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
         self.help = Menu(self.menu_bar, tearoff = 0)
+        self.blankenu = Menu(self.menu_bar, tearoff=0)
 
         self.general.add_command(label="About CANrasp")
         self.general.add_command(label="Check for Updates...")
@@ -34,6 +35,10 @@ class InterfaceTest():
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
+        self.menu_bar.add_cascade(label="".ljust(188), menu=self.help)
+        self.menu_bar.add_cascade(label='CANRasp', menu=self.help)
+        self.menu_bar.entryconfig("".ljust(188),state='disabled')
+        self.menu_bar.entryconfig("CANRasp",state='disabled')
 
         self.root.config(menu=self.menu_bar)
         self.brs_box = IntVar()
