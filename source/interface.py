@@ -136,12 +136,8 @@ class InterfaceTest():
         self.can_frame8_2 = Frame(self.can_frame8, highlightbackground='red', highlightthickness=3)
         self.can_frame8_2.grid(row=0, column=1, sticky='n')
 
-        '''
         self.empty_can_frame1 = Frame(self.root, highlightbackground='red', highlightthickness=3)
-        self.empty_can_frame1.grid(row=1, column=1, padx=20)
-        '''
-        self.can_frame9 = Frame(self.root)
-        self.can_frame9.grid(row=0, column=2, sticky='nsew')
+        self.empty_can_frame1.grid(row=0, column=1, padx=20, sticky='e')
         
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -423,10 +419,10 @@ class InterfaceTest():
             continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
             self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+130, continental_logo_height+30), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
-            self.label1 = Label(self.can_frame9, image= self.imagee)
-            self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
+            self.label1 = Label(self.empty_can_frame1, image= self.imagee)
+            self.label1.grid(row=0, column=0)
         except:
-            self.label1 = Label(self.can_frame9, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
+            self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
     
     def sensor_temp(self):
