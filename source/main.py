@@ -14,10 +14,11 @@ if os.environ.get('DISPLAY','') == '':
 
 if __name__ == "__main__":
     # MAJOR.MINOR.PATCH
-   #gui = CANGui("v.1.10.0")
-   #gui.build()
-   #gui.root.mainloop()
-    itf = InterfaceTest("v.1.10.0")
-    itf.build()
+    gui = CANGui("v.1.10.0")
+    gui.build()
+    gui.root.overrideredirect(True)
+    gui.root.mainloop()
+    #itf = InterfaceTest("v.1.10.0")
+    #itf.build()
     #itf.root.overrideredirect(True)
-    itf.root.mainloop()
+    #itf.root.mainloop()

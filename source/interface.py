@@ -14,10 +14,10 @@ class InterfaceTest():
         self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
         #self.root.title(f"CanInterfaceGUI {self.gui_revision}")
-        self.menu_bar1 = Menu(self.root, bg="grey", activebackground='#7f7e7f', activeborderwidth=0)
-        self.general = Menu(self.menu_bar1, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
+
         self.menu_bar = Menu(self.root, bg="grey")
-        self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
+        self.general = Menu(self.menu_bar, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
+        self.view = Menu(self.menu_bar, tearoff = 0)
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.blankenu = Menu(self.menu_bar, tearoff=0)
         self.canrasp = Menu(self.menu_bar, tearoff=0)
