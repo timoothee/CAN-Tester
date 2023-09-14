@@ -143,12 +143,14 @@ class CANGui():
         self.active_loop_var = False
         t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
+        self.t2 = threading.Thread(target=self.ranfun, daemon=True)
         t3 = threading.Thread(target=self.que_loop, daemon=True)
         t3.start()
         t4 = threading.Thread(target=self.sensor_temp, daemon=True)
         t4.start()
         t5 = threading.Thread(target=self.temp_var_color, daemon=True)
         t5.start()
+
         self.test_mode1 = StringVar()
         self.negate = StringVar()
         self.increment = StringVar()
@@ -270,14 +272,14 @@ class CANGui():
         self.status_label = Label(self.can_frame1, text="STATUS")
         self.status_label.grid(row=0, column=7, pady=(20,0))
 
-        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", width=3, state="disabled")
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", width=3, state="disabled", command=self.up_down_button_command)
         self.up_down_button.grid(row=0, column=8, sticky='e', padx=(5,0), pady= (10,0))
 
         self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.config(width=5)
         self.default_status_label.grid(row=1, column=7)
         
-        self.dev_button = Button(self.can_frame1, text= "<  >", width=3)
+        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings, width=3)
         self.dev_button.grid(row=1, column=8, padx=(10,0))
 
         self.empty_label2 = Label(self.can_frame1, text=' ')
@@ -287,7 +289,7 @@ class CANGui():
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
 
-        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box)
+        self.RTR_CkBtn = Checkbutton(self.can_frame2, variable=self.RTR_box, command=self.rtr_function)
         self.RTR_CkBtn.grid(row = 1, column=0, padx=(20,0))
 
         self.brs_Label = Label(self.can_frame2, text="BRS")
@@ -307,7 +309,7 @@ class CANGui():
         self.ext_flag_Label = Label(self.can_frame2, text="FD")
         self.ext_flag_Label.grid(row= 0, column=3)
 
-        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.FD_box)
+        self.FD_CkBtn = Checkbutton(self.can_frame2, variable=self.FD_box, command=self.fd_function)
         self.FD_CkBtn.grid(row = 1, column=3)
 
         self.frame_id_Label = Label(self.can_frame2, text="ID (0x)")
@@ -326,7 +328,7 @@ class CANGui():
 
         self.root.update()
 
-        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", width=10)
+        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", width=10, command= self.add_to_Q)
         self.add_to_q.grid(row = 1, column=6, padx=(292,0), pady=(0,5))
 
         # frame 3
@@ -334,23 +336,23 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=(5,0))
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 92, height= 15,selectmode=EXTENDED)
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 92, height= 15, selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=(5,0))
 
         # frame 4
-        self.import_button = Button(self.can_frame4, text="Import")
+        self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(5,0))
 
         self.save_button_input = Button(self.can_frame4, text="Save", command = lambda:self.save("input"))
         self.save_button_input.grid(row=0, column=1)
 
-        self.clear_button_input = Button(self.can_frame4, text="Clear")
+        self.clear_button_input = Button(self.can_frame4, text="Clear", command = lambda: self.delete_function(self.que_listbox))
         self.clear_button_input.grid(row=0, column=2)
 
-        self.Edit_button = Button(self.can_frame4, text="Edit")
+        self.Edit_button = Button(self.can_frame4, text="Edit", command= self.edit_button_fr4)
         self.Edit_button.grid(row=0, column=3, padx=(30,0))
 
-        self.ok_button = Button(self.can_frame4, text= "OK")
+        self.ok_button = Button(self.can_frame4, text= "OK", command= self.ok_command_fr4, state="disable")
         self.ok_button.grid(row=0, column=4)
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
@@ -359,7 +361,7 @@ class CANGui():
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6)
 
-        self.send_button = Button(self.can_frame4, text="SEND QUE")
+        self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
         self.send_button.grid(row = 0, column=7, pady=5)
 
         # This widget is not included in frame
@@ -367,49 +369,49 @@ class CANGui():
         self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
         
         # frame 5
-        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var)
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, command=self.mux_control)
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
 
         self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
 
-        self.can1_ckBox = Checkbutton(self.can_frame5, variable = self.can1_ckBox_var)
+        self.can1_ckBox = Checkbutton(self.can_frame5, variable = self.can1_ckBox_var, command=self.mux_control)
         self.can1_ckBox.grid(row=1, column=1, padx=(10,0))
 
         self.can1_label = Label(self.can_frame5, text='CAN 1')
         self.can1_label.grid(row=2, column=1, padx=(10,0))
 
-        self.can2_ckBox = Checkbutton(self.can_frame5, variable = self.can2_ckBox_var)
+        self.can2_ckBox = Checkbutton(self.can_frame5, variable = self.can2_ckBox_var, command=self.mux_control)
         self.can2_ckBox.grid(row=1, column=2, padx=(10,0))
 
         self.can2_label = Label(self.can_frame5, text='CAN 2')
         self.can2_label.grid(row=2, column=2, padx=(10,0))
 
-        self.can3_ckBox = Checkbutton(self.can_frame5, variable = self.can3_ckBox_var)
+        self.can3_ckBox = Checkbutton(self.can_frame5, variable = self.can3_ckBox_var, command=self.mux_control)
         self.can3_ckBox.grid(row=1, column=3, padx=(10,0))
 
         self.can3_label = Label(self.can_frame5, text='CAN 3')
         self.can3_label.grid(row=2, column=3, padx=(10,0))
 
-        self.can4_ckBox = Checkbutton(self.can_frame5, variable = self.can4_ckBox_var)
+        self.can4_ckBox = Checkbutton(self.can_frame5, variable = self.can4_ckBox_var, command=self.mux_control)
         self.can4_ckBox.grid(row=1, column=4, padx=(10,0))
 
         self.can4_label = Label(self.can_frame5, text='CAN 4')
         self.can4_label.grid(row=2, column=4, padx=(10,0))
 
-        self.can5_ckBox = Checkbutton(self.can_frame5, variable = self.can5_ckBox_var)
+        self.can5_ckBox = Checkbutton(self.can_frame5, variable = self.can5_ckBox_var, command=self.mux_control)
         self.can5_ckBox.grid(row=1, column=5, padx=(10,0))
 
         self.can5_label = Label(self.can_frame5, text='CAN 5')
         self.can5_label.grid(row=2, column=5, padx=(10,0))
 
-        self.can6_ckBox = Checkbutton(self.can_frame5, variable = self.can6_ckBox_var)
+        self.can6_ckBox = Checkbutton(self.can_frame5, variable = self.can6_ckBox_var, command=self.mux_control)
         self.can6_ckBox.grid(row=1, column=6, padx=(10,0))
 
         self.can6_label = Label(self.can_frame5, text='CAN 6')
         self.can6_label.grid(row=2, column=6, padx=(10,0))
 
-        self.can7_ckBox = Checkbutton(self.can_frame5, variable = self.can7_ckBox_var)
+        self.can7_ckBox = Checkbutton(self.can_frame5, variable = self.can7_ckBox_var, command=self.mux_control)
         self.can7_ckBox.grid(row=1, column=7, padx=(10,0))
 
         self.can7_label = Label(self.can_frame5, text='CAN 7')
@@ -425,16 +427,16 @@ class CANGui():
 
         # frame 7
         self.save_button_output = Button(self.can_frame7, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=0, column=0, sticky='w', padx=10, pady=5)
+        self.save_button_output.grid(row=0, column=0, sticky='w', padx=(10,0), pady=5)
 
-        self.clear_button_output = Button(self.can_frame7, text="Clear")
+        self.clear_button_output = Button(self.can_frame7, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
         self.clear_button_output.grid(row=0, column=1, sticky='w')
         
         self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame7, self.see_only_dropdown_var, *self.see_only_dropdown_list)
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        self.start_test_button = Button(self.can_frame7, text="Start Test")
+        self.start_test_button = Button(self.can_frame7, text="Start Test", command = self.test_starter)
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
         
         # frame 8_1
@@ -467,7 +469,7 @@ class CANGui():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=2, column=0, padx=(0,30), sticky='e')
 
-        self.loop_start_button = Button(self.can_frame8_2, text="START")
+        self.loop_start_button = Button(self.can_frame8_2, text="START", command=self.loop_section_button)
         self.loop_start_button.grid(row=3, column=0, padx=(25,0), sticky='w')
 
         self.emp = Label(self.can_frame8_2, text='  ')
@@ -491,7 +493,7 @@ class CANGui():
         except:
             self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
-    '''
+    
     def build2(self):
         self.dev_can_frame_1 = Frame(self.root_dev)
         self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
@@ -543,7 +545,7 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
-    '''
+    
     def minimize(self):
         self.root.state(newstate='iconic')
 
@@ -865,8 +867,7 @@ class CANGui():
         self.check_random_loop()
         self.random_loop_error_list()
         self.loop_active == True
-        t2 = threading.Thread(target=self.loop_section_button, daemon=True)
-        t2.start()
+        self.loop_section_button()
 
     def check_random_loop(self):
         self.delay_entry_incomplete = False
@@ -902,9 +903,20 @@ class CANGui():
             self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
-        while self.loop_active == True:
-            if self.default_status_label.cget("text") == "UP":
+        self.check_random_loop()
+        self.random_loop_error_list()
+        self.loop_active = True
+        print('Start')
+        self.t2.start()
+        print('Stop')
+        self.t2.Stop()
+
+    def ranfun(self):
+        while True:
+            print('Inside')
+            if self.default_status_label.cget("text") == "UP" and self.loop_active == True:
                 for i in range(self.messages_loop_var.get()):
+                    print('inside')
                     random_message = ""
                     bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
 
@@ -921,12 +933,13 @@ class CANGui():
 
                     self.module_sender.random_message(random_message)
                     time.sleep(self.delay_entry_var.get()/1000)
-                self.loop_active = False
+                    print('Outside')
+                self.loop_active == False
             else:
                 self.error_listbox.insert(END,"Error: CAN is DOWN")
                 self.error_listbox.itemconfig(END, {'fg': 'red'})
                 self.loop_active = False
-        self.module_sender.default_led()
+            self.module_sender.default_led()
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
