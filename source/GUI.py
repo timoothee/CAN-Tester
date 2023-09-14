@@ -139,17 +139,15 @@ class CANGui():
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
-        self.loop_active = False
         self.active_loop_var = False
         t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
-        self.t2 = threading.Thread(target=self.ranfun, daemon=True)
-        t3 = threading.Thread(target=self.que_loop, daemon=True)
+        t2 = threading.Thread(target=self.que_loop, daemon=True)
+        t2.start()
+        t3 = threading.Thread(target=self.sensor_temp, daemon=True)
         t3.start()
-        t4 = threading.Thread(target=self.sensor_temp, daemon=True)
+        t4 = threading.Thread(target=self.temp_var_color, daemon=True)
         t4.start()
-        t5 = threading.Thread(target=self.temp_var_color, daemon=True)
-        t5.start()
 
         self.test_mode1 = StringVar()
         self.negate = StringVar()
@@ -863,12 +861,6 @@ class CANGui():
         splash.destroy()
         root.mainloop()
 
-    def random_loop_start_func(self):
-        self.check_random_loop()
-        self.random_loop_error_list()
-        self.loop_active == True
-        self.loop_section_button()
-
     def check_random_loop(self):
         self.delay_entry_incomplete = False
         self.messages_entry_incomplete = False
@@ -905,41 +897,34 @@ class CANGui():
     def loop_section_button(self):
         self.check_random_loop()
         self.random_loop_error_list()
-        self.loop_active = True
-        print('Start')
-        self.t2.start()
-        print('Stop')
-        self.t2.Stop()
+        self.random_thread = threading.Thread(target=self.ranfun)
+        self.random_thread.start()
 
     def ranfun(self):
-        while True:
-            print('Inside')
-            if self.default_status_label.cget("text") == "UP" and self.loop_active == True:
-                for i in range(self.messages_loop_var.get()):
-                    print('inside')
-                    random_message = ""
-                    bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+        if self.default_status_label.cget("text") == "UP":
+            for i in range(self.messages_loop_var.get()):
+                print('inside')
+                random_message = ""
+                bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
 
-                    if random.choice(['normal', 'extended']) == "normal":
-                        random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
-                    else:
-                        random_message = '1'
-                        for i in range(7):
-                            random_message = random_message + random.choice(bits_list)
-                    random_message = random_message + "##" + str(random.randrange(0, 9))
-
-                    for i in range(random.randrange(1,11,2)+1):
+                if random.choice(['normal', 'extended']) == "normal":
+                    random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
+                else:
+                    random_message = '1'
+                    for i in range(7):
                         random_message = random_message + random.choice(bits_list)
+                random_message = random_message + "##" + str(random.randrange(0, 9))
 
-                    self.module_sender.random_message(random_message)
-                    time.sleep(self.delay_entry_var.get()/1000)
-                    print('Outside')
-                self.loop_active == False
-            else:
-                self.error_listbox.insert(END,"Error: CAN is DOWN")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
-                self.loop_active = False
-            self.module_sender.default_led()
+                for i in range(random.randrange(1,11,2)+1):
+                    random_message = random_message + random.choice(bits_list)
+
+                self.module_sender.random_message(random_message)
+                time.sleep(self.delay_entry_var.get()/1000)
+                print('Outside')
+        else:
+            self.error_listbox.insert(END,"Error: CAN is DOWN")
+            self.error_listbox.itemconfig(END, {'fg': 'red'})
+        self.module_sender.default_led()
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
