@@ -140,6 +140,7 @@ class CANGui():
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
         self.active_loop_var = False
+        self.stop_ran_func_var = False
         t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
         t2 = threading.Thread(target=self.que_loop, daemon=True)
@@ -468,8 +469,11 @@ class CANGui():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=2, column=0, padx=(0,30), sticky='e')
 
-        self.loop_start_button = Button(self.can_frame8_2, text="START", command=self.loop_section_button)
+        self.loop_start_button = Button(self.can_frame8_2, text="START", width=5, command=self.loop_section_button)
         self.loop_start_button.grid(row=3, column=0, padx=(25,0), sticky='w')
+
+        self.loop_stop_button = Button(self.can_frame8_2, text="STOP", width=5, command=self.stop_ran_func)
+        self.loop_stop_button.grid(row=3, column=0, padx=(0,25), sticky='e')
 
         self.emp = Label(self.can_frame8_2, text='  ')
         self.emp.grid(row=0, column=1)
@@ -545,6 +549,9 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
     
+    def stop_ran_func(self):
+        self.stop_ran_func_var = True 
+
     def minimize(self):
         self.root.state(newstate='iconic')
 
@@ -898,14 +905,15 @@ class CANGui():
     def loop_section_button(self):
         self.check_random_loop()
         self.random_loop_error_list()
+        self.stop_ran_func_var = False
         self.random_thread = threading.Thread(target=self.ranfun)
         self.random_thread.start()
 
     def ranfun(self):
-        if self.default_status_label.cget("text") == "UP":
-            for item in self.mux_list:
-                if item.get() == 1:
-                    for i in range(self.messages_loop_var.get()):
+        for item in self.mux_list:
+            if self.default_status_label.cget("text") == "UP" and item.get() == 1:
+                for i in range(self.messages_loop_var.get()):
+                    if self.stop_ran_func_var != True:
                         print('inside')
                         self.set_mux_sel(self.mux_list.index(item))
                         random_message = ""
@@ -925,10 +933,10 @@ class CANGui():
                         self.module_sender.random_message(random_message, self.mux_list.index(item))
                         time.sleep(self.delay_entry_var.get()/1000)
                         print('Outside')
-                    self.module_sender.default_led(self.mux_list.index(item))
-        else:
-            self.info_listbox.insert(END,"Error: CAN is DOWN")
-            self.info_listbox.itemconfig(END, {'fg': 'red'})
+                self.module_sender.default_led(self.mux_list.index(item))
+            elif self.default_status_label.cget("text") != "UP":
+                self.info_listbox.insert(END,"Error: CAN is DOWN")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")

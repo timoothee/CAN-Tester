@@ -104,6 +104,7 @@ class InterfaceTest():
         self.messages_loop_var = IntVar()
         self.loop_active = False
         self.active_loop_var = False
+        self.stop_ran_func_var = False
         t4 = threading.Thread(target=self.sensor_temp, daemon=True)
         t4.start()
         t5 = threading.Thread(target=self.temp_var_color, daemon=True)
@@ -427,8 +428,11 @@ class InterfaceTest():
         self.loop_messages_entry.config(width=6)
         self.loop_messages_entry.grid(row=2, column=0, padx=(0,30), sticky='e')
 
-        self.loop_start_button = Button(self.can_frame8_2, text="START")
+        self.loop_start_button = Button(self.can_frame8_2, text="START", width=5)
         self.loop_start_button.grid(row=3, column=0, padx=(25,0), sticky='w')
+
+        self.loop_stop_button = Button(self.can_frame8_2, text="STOP", width=5)
+        self.loop_stop_button.grid(row=3, column=0, padx=(0,25), sticky='e')
 
         self.emp = Label(self.can_frame8_2, text='  ')
         self.emp.grid(row=0, column=1)
