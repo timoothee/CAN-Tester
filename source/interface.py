@@ -14,10 +14,10 @@ class InterfaceTest():
         self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
         #self.root.title(f"CanInterfaceGUI {self.gui_revision}")
-        self.menu_bar1 = Menu(self.root, bg="grey", activebackground='#7f7e7f', activeborderwidth=0)
-        self.general = Menu(self.menu_bar1, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
+
         self.menu_bar = Menu(self.root, bg="grey")
-        self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
+        self.general = Menu(self.menu_bar, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
+        self.view = Menu(self.menu_bar, tearoff = 0)
         self.help = Menu(self.menu_bar, tearoff = 0)
         self.blankenu = Menu(self.menu_bar, tearoff=0)
         self.canrasp = Menu(self.menu_bar, tearoff=0)
@@ -326,8 +326,9 @@ class InterfaceTest():
         self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
         
         # frame 5
-        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var)
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, state='disable')
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
+        self.can0_ckBox.select()
 
         self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
@@ -397,12 +398,12 @@ class InterfaceTest():
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
         
         # frame 8_1
-        self.error_listbox_label = Label(self.can_frame8_1, text='Info list')
-        self.error_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
-        self.error_listbox_label.config(font=('Helvetica bold', 13))
+        self.info_listbox_label = Label(self.can_frame8_1, text='Info list')
+        self.info_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
+        self.info_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.error_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 0, pady=5)
+        self.info_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
+        self.info_listbox.grid(row=1, column= 0, pady=5)
 
         self.ep_label = Label(self.can_frame8_1, text='  ')
         self.ep_label.grid(row=0, column=1, padx=(20,0))
