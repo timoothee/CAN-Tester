@@ -367,8 +367,9 @@ class CANGui():
         self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
         
         # frame 5
-        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, command=self.mux_control)
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, command=self.mux_control, state='disable')
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
+        self.can0_ckBox.select()
 
         self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
@@ -438,12 +439,12 @@ class CANGui():
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
         
         # frame 8_1
-        self.error_listbox_label = Label(self.can_frame8_1, text='Info list')
-        self.error_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
-        self.error_listbox_label.config(font=('Helvetica bold', 13))
+        self.info_listbox_label = Label(self.can_frame8_1, text='Info list')
+        self.info_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
+        self.info_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.error_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 0, pady=5)
+        self.info_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
+        self.info_listbox.grid(row=1, column= 0, pady=5)
 
         self.ep_label = Label(self.can_frame8_1, text='  ')
         self.ep_label.grid(row=0, column=1, padx=(20,0))
@@ -605,13 +606,13 @@ class CANGui():
 
     def info_listbox_testmode(self):
         test_number, x = self.find_bus_payload()
-        self.error_listbox.delete(0, END)
-        self.error_listbox.insert(END,'All messages ' + str(len(test_number)//2))
-        self.error_listbox.itemconfig(END, {'fg': 'black'})
-        self.error_listbox.insert(END,'Passed ' + str(len(self.pass_test_list)))
-        self.error_listbox.itemconfig(END, {'fg': 'green'})
-        self.error_listbox.insert(END,'Failed ' + str(len(self.error_test_list)))
-        self.error_listbox.itemconfig(END, {'fg': 'red'})
+        self.info_listbox.delete(0, END)
+        self.info_listbox.insert(END,'All messages ' + str(len(test_number)//2))
+        self.info_listbox.itemconfig(END, {'fg': 'black'})
+        self.info_listbox.insert(END,'Passed ' + str(len(self.pass_test_list)))
+        self.info_listbox.itemconfig(END, {'fg': 'green'})
+        self.info_listbox.insert(END,'Failed ' + str(len(self.error_test_list)))
+        self.info_listbox.itemconfig(END, {'fg': 'red'})
 
         for i in range(len(test_number)):
             self.can_bus_listbox.itemconfig(i, {'fg': 'black'})
@@ -878,20 +879,20 @@ class CANGui():
 
     def random_loop_error_list(self):
         if self.delay_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Delay field uncompleted")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Delay field uncompleted")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Messages field uncompleted")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Messages field uncompleted")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.delay_entry_wrong == True:
-            self.error_listbox.insert(END,"Error: Delay field")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Delay field")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_wrong == True:
-            self.error_listbox.insert(END,"Error: Messages field")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Messages field")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
@@ -902,28 +903,31 @@ class CANGui():
 
     def ranfun(self):
         if self.default_status_label.cget("text") == "UP":
-            for i in range(self.messages_loop_var.get()):
-                print('inside')
-                random_message = ""
-                bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+            for item in self.mux_list:
+                if item.get() == 1:
+                    for i in range(self.messages_loop_var.get()):
+                        print('inside')
+                        self.set_mux_sel(self.mux_list.index(item))
+                        random_message = ""
+                        bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
 
-                if random.choice(['normal', 'extended']) == "normal":
-                    random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
-                else:
-                    random_message = '1'
-                    for i in range(7):
-                        random_message = random_message + random.choice(bits_list)
-                random_message = random_message + "##" + str(random.randrange(0, 9))
+                        if random.choice(['normal', 'extended']) == "normal":
+                            random_message = random.choice(['1','2','3','4','5','6','7']) + random.choice(bits_list) + random.choice(bits_list)
+                        else:
+                            random_message = '1'
+                            for i in range(7):
+                                random_message = random_message + random.choice(bits_list)
+                        random_message = random_message + "##" + str(random.randrange(0, 9))
 
-                for i in range(random.randrange(1,11,2)+1):
-                    random_message = random_message + random.choice(bits_list)
+                        for i in range(random.randrange(1,11,2)+1):
+                            random_message = random_message + random.choice(bits_list)
 
-                self.module_sender.random_message(random_message)
-                time.sleep(self.delay_entry_var.get()/1000)
-                print('Outside')
+                        self.module_sender.random_message(random_message)
+                        time.sleep(self.delay_entry_var.get()/1000)
+                        print('Outside')
         else:
-            self.error_listbox.insert(END,"Error: CAN is DOWN")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: CAN is DOWN")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
         self.module_sender.default_led()
     
     def default_module_settings(self):
@@ -1207,49 +1211,49 @@ class CANGui():
         self.debugging(" checking finished! ...", 0)
 
     def fields_uncompleted_error(self):
-        self.error_listbox.delete(0,END)
+        self.info_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
             self.debugging("... Not all fields were completed !", 1)
             if self.id_entry_error == True:
                 self.frame_id_Label.config(fg='red')
-                self.error_listbox.insert(END,"Error: Id uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Id uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_size_error == True:
-                self.error_listbox.insert(END,"Error: Payload size uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload size uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_entry_error == True:
                 self.payload_Label.config(fg='red')
-                self.error_listbox.insert(END,"Error: Payload uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
             self.debugging("... Some fields were completed wrong ! ", 1)
-            self.error_listbox.delete(0,END)
+            self.info_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True or self.id_entry_over_error == True:
                 if self.ext_box.get() == 1 and self.id_entry_over_error == False:
-                    self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Ext selected, Id not ext")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
                 elif self.ext_box.get() == 1 and self.id_entry_over_error == True:
-                    self.error_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
                 if self.ext_box.get() == 0:
-                    self.error_listbox.insert(END,"Error: Id ext")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Id ext")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
             if self.payload_size_error == True or self.payload_entry_error == True:
-                self.error_listbox.insert(END,"Error: Payload not equal to payload size")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload not equal to payload size")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_Entry.config(fg= 'red')
             if self.payload_entry_odd:
-                self.error_listbox.insert(END,"Error: Payload odd")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload odd")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_Entry.config(fg= 'red')
                 
 
@@ -1337,7 +1341,7 @@ class CANGui():
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
         self.payload_Entry.delete(0, 'end')
-        self.error_listbox.delete(0,END)
+        self.info_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color, state="normal")
         self.frame_id_entry.config(fg=self.default_entry_color)
@@ -1425,19 +1429,24 @@ class CANGui():
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
+            chkb = 0
             for item in self.mux_list:
                 if item.get() == 1:
+                    chkb += 1
                     self.set_mux_sel(self.mux_list.index(item))
-                    self.error_listbox.delete(0, END)
+                    self.info_listbox.delete(0, END)
                     self.backend_frame()
                     self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
                     if self.que_loop_var.get() == 1:
                         self.active_loop_var = True
-                
+            if chkb == 0:
+                self.info_listbox.insert(END,"INFO: No checkbox selected")
+                self.info_listbox.itemconfig(END, {'fg': '#ffd700'})
+
         else:
             self.initial_interface_state()
-            self.error_listbox.insert(END,"Error: CAN is DOWN")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: CAN is DOWN")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
 
 
 class SplashScreen:
