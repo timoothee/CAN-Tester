@@ -70,7 +70,7 @@ class CANGui():
         self.menu_bar.entryconfig("".ljust(206),state='disabled')
 
         self.menu_bar.add_command(label="_", activebackground='yellow', command=self.minimize(), font=font.Font(weight="bold"))
-        self.menu_bar.add_command(label="x", activebackground='red', command=self.root.destroy, font=font.Font(weight="bold"))
+        self.menu_bar.add_command(label="x", activebackground='red', command=self.destroy_app, font=font.Font(weight="bold"))
         self.root.config(menu=self.menu_bar)
 
         self.brs_box = IntVar()
@@ -368,9 +368,10 @@ class CANGui():
         self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
         
         # frame 5
-        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, command=self.mux_control, state='disable')
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, state='disable')
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
         self.can0_ckBox.select()
+        self.can0_ckBox.config(command=self.mux_control())
 
         self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
@@ -551,6 +552,11 @@ class CANGui():
     
     def stop_ran_func(self):
         self.stop_ran_func_var = True 
+
+    def destroy_app(self):
+        for item in self.mux_list:
+            self.module_sender.mux_led_control_off(self.mux_list.index(item))
+        self.root.destroy()
 
     def minimize(self):
         self.root.state(newstate='iconic')
@@ -855,7 +861,6 @@ class CANGui():
                 time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
-            self.module_sender.default_led()
 
     def splash(self):
         root = Tk()
