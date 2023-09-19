@@ -922,13 +922,13 @@ class CANGui():
                         for i in range(random.randrange(1,11,2)+1):
                             random_message = random_message + random.choice(bits_list)
 
-                        self.module_sender.random_message(random_message)
+                        self.module_sender.random_message(random_message, self.mux_list.index(item))
                         time.sleep(self.delay_entry_var.get()/1000)
                         print('Outside')
+                    self.module_sender.default_led(self.mux_list.index(item))
         else:
             self.info_listbox.insert(END,"Error: CAN is DOWN")
             self.info_listbox.itemconfig(END, {'fg': 'red'})
-        self.module_sender.default_led()
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
@@ -1433,10 +1433,12 @@ class CANGui():
             for item in self.mux_list:
                 if item.get() == 1:
                     chkb += 1
+                    print(self.mux_list.index(item))
                     self.set_mux_sel(self.mux_list.index(item))
                     self.info_listbox.delete(0, END)
                     self.backend_frame()
-                    self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
+                    self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list, self.mux_list.index(item))
+                    self.module_sender.default_led(self.mux_list.index(item))
                     if self.que_loop_var.get() == 1:
                         self.active_loop_var = True
             if chkb == 0:
