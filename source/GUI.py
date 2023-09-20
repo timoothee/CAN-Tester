@@ -426,6 +426,9 @@ class CANGui():
         self.can_bus_listbox = Listbox(self.can_frame6, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=10)
 
+        self.start_thread = Button(self.can_frame7, text='Start Thread')
+        self.start_thread.grid(row=0, column=4, sticky='e', padx=(0,10))
+
         # frame 7
         self.save_button_output = Button(self.can_frame7, text="Save", command=lambda:self.save("output"))
         self.save_button_output.grid(row=0, column=0, sticky='w', padx=(10,0), pady=5)
