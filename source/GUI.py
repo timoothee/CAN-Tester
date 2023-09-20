@@ -857,7 +857,7 @@ class CANGui():
         while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
                 for item in list(self.que_listbox.get(0, 'end')):
-                    self.module_sender.random_message(str(item[10:]))
+                    self.module_sender.random_message(str(item[10:]), 4)
                 time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
