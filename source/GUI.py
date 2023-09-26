@@ -165,6 +165,7 @@ class CANGui():
         self.can7_ckBox_var = IntVar()
         self.mux_list = [self.can0_ckBox_var, self.can1_ckBox_var, self.can2_ckBox_var, self.can3_ckBox_var, self.can4_ckBox_var, self.can5_ckBox_var, self.can6_ckBox_var, self.can7_ckBox_var]
         self.mux_sel = [23, 16, 7]
+        self.thread_var = IntVar()
 
     def build(self):
         #self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -426,9 +427,6 @@ class CANGui():
         self.can_bus_listbox = Listbox(self.can_frame6, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
         self.can_bus_listbox.grid(row=1, column=0, padx=10)
 
-        self.start_thread = Button(self.can_frame7, text='Start Thread')
-        self.start_thread.grid(row=0, column=4, sticky='e', padx=(0,10))
-
         # frame 7
         self.save_button_output = Button(self.can_frame7, text="Save", command=lambda:self.save("output"))
         self.save_button_output.grid(row=0, column=0, sticky='w', padx=(10,0), pady=5)
@@ -442,6 +440,12 @@ class CANGui():
 
         self.start_test_button = Button(self.can_frame7, text="Start Test", command = self.test_starter)
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
+
+        self.start_thread_btn = Button(self.can_frame7, text='Start Thread', state='disabled')
+        self.start_thread_btn.grid(row=0, column=4, sticky='e', padx=(335,0))
+
+        self.start_thread_ckbt = Checkbutton(self.can_frame7, command = self.bus_thread, variable=self.thread_var)
+        self.start_thread_ckbt.grid(row=0, column=5, padx=(0,10))
         
         # frame 8_1
         self.info_listbox_label = Label(self.can_frame8_1, text='Info list')
@@ -552,9 +556,60 @@ class CANGui():
 
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
-    
+
+    def bus_thread(self):
+        if self.thread_var.get() == 1:
+            self.test_listbox = Listbox(self.can_frame6, bg='black', fg='white', activestyle='underline', height=15, width=25, selectmode = EXTENDED)
+            self.test_listbox.grid(row=1, column=1, sticky='e')
+            #self.test_listbox.bindtags((self.test_listbox, self.can_frame6, 'all'))
+            self.start_thread_btn.config(state='normal')
+            test_thread = threading.Thread(target=self.thread_1, daemon=True)
+            test_thread.start()
+            #test_thread = threading.Thread(target=self.thread_1_2, daemon=True)
+            #test_thread.start()
+        else:
+            self.start_thread_btn.config(state='disabled')
+            self.test_listbox.destroy()
+
+    def thread_1(self):
+        log_file = open(self.module_sender.get_rasp_path() + 'can.log', 'r')
+        index = len(log_file.readlines())
+        log_file.seek(0)
+        str_1 = str(index) + ' messages already sent'
+        output_list = [str_1, 'This messages will not be verified']
+        self.test_listbox.insert(0, output_list[0])
+        time.sleep(0.2)
+        self.test_listbox.insert(1, output_list[1])
+        while self.thread_var.get() == 1:
+            log_file.seek(0)
+            if int(len(log_file.readlines())) != int(index):
+                log_file.seek(0)
+                if len(log_file.readlines()) > index:
+                    log_file.seek(0)
+                    x = self.module_sender.get_messages()
+                    print(x)
+                    if x != 0:
+                        self.test_listbox.insert('end', 'I sent a message')
+                        index = len(log_file.readlines())
+                        log_file.seek(0)
+                        self.module_sender.set_messages(0)
+                    else:
+                        self.test_listbox.insert('end', 'I received a message')
+                        index = len(log_file.readlines())
+                        log_file.seek(0)
+                else:
+                    index = 0
+
+    def thread_1_2(self):
+        while self.thread_var.get() == 1:
+            if self.module_sender.get_message_flag() == 1:
+                self.test_listbox.insert('end', 'I sent a message')
+                index = self.can_bus_listbox.size()
+                self.module_sender.set_message_flag(0)
+         
+
     def stop_ran_func(self):
-        self.stop_ran_func_var = True 
+        self.stop_ran_func_var = True
 
     def destroy_app(self):
         for item in self.mux_list:

@@ -14,6 +14,8 @@ class CanModule():
         self.can_status_var = False
         self.mux_led_pos = [4, 17, 27, 22, 5, 6, 13, 26]
         self.sel_pins = [23, 16, 7]
+        self.msg = ''
+        self.flag_msg = 0
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(14, GPIO.OUT)
@@ -28,6 +30,21 @@ class CanModule():
             GPIO.setup(self.sel_pins[i], GPIO.OUT)
             GPIO.output(self.sel_pins[i], int(selection[0]))
             selection = selection[1:]
+
+    def set_messages(self, mesg: int):
+        self.msg = mesg
+        print('<---', self.msg)
+
+    def get_messages(self):
+        print('--->', self.msg)
+        return self.msg
+
+    def set_message_flag(self, msg: int):
+        self.flag_msg = msg
+
+    def get_message_flag(self):
+        print(self.flag_msg)
+        return self.flag_msg
 
     def set_rasp_path(self, path):
         self.rasp_path = path
@@ -106,6 +123,8 @@ class CanModule():
 
     def send_q(self, id_list, brs_list, payload_list, fd_list, led_pin: int):
         for i in range(len(id_list)):
+            self.set_messages(1)
+            print('I set the flag')
             print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
             if payload_list[i] == "R":
                 #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)

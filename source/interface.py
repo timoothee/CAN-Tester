@@ -147,6 +147,7 @@ class InterfaceTest():
         
         self.can_frame7 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
         self.can_frame7.grid(row=3, column=1, sticky="w", padx=5, pady=5)
+
         # Mux label has no frame, row 5 column 0 are reserved
         self.can_frame8 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
         self.can_frame8.grid(row=7, column=0, sticky='w', padx=5)
@@ -398,8 +399,11 @@ class InterfaceTest():
         self.start_test_button = Button(self.can_frame7, text="Start Test")
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
 
-        self.start_thread = Button(self.can_frame7, text='Start Thread')
-        self.start_thread.grid(row=0, column=4, sticky='e', padx=(0,10))
+        self.start_thread_label = Label(self.can_frame7, text='Start Thread')
+        self.start_thread_label.grid(row=0, column=4, sticky='e', padx=(335,0))
+
+        self.start_thread_ckbt = Checkbutton(self.can_frame7)
+        self.start_thread_ckbt.grid(row=0, column=5, padx=(0,10))
         
         # frame 8_1
         self.info_listbox_label = Label(self.can_frame8_1, text='Info list')
