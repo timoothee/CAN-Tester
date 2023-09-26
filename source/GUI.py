@@ -23,15 +23,16 @@ from tkinter import font
 
 class CANGui():
     def __init__(self, gui_revision: str):
-        #self.splash()
+        self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
-        #self.root.geometry("1350x800")
-        #self.root.title(f"CanInterfaceGUI {self.gui_revision}")
+        print('-', self.root.winfo_screenwidth(),'--', self.root.winfo_screenheight())
+        self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
-
+        
+        # --- Menu Options
         self.menu_bar = Menu(self.root, bg="grey")
         self.general = Menu(self.menu_bar, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
         self.view = Menu(self.menu_bar, tearoff = 0)
@@ -49,11 +50,11 @@ class CANGui():
         self.general.add_separator()
         self.general.add_command(label="Quit", command=self.root.destroy)
         self.enable_menu = Menu(self.canrasp, tearoff=0)
-
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
         self.help.add_command(label="Welcome", command = self.welcome_user)
         self.help.add_command(label="Contact", command = self.contact_msg)
+
         self.canrasp.add_cascade(label='Enable', menu=self.enable_menu)
         self.enable_menu.add_command(label ='thickness 2', command=self.frame_enable2)
         self.enable_menu.add_command(label ='thickness 3', command=self.frame_enable3)
@@ -68,17 +69,16 @@ class CANGui():
         self.menu_bar.entryconfig("".ljust(172),state='disabled')
         self.menu_bar.entryconfig((f"CanInterfaceGUI {self.gui_revision}"),state='normal')
         self.menu_bar.entryconfig("".ljust(206),state='disabled')
-
         self.menu_bar.add_command(label="_", activebackground='yellow', command=self.minimize(), font=font.Font(weight="bold"))
         self.menu_bar.add_command(label="x", activebackground='red', command=self.destroy_app, font=font.Font(weight="bold"))
         self.root.config(menu=self.menu_bar)
-
+        # --- Variable Initialization
         self.brs_box = IntVar()
         self.ext_box = IntVar()
-        self.id_text = StringVar()
         self.RTR_box = IntVar()
         self.FD_box = IntVar()
         self.que_loop_var = IntVar()
+        self.id_text = StringVar()
         self.payload_entry = StringVar()
         self.payload_entry.set("")
         self.can_sender_var = StringVar()
@@ -102,6 +102,13 @@ class CANGui():
         self.position = 0
         self.can_send_module_optionmenu = None
         self.can_receive_module_optionmenu = None
+        self.screen_width_h = self.root.winfo_screenwidth() // 23
+        self.screen_height_h = self.root.winfo_screenheight() // 65
+        self.screen_width_v = self.root.winfo_screenwidth() // 25
+        self.screen_height_v = self.root.winfo_screenheight() // 100
+        # ---
+
+        # --- Platform Module
         if platform.system() == "Darwin":
             self.can_send_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
             self.can_receive_module_optionmenu = tuple(psutil.net_if_addrs())[1:4]
@@ -114,6 +121,8 @@ class CANGui():
             self.can_send_module_optionmenu = ("CAN0", "CAN1")
             self.can_receive_module_optionmenu = ("CAN0","CAN1")
             self.can_dict = {'CAN0':"can0", 'CAN1':"can1", 'CAN2':"can2"}
+        # ---
+
         self.baudrate_list = ('100K','200K','400K','500K','1M')
         self.data_baudrate_list = ('100K','200K','400K','500K','1M','2M','3M','4M','5M','6M','7M','8M')
         self.baudrate_dict = {'100K':100000,'200K':200000,'400K':400000,'500K':500000,"1M":1000000,"2M":2000000,'3M':3000000,'4M':4000000,"5M":5000000,"6M":6000000,"7M":7000000,"8M":8000000}   
@@ -141,6 +150,7 @@ class CANGui():
         self.messages_loop_var = IntVar()
         self.active_loop_var = False
         self.stop_ran_func_var = False
+        # --- Threads
         t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
         t2 = threading.Thread(target=self.que_loop, daemon=True)
@@ -230,6 +240,7 @@ class CANGui():
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
         self.drop_down_data_baudrate.config(width=5)
         self.drop_down_data_baudrate.grid(row = 1, column=2, padx=(0,20))
+
 
         self.temp_cpu_label= Label(self.can_frame1, text= self.cpu_temp, width=15)
         self.temp_cpu_label.grid(row=3, column=1)
@@ -336,9 +347,10 @@ class CANGui():
         self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=(5,0))
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
+
         self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 92, height= 15, selectmode=EXTENDED)
         self.que_listbox.grid(row=1, column=0, padx=(5,0))
-
+        
         # frame 4
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
         self.import_button.grid(row=0, column=0, padx=(5,0))
@@ -356,6 +368,7 @@ class CANGui():
         self.ok_button.grid(row=0, column=4)
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
+
         self.loop_checkbox_label.grid(row = 0, column=5, padx=(337,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
@@ -504,7 +517,7 @@ class CANGui():
         except:
             self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
-    
+
     def build2(self):
         self.dev_can_frame_1 = Frame(self.root_dev)
         self.dev_can_frame_1.grid(row=0, column=0, sticky="nsew")
@@ -779,7 +792,16 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")      
         
     def sensor_temp(self):
-        time.sleep(0.5)
+        slash_list = ['|','/','-','\\']
+        time.sleep(1)
+        for i in range(8):
+            point_load = ''
+            self.temp_cpu_label.config(text='CPU Temp')
+            for i in range(4):
+                point_load = slash_list[i]
+                self.temp_cpu_label.config(text=point_load + ' CPU Temp ' + point_load)
+                time.sleep(0.2)
+        
         self.cpu_sensor.add_command(label="CPU")
         output = subprocess.check_output(['sensors'])
         if output.decode().split('\n')[2].split()[1] == 'N/A':
@@ -793,9 +815,10 @@ class CANGui():
             self.cpu_sensor.entryconfig(0,label=self.cpu_temp)
             self.temp_cpu_label.config(text='Temp '+self.cpu_temp)
             time.sleep(0.5)
+        
 
     def temp_var_color(self):
-        time.sleep(5)
+        time.sleep(15)
         while True:
             temp_int = self.temp_int
             for char in temp_int:
@@ -814,53 +837,84 @@ class CANGui():
         messagebox.showinfo(title="INFO", message="Contact Teams: \nSandru Timotei")
 
     def welcome_user(self):
-        self.case = 0
+        self.case = 1
         self.welcome_root = Toplevel(self.root)
-        self.welcome_root.geometry("700x400")
-        self.welcome_label = Label(self.welcome_root, text="Welcome")
-        self.welcome_label.grid(row=0,column=0)
-        self.next_button = Button(self.welcome_root, text="Next", command= self.case_scenario)
-        self.next_button.grid(row=1, column=0, sticky='nw')
+        self.welcome_fr1 = Frame(self.welcome_root)
+        self.welcome_fr1.grid(row=0, column=0, pady=(300,0))
+        self.welcome_fr2 = Frame(self.welcome_root)
+        self.welcome_fr2.grid(row=1, column=0)
+        self.welcome_root.geometry("800x550")
+        self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/one.png')
+        imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+        new_imagee = ImageTk.PhotoImage(imagee)
+        self.label1 = Label(self.welcome_root, image= new_imagee)
+        self.label.image=new_imagee
+        self.label1.grid(row=0, column=0)
+        self.welcome_root.geometry("800x550")
+        self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
+        self.next_button.grid(row=1, column=0, sticky='s')
         self.welcome_root.mainloop()
 
     def case_scenario(self):
         self.case += 1
-        if self.case == 1:
-            self.welcome_label.destroy()
-            self.image = PhotoImage(file="../images/welcome/one.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
-            self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("500x300")
-        if self.case == 2:
-            self.image = PhotoImage(file="../images/welcome/two.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
-            self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
-        if self.case == 3:
-            self.image = PhotoImage(file="../images/welcome/three.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
-            self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
-        if self.case == 4:
-            self.image = PhotoImage(file="../images/welcome/four.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
-            self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("600x450")
-        if self.case == 5:
-            self.image = PhotoImage(file="../images/welcome/five.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
-            self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x520")
-        if self.case == 6:
-            self.image = PhotoImage(file="../images/welcome/six.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+        if self.case == 10:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/one.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
             self.welcome_root.geometry("800x550")
-        if self.case == 7:
-            self.image = PhotoImage(file="../images/welcome/seven.png")
-            self.label1 = Label(self.welcome_root, image= self.image)
+        if self.case == 2:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/two.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
             self.label1.grid(row=0, column=0)
-            self.welcome_root.geometry("800x530")
+            
+        if self.case == 3:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/three.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
+            self.label1.grid(row=0, column=0)
+        if self.case == 4:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/four.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
+            self.label1.grid(row=0, column=0)
+            
+        if self.case == 5:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/five.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
+            self.label1.grid(row=0, column=0)
+            
+        if self.case == 6:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/six.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
+            self.label1.grid(row=0, column=0)
+            
+        if self.case == 7:
+            self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/seven.png')
+            imagee = self.image.resize((800, 500), Image.ANTIALIAS)
+            new_imagee = ImageTk.PhotoImage(imagee)
+            self.label1 = Label(self.welcome_root, image= new_imagee)
+            self.label.image=new_imagee
+            self.label1.grid(row=0, column=0)
+           
+            self.next_button.config(text='Close')
+        if self.case == 8:
+            self.welcome_root.destroy()
 
 
     def vertical_view(self):
@@ -869,18 +923,31 @@ class CANGui():
         self.can_frame7.grid(row=6, column=0, sticky="nsew", pady=(30))
         self.can_frame7_2.grid(row=0, column=1)
         self.can_frame8.grid(row=1, column=1, sticky="nw")
-        self.que_listbox.configure(width=85, height=10)
-        self.can_bus_listbox.configure(width=85, height=10)
+        self.que_listbox.configure(width = self.root.winfo_width() - 1845, height= 10)
+        self.can_bus_listbox.configure(width = self.root.winfo_width() - 1845, height= 10)
         self.root.geometry("750x1200")
-        self.add_to_q.grid(padx=(190,0))
+        self.add_to_q.grid(padx=(self.root.winfo_width() - 1760,0))
         self.loop_checkbox_label.grid(padx=(187,0))
         self.status_label.grid(row=0, column=0, pady=(20,0), padx=(10,0))
         self.default_status_label.grid(row=0, column=0, padx=(13,0), sticky='e')
-        self.add_to_q.grid(padx=(160,0))
         self.loop_section_label.grid(padx=(50,0))
         self.delay_label.grid(padx=(80,0))
         self.delay_entry.grid(padx=(80,0))
         self.loop_start_button.grid(padx=(90,0))
+        self.can_frame10.grid_forget()
+        self.can_frame11.grid_forget()
+        self.label.grid_forget()
+        self.label1.grid_forget()
+        
+        self.label = Label(self.can_frame7, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.label.grid(row=2, column=0, sticky='w', padx=(20,0), pady=(30,0))
+        self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width, self.continental_logo_height), Image.ANTIALIAS)
+        self.imagee = ImageTk.PhotoImage(self.imagee)
+        self.label1 = Label(self.can_frame7, image= self.imagee)
+        self.label1.grid(row=2, column=1, padx=(10,0))
+        #self.label2 = Label(self.can_frame8, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        #self.label2.grid(row=3, column=0, sticky='e')
+        
     
     def horizontal_view(self):
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
@@ -889,7 +956,7 @@ class CANGui():
         self.can_frame1_2.grid(row=1, column=3, sticky="nsew")
         self.can_frame1_3.grid(row=2, column=3, sticky="nsew")
         self.can_frame1_4.grid(row=0, column=4, sticky="nsew")
-        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(25,0))
+        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(self.root.winfo_screenwidth() - 1890,0))
         self.default_status_label.grid(row=0, column=0, padx=(30,0), sticky='e')
         self.can_frame1_5.grid(row=1, column=4, sticky="nsew")
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
@@ -901,15 +968,31 @@ class CANGui():
         self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
         self.can_frame7_2.grid(row=0, column=1)
         self.can_frame8.grid(row=1, column=1, sticky="nw")
-        self.que_listbox.configure(width=90, height=15)
-        self.can_bus_listbox.configure(width=85, height=15)
+        self.que_listbox.configure(width = self.screen_width_h, height= self.screen_height_h)
+        self.can_bus_listbox.configure(width = self.screen_width_h, height= self.screen_height_h)
         self.add_to_q.grid(row = 1, column=6, padx=(238,0))
-        self.loop_checkbox_label.grid(padx=(240,0))
+        self.loop_checkbox_label.grid(padx=(self.root.winfo_screenwidth() - 1660,0))
         self.loop_section_label.grid(padx=(80,0))
         self.delay_label.grid(padx=(110,0))
         self.delay_entry.grid(padx=(110,0))
         self.loop_start_button.grid(padx=(110,0))
-
+        self.can_frame10.grid_forget()
+        self.can_frame11.grid_forget()
+        self.label.grid_forget()
+        self.label1.grid_forget()
+        self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width+130, self.continental_logo_height+30), Image.ANTIALIAS)
+        self.imagee = ImageTk.PhotoImage(self.imagee)
+        self.label1 = Label(self.can_frame12, image= self.imagee)
+        self.label1.grid(row=0, column=0, padx=10, pady=(50,0))
+        screen_height = self.root.winfo_screenheight()
+        self.can_frame10 = Frame(self.root, height=self.powered_offsety)
+        self.can_frame10.grid(row=5, column=0, sticky='w')
+        self.can_frame11 = Frame(self.root)
+        self.can_frame11.grid(row=5, column=2, sticky='e')
+        self.label = Label(self.can_frame10, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.label.grid(row=0, column=0, padx=(10,0),pady=(self.powered_offsety,0))
+        self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        self.label2.grid(row=0, column=0, padx =10 , pady=(self.mail_offsety,0), sticky='e')
     def que_loop(self):
         time.sleep(10)
         while True:
