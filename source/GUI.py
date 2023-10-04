@@ -10,6 +10,7 @@ import sys
 import can_module as CAN_module
 import can_frame as CAN_frame
 import test_canbus as Can_Test
+import fade
 import psutil
 import platform
 import threading
@@ -23,6 +24,7 @@ from tkinter import font
 
 class CANGui():
     def __init__(self, gui_revision: str):
+        fade.leds_init()
         self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
@@ -580,6 +582,7 @@ class CANGui():
             test_thread.start()
             #test_thread = threading.Thread(target=self.thread_1_2, daemon=True)
             #test_thread.start()
+            test_mode = self.see_only_dropdown_var.get()
         else:
             self.start_thread_btn.config(state='disabled')
             self.test_listbox.destroy()
@@ -1591,7 +1594,9 @@ class CANGui():
                     self.set_mux_sel(self.mux_list.index(item))
                     self.info_listbox.delete(0, END)
                     self.backend_frame()
-                    self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list, self.mux_list.index(item))
+                    for i in range(len(self.frame.id_list)):
+                        print('InSiDe')
+                        self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
                     self.module_sender.default_led(self.mux_list.index(item))
                     if self.que_loop_var.get() == 1:
                         self.active_loop_var = True

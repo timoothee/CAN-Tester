@@ -121,28 +121,27 @@ class CanModule():
     def interface_down(self):
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
 
-    def send_q(self, id_list, brs_list, payload_list, fd_list, led_pin: int):
-        for i in range(len(id_list)):
-            self.set_messages(1)
-            print('I set the flag')
-            print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
-            if payload_list[i] == "R":
-                #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
-                GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
-                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
-            if fd_list[i] == "0":
-                #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
-                GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
-                os.popen(f"cansend {self.module_name} {id_list[i]}#{payload_list[i]}", 'w', 128)
-            else:
-                #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
-                GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
-                print(self.module_name)
-                print(id_list[i])
-                print(brs_list[i])
-                print(payload_list[i])
-                os.popen(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}", 'w', 128)
-                print(f"cansend {self.module_name} {id_list[i]}##{brs_list[i]}{payload_list[i]}")
+    def send_q(self, id_list: str, brs_list, payload_list, fd_list, led_pin: int):
+        self.set_messages(1)
+        print('I set the flag')
+        print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
+        if payload_list == "R":
+            #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
+            GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
+            os.popen(f"cansend {self.module_name} {id_list}#{payload_list}", 'w', 128)
+        if fd_list == "0":
+            #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
+            GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
+            os.popen(f"cansend {self.module_name} {id_list}#{payload_list}", 'w', 128)
+        else:
+            #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
+            GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
+            print(self.module_name)
+            print(id_list)
+            print(brs_list)
+            print(payload_list)
+            os.popen(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}", 'w', 128)
+            print(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}")
         
     def mux_led_control_on(self, led_pin: int):
         GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
