@@ -594,6 +594,7 @@ class CANGui():
                         log_file.seek(0)
                         #self.module_sender.set_messages(0)
                         red_flag = 1
+                        self.info_listbox.insert(4, str(red_flag))
                     else:
                         df_tx_bytes = tx_bytes
                         df_rx_bytes = rx_bytes
@@ -603,6 +604,7 @@ class CANGui():
                             red_flag = 0
                         index = len(log_file.readlines())
                         log_file.seek(0)
+                        self.info_listbox.insert(4, str(red_flag))
                 else:
                     index = 0
 
