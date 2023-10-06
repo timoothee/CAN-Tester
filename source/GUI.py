@@ -3,7 +3,7 @@ from lib import *
 class CANGui():
     def __init__(self, gui_revision: str):
         fade.leds_init()
-        self.splash()
+        #self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
         self.root.wm_attributes('-type', 'splash')
@@ -445,7 +445,7 @@ class CANGui():
         self.info_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
         self.info_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.info_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
+        self.info_listbox =Listbox(self.can_frame8_1, width = 50, height=7,  bg='black', fg='white', selectmode=EXTENDED)
         self.info_listbox.grid(row=1, column= 0, pady=5)
 
         self.ep_label = Label(self.can_frame8_1, text='  ')
@@ -552,8 +552,6 @@ class CANGui():
 
     def bus_thread(self):
         if self.thread_var.get() == 1:
-            self.test_listbox = Listbox(self.can_frame6, bg='black', fg='white', activestyle='underline', height=15, width=25, selectmode = EXTENDED)
-            self.test_listbox.grid(row=1, column=1, sticky='e')
             #self.test_listbox.bindtags((self.test_listbox, self.can_frame6, 'all'))
             self.start_thread_btn.config(state='normal')
             test_thread = threading.Thread(target=self.thread_1, daemon=True)
@@ -563,7 +561,6 @@ class CANGui():
             test_mode = self.see_only_dropdown_var.get()
         else:
             self.start_thread_btn.config(state='disabled')
-            self.test_listbox.destroy()
 
     def thread_1(self):
         log_file = open(self.module_sender.get_rasp_path() + 'can.log', 'r')
@@ -571,24 +568,35 @@ class CANGui():
         log_file.seek(0)
         str_1 = str(index) + ' messages already sent'
         output_list = [str_1, 'This messages will not be verified']
-        self.test_listbox.insert(0, output_list[0])
+        self.info_listbox.insert(0, output_list[0])
         time.sleep(0.2)
-        self.test_listbox.insert(1, output_list[1])
+        self.info_listbox.insert(1, output_list[1])
+        df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_bytes").read().strip())
+        df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_bytes").read().strip())
         while self.thread_var.get() == 1:
             log_file.seek(0)
             if int(len(log_file.readlines())) != int(index):
                 log_file.seek(0)
+                tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_bytes").read().strip())
+                rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_bytes").read().strip())
+                self.info_listbox.insert(0, tx_bytes)
+                self.info_listbox.insert(1, rx_bytes)
                 if len(log_file.readlines()) > index:
                     log_file.seek(0)
-                    x = self.module_sender.get_messages()
-                    print(x)
-                    if x != 0:
-                        self.test_listbox.insert('end', 'I sent a message')
+                    #x = self.module_sender.get_messages()
+                    #print(x)
+                    print('tx diff ', tx_bytes - df_tx_bytes)
+                    print('rx diff ', rx_bytes - df_rx_bytes)
+                    if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes:
+                        self.info_listbox.insert(3, 'I sent a message')
                         index = len(log_file.readlines())
                         log_file.seek(0)
-                        self.module_sender.set_messages(0)
+                        #self.module_sender.set_messages(0)
                     else:
-                        self.test_listbox.insert('end', 'I received a message')
+                        df_tx_bytes = tx_bytes
+                        df_rx_bytes = rx_bytes
+                        self.info_listbox.insert(3, 'I received a message')
+                        os.popen(f"cansend can0 123#1122", 'w', 128)
                         index = len(log_file.readlines())
                         log_file.seek(0)
                 else:
