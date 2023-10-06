@@ -573,6 +573,7 @@ class CANGui():
         self.info_listbox.insert(1, output_list[1])
         df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_bytes").read().strip())
         df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_bytes").read().strip())
+        red_flag = 0
         while self.thread_var.get() == 1:
             log_file.seek(0)
             if int(len(log_file.readlines())) != int(index):
@@ -592,11 +593,14 @@ class CANGui():
                         index = len(log_file.readlines())
                         log_file.seek(0)
                         #self.module_sender.set_messages(0)
+                        red_flag = 1
                     else:
                         df_tx_bytes = tx_bytes
                         df_rx_bytes = rx_bytes
                         self.info_listbox.insert(3, 'I received a message')
-                        os.popen(f"cansend can0 123#1122", 'w', 128)
+                        if red_flag == 1:
+                            os.popen(f"cansend can0 123#1122", 'w', 128)
+                            red_flag = 0
                         index = len(log_file.readlines())
                         log_file.seek(0)
                 else:
