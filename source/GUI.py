@@ -512,10 +512,9 @@ class CANGui():
         
         # frame 12
         try:
-            
             self.image_dimenion = PhotoImage(file="/home/raspberry/CAN-Tester/images/Continental-Logo.png")
             continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
-            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+200, continental_logo_height+50), Image.ANTIALIAS)
+            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+220, continental_logo_height+50), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
             self.label1 = Label(self.empty_can_frame1, image= self.imagee)
             self.label1.grid(row=0, column=1)

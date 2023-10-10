@@ -117,7 +117,7 @@ class CanModule():
 
     def send_q(self, id_list: str, brs_list, payload_list, fd_list, led_pin: int):
         self.set_messages(1)
-        print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
+        print(f"module name {self.module_name}, id list {id_list}, brs {brs_list}, payload {payload_list}")
         if payload_list == "R":
             #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
             GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
@@ -129,10 +129,6 @@ class CanModule():
         else:
             #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
             GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
-            print(self.module_name)
-            print(id_list)
-            print(brs_list)
-            print(payload_list)
             os.popen(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}", 'w', 128)
             print(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}")
         
