@@ -453,7 +453,7 @@ class CANGui():
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        self.start_test_button = Button(self.can_frame7, text="Start Test", command = self.test_starter)
+        self.start_test_button = Button(self.can_frame7, text="Check Test", command = self.test_starter)
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
 
         self.start_thread_btn = Button(self.can_frame7, text='Start Thread', state='disabled')
@@ -996,10 +996,12 @@ class CANGui():
         self.label.grid(row=0, column=0, padx=(10,0),pady=(self.powered_offsety,0))
         self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         self.label2.grid(row=0, column=0, padx =10 , pady=(self.mail_offsety,0), sticky='e')
+        
     def que_loop(self):
         time.sleep(10)
         while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
+                time.sleep(1)
                 for item in self.mux_list:
                     if item.get() == 1:
                         print(self.mux_list.index(item))
@@ -1012,7 +1014,6 @@ class CANGui():
                         self.module_sender.default_led(self.mux_list.index(item))                
                 #for item in list(self.que_listbox.get(0, 'end')):
                     #self.module_sender.random_message(str(item[10:]), 4)
-                time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
 
