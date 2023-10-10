@@ -571,42 +571,49 @@ class CANGui():
         self.info_listbox.insert(0, output_list[0])
         time.sleep(0.2)
         self.info_listbox.insert(1, output_list[1])
-        df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_bytes").read().strip())
-        df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_bytes").read().strip())
+        df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+        df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
         red_flag = 0
+        blue_flag = 0
         while self.thread_var.get() == 1:
-            log_file.seek(0)
-            if int(len(log_file.readlines())) != int(index):
-                log_file.seek(0)
-                tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_bytes").read().strip())
-                rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_bytes").read().strip())
+            tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+            rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+            if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:
+                print('Message was sent')
                 self.info_listbox.insert(0, tx_bytes)
                 self.info_listbox.insert(1, rx_bytes)
                 if len(log_file.readlines()) > index:
+                    print('Listbox incremented')
                     log_file.seek(0)
-                    #x = self.module_sender.get_messages()
-                    #print(x)
-                    print('tx diff ', tx_bytes - df_tx_bytes)
-                    print('rx diff ', rx_bytes - df_rx_bytes)
-                    if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes:
+                    index = len(log_file.readlines())
+                    log_file.seek(0)
+                    print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
+                    if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag != 1:
+                        print('First case')
                         self.info_listbox.insert(3, 'I sent a message')
                         index = len(log_file.readlines())
                         log_file.seek(0)
                         #self.module_sender.set_messages(0)
                         red_flag = 1
                         self.info_listbox.insert(4, str(red_flag))
-                    else:
+                    elif blue_flag != 1:
+                        print('Second case')
                         df_tx_bytes = tx_bytes
                         df_rx_bytes = rx_bytes
                         self.info_listbox.insert(3, 'I received a message')
                         if red_flag == 0:
                             os.popen(f"cansend can0 123#1122", 'w', 128)
+                            blue_flag = 1
                         else:
                             red_flag = 0
                         index = len(log_file.readlines())
                         log_file.seek(0)
                         self.info_listbox.insert(4, str(red_flag))
+                    else:
+                        print('Blue flag set')
+                        blue_flag = 0
                 else:
+                    print('ERROR')
                     index = 0
 
     def thread_1_2(self):

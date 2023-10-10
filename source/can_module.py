@@ -122,8 +122,8 @@ class CanModule():
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
 
     def send_q(self, id_list: str, brs_list, payload_list, fd_list, led_pin: int):
-        self.set_messages(1)
-        print('I set the flag')
+        #self.set_messages(1)
+        #print('I set the flag')
         print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
         if payload_list == "R":
             #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
