@@ -105,7 +105,6 @@ class CanModule():
             if 'dsample-point' in line:
                 return line.split()[-1]
 
-    
     def interface_up(self):
         os.popen(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on dsample-point {self.dsample_point}", 'w', 128)
         print(f"sudo ip link set {self.module_name} up type can bitrate {self.baudrate}  dbitrate {self.dbaudrate} restart-ms 1000 berr-reporting on fd on dsample-point {self.dsample_point}")

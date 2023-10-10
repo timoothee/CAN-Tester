@@ -597,7 +597,7 @@ class CANGui():
                         print('Second case')
                         self.info_listbox.insert(3, 'I received a message')
                         if red_flag == 0:
-                            os.popen(f"cansend can0 123#112233", 'w', 128)
+                            os.popen(f"cansend can0 123#11223344", 'w', 128)
                             #blue_flag = 1
                         else:
                             red_flag = 0
@@ -992,12 +992,23 @@ class CANGui():
         self.label.grid(row=0, column=0, padx=(10,0),pady=(self.powered_offsety,0))
         self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         self.label2.grid(row=0, column=0, padx =10 , pady=(self.mail_offsety,0), sticky='e')
+
     def que_loop(self):
         time.sleep(10)
         while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
-                for item in list(self.que_listbox.get(0, 'end')):
-                    self.module_sender.random_message(str(item[10:]), 4)
+                for item in self.mux_list:
+                    if item.get() == 1:
+                        print(self.mux_list.index(item))
+                        self.set_mux_sel(self.mux_list.index(item))
+                        self.info_listbox.delete(0, END)
+                        self.backend_frame()
+                        for i in range(len(self.frame.id_list)):
+                            print('InSiDe joke')
+                            self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
+                        self.module_sender.default_led(self.mux_list.index(item))                
+                #for item in list(self.que_listbox.get(0, 'end')):
+                    #self.module_sender.random_message(str(item[10:]), 4)
                 time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
