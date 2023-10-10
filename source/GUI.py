@@ -197,7 +197,7 @@ class CANGui():
         self.can_frame5.grid(row=6, column=0, sticky="nsew", pady=5, padx=5)
 
         self.can_frame6= Frame(self.root, highlightbackground='light grey', highlightthickness=3)
-        self.can_frame6.grid(row=2, column=1, padx=5, pady=5)
+        self.can_frame6.grid(row=2, column=1, padx=(25,0), pady=5, sticky="w")
         
         self.can_frame7 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
         self.can_frame7.grid(row=3, column=1, sticky="w", padx=5, pady=5)
@@ -211,8 +211,11 @@ class CANGui():
         self.can_frame8_2 = Frame(self.can_frame8)
         self.can_frame8_2.grid(row=0, column=1, sticky='n')
 
-        self.empty_can_frame1 = Frame(self.root)
-        self.empty_can_frame1.grid(row=0, column=1, padx=20, sticky='e')
+        self.emp = Frame(self.root)
+        self.emp.grid(row=0, column=1)
+
+        self.empty_can_frame1 = Frame(self.emp)
+        self.empty_can_frame1.grid(row=1, column=0, padx=(600,0), pady=(50,0), sticky='nsew')
         
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -510,15 +513,19 @@ class CANGui():
         
         # frame 12
         try:
+            
             self.image_dimenion = PhotoImage(file="/home/raspberry/CAN-Tester/images/Continental-Logo.png")
             continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
-            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+130, continental_logo_height+30), Image.ANTIALIAS)
+            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+200, continental_logo_height+50), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
             self.label1 = Label(self.empty_can_frame1, image= self.imagee)
-            self.label1.grid(row=0, column=0)
+            self.label1.grid(row=0, column=1)
+            
+            print(':)')
         except:
-            self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
-            self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
+            print(':(')
+            #self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
+            #self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
 
     def build2(self):
         self.dev_can_frame_1 = Frame(self.root_dev)
@@ -851,7 +858,7 @@ class CANGui():
         imagee = self.image.resize((800, 500), Image.ANTIALIAS)
         new_imagee = ImageTk.PhotoImage(imagee)
         self.label1 = Label(self.welcome_root, image= new_imagee)
-        self.label.image=new_imagee
+        self.label_image = new_imagee
         self.label1.grid(row=0, column=0)
         self.welcome_root.geometry("800x550")
         self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
@@ -865,7 +872,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             self.welcome_root.geometry("800x550")
         if self.case == 2:
@@ -873,7 +880,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 3:
@@ -881,14 +888,14 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
         if self.case == 4:
             self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/four.png')
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 5:
@@ -896,7 +903,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 6:
@@ -904,7 +911,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 7:
@@ -912,7 +919,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
            
             self.next_button.config(text='Close')
@@ -946,8 +953,8 @@ class CANGui():
         self.label.grid(row=2, column=0, sticky='w', padx=(20,0), pady=(30,0))
         self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width, self.continental_logo_height), Image.ANTIALIAS)
         self.imagee = ImageTk.PhotoImage(self.imagee)
-        self.label1 = Label(self.can_frame7, image= self.imagee)
-        self.label1.grid(row=2, column=1, padx=(10,0))
+        self.label1 = Label(self.can_frame7, image= self.imagee, highlightbackground='blue', highlightthickness=5)
+        self.label1.grid(row=2, column=2, padx=(100,0))
         #self.label2 = Label(self.can_frame8, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         #self.label2.grid(row=3, column=0, sticky='e')
         
@@ -965,7 +972,7 @@ class CANGui():
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
         self.can_frame3.grid(row=2, column=0, sticky="nsew")
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
-        self.empty_can_frame1.grid(row=1, column=1)
+        #self.empty_can_frame1.grid(row=1, column=1)
         self.can_frame5.grid(row=2, column=1, sticky="nsew")
         self.can_frame6.grid(row=3, column=1, sticky="nsew")
         self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
