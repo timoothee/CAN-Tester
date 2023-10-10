@@ -577,7 +577,7 @@ class CANGui():
             tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
             rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
             print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
-            time.sleep(2)
+            time.sleep(0.5)
             if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:
                 print('Message was sent')
                 self.info_listbox.insert(0, tx_bytes)
@@ -593,21 +593,21 @@ class CANGui():
                         #self.module_sender.set_messages(0)
                         red_flag = 1
                         self.info_listbox.insert(4, str(red_flag))
-                    elif blue_flag != 1:
+                    else:
                         print('Second case')
-                        df_tx_bytes = tx_bytes
-                        df_rx_bytes = rx_bytes
                         self.info_listbox.insert(3, 'I received a message')
                         if red_flag == 0:
-                            os.popen(f"cansend can0 123#11223344", 'w', 128)
-                            blue_flag = 1
+                            os.popen(f"cansend can0 123#112233", 'w', 128)
+                            #blue_flag = 1
                         else:
                             red_flag = 0
+                        tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+                        rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+                        df_tx_bytes = tx_bytes 
+                        df_rx_bytes = rx_bytes
                         index = self.can_bus_listbox.size()
                         self.info_listbox.insert(4, str(red_flag))
-                    else:
-                        print('Blue flag set')
-                        blue_flag = 0
+                    
                 else:
                     print('ERROR')
                     index = 0
