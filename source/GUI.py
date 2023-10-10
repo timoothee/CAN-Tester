@@ -599,8 +599,9 @@ class CANGui():
                         df_tx_bytes = tx_bytes
                         df_rx_bytes = rx_bytes
                         self.info_listbox.insert(3, 'I received a message')
-                        if red_flag == 1:
+                        if red_flag == 0:
                             os.popen(f"cansend can0 123#1122", 'w', 128)
+                        else:
                             red_flag = 0
                         index = len(log_file.readlines())
                         log_file.seek(0)
