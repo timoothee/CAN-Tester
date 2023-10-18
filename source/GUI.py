@@ -10,6 +10,7 @@ import sys
 import can_module as CAN_module
 import can_frame as CAN_frame
 import test_canbus as Can_Test
+import fade
 import psutil
 import platform
 import threading
@@ -19,21 +20,28 @@ from PIL import Image, ImageTk
 import subprocess
 import webbrowser
 from collections import Counter
+from tkinter import font
+
 class CANGui():
     def __init__(self, gui_revision: str):
+        fade.leds_init()
         self.splash()
         self.gui_revision = gui_revision
         self.root = Tk()
+        self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
-        print('-', self.root.winfo_screenwidth(),'--', self.root.winfo_screenheight())
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         
         # --- Menu Options
         self.menu_bar = Menu(self.root, bg="grey")
-        self.general = Menu(self.menu_bar, tearoff = 0)
-        self.view = Menu(self.menu_bar, tearoff = 0, bg="grey")
+        self.general = Menu(self.menu_bar, tearoff = 0, activebackground='#7f7e7f', activeborderwidth=0)
+        self.view = Menu(self.menu_bar, tearoff = 0)
         self.help = Menu(self.menu_bar, tearoff = 0)
+        self.blankenu = Menu(self.menu_bar, tearoff=0)
+        self.canrasp = Menu(self.menu_bar, tearoff=0)
+
+        self.ico = PhotoImage(file="/home/raspberry/CAN-Tester/images/button.png")
 
         self.general.add_command(label="About CANrasp", command=self.open_git_url)
         self.general.add_command(label="Check for Updates...", command=self.open_release_url)
@@ -42,16 +50,29 @@ class CANGui():
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
         self.general.add_separator()
         self.general.add_command(label="Quit", command=self.root.destroy)
+        self.enable_menu = Menu(self.canrasp, tearoff=0)
         self.view.add_command(label="Vertical", command=self.vertical_view)
         self.view.add_command(label="Horizontal", command = self.horizontal_view)
         self.help.add_command(label="Welcome", command = self.welcome_user)
         self.help.add_command(label="Contact", command = self.contact_msg)
+
+        self.canrasp.add_cascade(label='Enable', menu=self.enable_menu)
+        self.enable_menu.add_command(label ='thickness 2', command=self.frame_enable2)
+        self.enable_menu.add_command(label ='thickness 3', command=self.frame_enable3)
+        self.canrasp.add_command(label='Disable', command=self.frame_disable)
+
         self.menu_bar.add_cascade(label="General", menu=self.general)
         self.menu_bar.add_cascade(label="View", menu=self.view)
         self.menu_bar.add_cascade(label="Help", menu=self.help)
+        self.menu_bar.add_cascade(label="".ljust(172))
+        self.menu_bar.add_cascade(label=(f"CanInterfaceGUI {self.gui_revision}"), menu=self.canrasp)
+        self.menu_bar.add_cascade(label="".ljust(206))
+        self.menu_bar.entryconfig("".ljust(172),state='disabled')
+        self.menu_bar.entryconfig((f"CanInterfaceGUI {self.gui_revision}"),state='normal')
+        self.menu_bar.entryconfig("".ljust(206),state='disabled')
+        self.menu_bar.add_command(label="_", activebackground='yellow', command=self.minimize(), font=font.Font(weight="bold"))
+        self.menu_bar.add_command(label="x", activebackground='red', command=self.destroy_app, font=font.Font(weight="bold"))
         self.root.config(menu=self.menu_bar)
-        # ---
-
         # --- Variable Initialization
         self.brs_box = IntVar()
         self.ext_box = IntVar()
@@ -128,88 +149,76 @@ class CANGui():
         self.delay_optionmenu = ("1s","2s","3s","5s")
         self.delay_optionmenu_dict = {'1s':1, '2s':2, '3s':3, '5s':5}
         self.messages_loop_var = IntVar()
-        self.loop_active = False
         self.active_loop_var = False
-
+        self.stop_ran_func_var = False
         # --- Threads
         t1 = threading.Thread(target=self.threadfunc, daemon=True)
         t1.start()
-        t2 = threading.Thread(target=self.loop_section_button, daemon=True)
+        t2 = threading.Thread(target=self.que_loop, daemon=True)
         t2.start()
-        t3 = threading.Thread(target=self.que_loop, daemon=True)
+        t3 = threading.Thread(target=self.sensor_temp, daemon=True)
         t3.start()
-        t4 = threading.Thread(target=self.sensor_temp, daemon=True)
+        t4 = threading.Thread(target=self.temp_var_color, daemon=True)
         t4.start()
-        t5 = threading.Thread(target=self.temp_var_color, daemon=True)
-        t5.start()
-        t6 = threading.Thread(target=self.credential_offset, daemon=True)
-        t6.start()
-        # ---
 
         self.test_mode1 = StringVar()
         self.negate = StringVar()
         self.increment = StringVar()
         self.decrement = StringVar()
+        self.frame_color = 'red'
+        self.can0_ckBox_var = IntVar()
+        self.can1_ckBox_var = IntVar()
+        self.can2_ckBox_var = IntVar()
+        self.can3_ckBox_var = IntVar()
+        self.can4_ckBox_var = IntVar()
+        self.can5_ckBox_var = IntVar()
+        self.can6_ckBox_var = IntVar()
+        self.can7_ckBox_var = IntVar()
+        self.mux_list = [self.can0_ckBox_var, self.can1_ckBox_var, self.can2_ckBox_var, self.can3_ckBox_var, self.can4_ckBox_var, self.can5_ckBox_var, self.can6_ckBox_var, self.can7_ckBox_var]
+        self.mux_sel = [23, 16, 7]
+        self.thread_var = IntVar()
 
     def build(self):
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.can_frame1 = Frame(self.root)
-        self.can_frame1.grid(row=0, column=0, sticky="nsew")
+        #self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.can_frame1 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
+        self.can_frame1.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        self.can_frame1_1 = Frame(self.can_frame1)
-        self.can_frame1_1.grid(row=0, column=3, sticky="nsew")
+        self.can_frame2 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
+        self.can_frame2.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
-        self.can_frame1_2 = Frame(self.can_frame1)
-        self.can_frame1_2.grid(row=1, column=3, sticky="nsew")
+        self.can_frame3 = Frame(self.root,  highlightbackground='light grey', highlightthickness=3)
+        self.can_frame3.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
+        
+        self.can_frame4 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
+        self.can_frame4.grid(row=3, column=0, sticky="nsew", padx=5, pady=5)
+        
+        self.can_frame5 = Frame(self.root, highlightbackground='#a9a9a9', highlightthickness=3)
+        self.can_frame5.grid(row=6, column=0, sticky="nsew", pady=5, padx=5)
 
-        self.can_frame1_3 = Frame(self.can_frame1)
-        self.can_frame1_3.grid(row=2, column=3, sticky="nsew")
+        self.can_frame6= Frame(self.root, highlightbackground='light grey', highlightthickness=3)
+        self.can_frame6.grid(row=2, column=1, padx=(25,0), pady=5, sticky="w")
+        
+        self.can_frame7 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
+        self.can_frame7.grid(row=3, column=1, sticky="w", padx=5, pady=5)
+        # Mux label has no frame, row 5 column 0 are reserved
+        self.can_frame8 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
+        self.can_frame8.grid(row=7, column=0, sticky='w', padx=5)
 
-        self.can_frame1_4 = Frame(self.can_frame1)
-        self.can_frame1_4.grid(row=0, column=4, sticky="nsew")
+        self.can_frame8_1 = Frame(self.can_frame8)
+        self.can_frame8_1.grid(row=0, column=0, padx=(10,0))
+        
+        self.can_frame8_2 = Frame(self.can_frame8)
+        self.can_frame8_2.grid(row=0, column=1, sticky='n')
 
-        self.can_frame1_5 = Frame(self.can_frame1)
-        self.can_frame1_5.grid(row=1, column=4, sticky="nsew")
+        self.emp = Frame(self.root)
+        self.emp.grid(row=0, column=1)
 
-        self.can_frame2 = Frame(self.root)
-        self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
-
-        self.can_frame3 = Frame(self.root)
-        self.can_frame3.grid(row=2, column=0, sticky="nsew")
-
-        self.can_frame4 = Frame(self.root)
-        self.can_frame4.grid(row=3, column=0, sticky="nsew")
-
-        self.empty_can_frame1 = Frame(self.root)
-        self.empty_can_frame1.grid(row=1, column=1)
-
-        self.can_frame5= Frame(self.root)
-        self.can_frame5.grid(row=2, column=1, sticky="nsew")
-
-        self.can_frame6 = Frame(self.root)
-        self.can_frame6.grid(row=3, column=1, sticky="nsew")
-
-        self.can_frame7 = Frame(self.root)
-        self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
-
-        self.can_frame7_2 = Frame(self.can_frame7)
-        self.can_frame7_2.grid(row=0, column=1)
-
-        self.can_frame8 = Frame(self.can_frame7)
-        self.can_frame8.grid(row=1, column=1, sticky="nw")
-
-        self.empty_can_frame2 = Frame(self.root)
-        self.empty_can_frame2.grid(row=1, column=3)
-
-        self.can_frame9 = Frame(self.can_frame5)
-        self.can_frame9.grid(row=0, column=1)
-
-        self.can_frame12 = Frame(self.root)
-        self.can_frame12.grid(row=0, column=2, sticky='nsew')
-
+        self.empty_can_frame1 = Frame(self.emp)
+        self.empty_can_frame1.grid(row=1, column=0, padx=(600,0), pady=(50,0), sticky='nsew')
+        
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
-        self.can_interface_sender_label.grid(row=0, column=0, padx=20, pady=(20,0))
+        self.can_interface_sender_label.grid(row=0, column=0, pady=(20,0))
 
         self.sender_drop_down_menu = OptionMenu(self.can_frame1, self.can_sender_var, *self.can_send_module_optionmenu)
         self.sender_drop_down_menu.config(width=5)
@@ -230,62 +239,67 @@ class CANGui():
         self.drop_down_id_baudrate.grid(row = 1, column=1)
 
         self.data_baudrate_Label = Label(self.can_frame1, text = "DATA Baudrate")
-        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0))
+        self.data_baudrate_Label.grid(row=0, column=2, pady=(20,0), padx=(0,20))
 
         self.drop_down_data_baudrate = OptionMenu(self.can_frame1, self.drop_down_data_baudrate_var, *self.data_baudrate_list)
         self.drop_down_data_baudrate.config(width=5)
-        self.drop_down_data_baudrate.grid(row = 1, column=2)
+        self.drop_down_data_baudrate.grid(row = 1, column=2, padx=(0,20))
 
-        self.temp_cpu_label= Label(self.can_frame1, text= self.cpu_temp, width= 15)
+
+        self.temp_cpu_label= Label(self.can_frame1, text= self.cpu_temp, width=15)
         self.temp_cpu_label.grid(row=3, column=1)
 
-        # frame_1_1
-        self.sample_point_label = Label(self.can_frame1_1, text = "ID SP")
+        self.sample_point_label = Label(self.can_frame1, text = "ID SP")
         self.sample_point_label.config(state='disabled')
-        self.sample_point_label.grid(row=0, column=0, padx=(50,0), pady=(20,0))
+        self.sample_point_label.grid(row=0, column=3, pady=(20,0))
 
-        self.dsample_point_label = Label(self.can_frame1_1, text = "DATA SP")
-        self.dsample_point_label.grid(row=0, column=1, padx=(77,0), pady=(20,0))
+        self.empty_label = Label(self.can_frame1,text='   ')
+        self.empty_label.grid(row=0, column=4)
 
-        # frame 1_2
-        self.sample_point_entry = Entry(self.can_frame1_2, textvariable = self.text_variable_sp)
+        self.dsample_point_label = Label(self.can_frame1, text = "DATA SP")
+        self.dsample_point_label.grid(row=0, column=5, pady=(20,0))
+
+        self.sample_point_entry = Entry(self.can_frame1, textvariable = self.text_variable_sp)
         self.sample_point_entry.config(width=5, state='disable')
-        self.sample_point_entry.grid(row=0, column=0, padx=(47,0))
+        self.sample_point_entry.grid(row=1, column=3)
 
-        self.dsample_point_entry = Entry(self.can_frame1_2, textvariable = self.dtext_variable_sp)
+        self.dsample_point_entry = Entry(self.can_frame1, textvariable = self.dtext_variable_sp)
         self.dsample_point_entry.config(width=5)
-        self.dsample_point_entry.grid(row=0, column=1, padx=(74,0))
+        self.dsample_point_entry.grid(row=1, column=5)
 
-        # frame 1_3
-        self.actual_data_label = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10))
+        self.actual_data_label = Label(self.can_frame1, text="Actual Data", font=('Arial', 10))
         self.actual_data_label.config(state='disabled')
-        self.actual_data_label.grid(row=0, column=0, padx=(15,0))
+        self.actual_data_label.grid(row=2, column=3, padx=(0,35))
 
-        self.sample_point_data = Label(self.can_frame1_3, text = "0.750", font=('Arial', 10))
+        self.sample_point_data = Label(self.can_frame1, text = "0.750", font=('Arial', 10))
         self.sample_point_data.config(state='disabled')
-        self.sample_point_data.grid(row=0, column=1)
+        self.sample_point_data.grid(row=2, column=3, sticky='e')
 
-        self.actual_data_dlabel = Label(self.can_frame1_3, text="Actual Data", font=('Arial', 10))
-        self.actual_data_dlabel.grid(row=0, column=2, padx=(15,0))
+        self.actual_data_dlabel = Label(self.can_frame1, text="Actual Data", font=('Arial', 10))
+        self.actual_data_dlabel.grid(row=2, column=5, padx=(0,35))
 
-        self.sample_dpoint_data = Label(self.can_frame1_3, text = "0.750", font=('Arial', 10))
-        self.sample_dpoint_data.grid(row=0, column=3)
+        self.sample_dpoint_data = Label(self.can_frame1, text = "0.750", font=('Arial', 10))
+        self.sample_dpoint_data.grid(row=2, column=5, sticky='e')
 
-        # frame 1_4
-        self.status_label = Label(self.can_frame1_4, text="STATUS")
-        self.status_label.grid(row=0, column=0, pady=(20,0), padx=(self.root.winfo_screenwidth() - 1890,0))
+        self.empty_label2 = Label(self.can_frame1, text='   ')
+        self.empty_label2.grid(row=0, column=6, padx=(107,0))
 
-        self.up_down_button = Button(self.can_frame1_4, text="UP",fg="green", command=self.up_down_button_command, width=3, state="disabled")
-        self.up_down_button.grid(row=0, column=1, sticky='e', padx=(5,0), pady= (10,0))
+        self.status_label = Label(self.can_frame1, text="STATUS")
+        self.status_label.grid(row=0, column=7, pady=(20,0))
 
-        # frame 1_5
-        self.default_status_label = Label(self.can_frame1_5, text="DOWN", fg='red')
+        self.up_down_button = Button(self.can_frame1, text="UP",fg="green", width=3, state="disabled", command=self.up_down_button_command)
+        self.up_down_button.grid(row=0, column=8, sticky='e', padx=(5,0), pady= (10,0))
+
+        self.default_status_label = Label(self.can_frame1, text="DOWN", fg='red')
         self.default_status_label.config(width=5)
-        self.default_status_label.grid(row=0, column=0, padx=(30,0), sticky='e')
+        self.default_status_label.grid(row=1, column=7)
         
-        self.dev_button = Button(self.can_frame1_5, text= "<  >", command=self.developer_settings, width = 3)
-        self.dev_button.grid(row=0, column=1, padx=(10,0))
+        self.dev_button = Button(self.can_frame1, text= "<  >", command=self.developer_settings, width=3)
+        self.dev_button.grid(row=1, column=8, padx=(10,0))
 
+        self.empty_label2 = Label(self.can_frame1, text=' ')
+        self.empty_label2.grid(row=0, column=9, padx=(5,0))
+        
         # frame 2
         self.RTR_Label = Label(self.can_frame2, text="RTR")
         self.RTR_Label.grid(row= 0, column =0, padx=(20,0))
@@ -327,20 +341,23 @@ class CANGui():
         self.payload_Entry = Entry(self.can_frame2, textvariable=self.payload_entry)
         self.payload_Entry.grid(row = 1, column=5)
 
-        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", command= self.add_to_Q)
-        self.add_to_q.grid(row = 1, column=6, padx=(238,0))
+        self.root.update()
+
+        self.add_to_q = Button(self.can_frame2, text="ADD TO QUE", width=10, command= self.add_to_Q)
+        self.add_to_q.grid(row = 1, column=6, padx=(292,0), pady=(0,5))
 
         # frame 3
         self.que_listbox_label = Label(self.can_frame3, text = "Message list")
-        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
+        self.que_listbox_label.grid(row=0, column=0, sticky='w', padx=(5,0))
         self.que_listbox_label.config(font=('Helvetica bold', 13))
     
-        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = self.screen_width_h, height= self.screen_height_h, selectmode=EXTENDED)
-        self.que_listbox.grid(row=1, column=0, padx=20)
 
+        self.que_listbox = Listbox(self.can_frame3, yscrollcommand = 1, width = 92, height= 15, selectmode=EXTENDED)
+        self.que_listbox.grid(row=1, column=0, padx=(5,0))
+        
         # frame 4
         self.import_button = Button(self.can_frame4, text="Import", command = self.import_messagges)
-        self.import_button.grid(row=0, column=0, padx=(20,0))
+        self.import_button.grid(row=0, column=0, padx=(5,0))
 
         self.save_button_input = Button(self.can_frame4, text="Save", command = lambda:self.save("input"))
         self.save_button_input.grid(row=0, column=1)
@@ -355,79 +372,155 @@ class CANGui():
         self.ok_button.grid(row=0, column=4)
 
         self.loop_checkbox_label = Label(self.can_frame4, text="LOOP")
-        self.loop_checkbox_label.grid(row = 0, column=5, padx=(self.root.winfo_screenwidth() - 1660,0))
+
+        self.loop_checkbox_label.grid(row = 0, column=5, padx=(337,0))
 
         self.loop_checkbox = Checkbutton(self.can_frame4, variable= self.que_loop_var)
         self.loop_checkbox.grid(row = 0, column=6)
 
         self.send_button = Button(self.can_frame4, text="SEND QUE", command=self.send_que, state="normal")
-        self.send_button.grid(row = 0, column=7)
+        self.send_button.grid(row = 0, column=7, pady=5)
 
+        # This widget is not included in frame
+        self.mux_label = Label(self.root, text='MUX AREA', font=('Helvetica bold', 13))
+        self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
+        
         # frame 5
-        self.can_bus_listbox_label = Label(self.can_frame5, text="CAN BUS")
-        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w', padx=20)
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, state='disable')
+        self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
+        self.can0_ckBox.select()
+        self.can0_ckBox.config(command=self.mux_control())
+
+        self.can0_label = Label(self.can_frame5, text='CAN 0')
+        self.can0_label.grid(row=2, column=0, padx=(15,0))
+
+        self.can1_ckBox = Checkbutton(self.can_frame5, variable = self.can1_ckBox_var, command=self.mux_control)
+        self.can1_ckBox.grid(row=1, column=1, padx=(10,0))
+
+        self.can1_label = Label(self.can_frame5, text='CAN 1')
+        self.can1_label.grid(row=2, column=1, padx=(10,0))
+
+        self.can2_ckBox = Checkbutton(self.can_frame5, variable = self.can2_ckBox_var, command=self.mux_control)
+        self.can2_ckBox.grid(row=1, column=2, padx=(10,0))
+
+        self.can2_label = Label(self.can_frame5, text='CAN 2')
+        self.can2_label.grid(row=2, column=2, padx=(10,0))
+
+        self.can3_ckBox = Checkbutton(self.can_frame5, variable = self.can3_ckBox_var, command=self.mux_control)
+        self.can3_ckBox.grid(row=1, column=3, padx=(10,0))
+
+        self.can3_label = Label(self.can_frame5, text='CAN 3')
+        self.can3_label.grid(row=2, column=3, padx=(10,0))
+
+        self.can4_ckBox = Checkbutton(self.can_frame5, variable = self.can4_ckBox_var, command=self.mux_control)
+        self.can4_ckBox.grid(row=1, column=4, padx=(10,0))
+
+        self.can4_label = Label(self.can_frame5, text='CAN 4')
+        self.can4_label.grid(row=2, column=4, padx=(10,0))
+
+        self.can5_ckBox = Checkbutton(self.can_frame5, variable = self.can5_ckBox_var, command=self.mux_control)
+        self.can5_ckBox.grid(row=1, column=5, padx=(10,0))
+
+        self.can5_label = Label(self.can_frame5, text='CAN 5')
+        self.can5_label.grid(row=2, column=5, padx=(10,0))
+
+        self.can6_ckBox = Checkbutton(self.can_frame5, variable = self.can6_ckBox_var, command=self.mux_control)
+        self.can6_ckBox.grid(row=1, column=6, padx=(10,0))
+
+        self.can6_label = Label(self.can_frame5, text='CAN 6')
+        self.can6_label.grid(row=2, column=6, padx=(10,0))
+
+        self.can7_ckBox = Checkbutton(self.can_frame5, variable = self.can7_ckBox_var, command=self.mux_control)
+        self.can7_ckBox.grid(row=1, column=7, padx=(10,0))
+
+        self.can7_label = Label(self.can_frame5, text='CAN 7')
+        self.can7_label.grid(row=2, column=7, padx=(10,0))
+        
+        # frame 6
+        self.can_bus_listbox_label = Label(self.can_frame6, text="CAN BUS")
+        self.can_bus_listbox_label.grid(row=0, column=0, sticky='w', padx=10)
         self.can_bus_listbox_label.config(font=('Helvetica bold', 13))
 
-        self.can_bus_listbox = Listbox(self.can_frame5, yscrollcommand = 1, width = self.screen_width_h, height= self.screen_height_h, selectmode =EXTENDED)
-        self.can_bus_listbox.grid(row=1, column=0, padx=20)
+        self.can_bus_listbox = Listbox(self.can_frame6, yscrollcommand = 1, width = 85, height=15, selectmode =EXTENDED)
+        self.can_bus_listbox.grid(row=1, column=0, padx=10)
 
-        # frame 6
-        self.save_button_output = Button(self.can_frame6, text="Save", command=lambda:self.save("output"))
-        self.save_button_output.grid(row=0, column=0, padx=(20,0), sticky='w')
+        # frame 7
+        self.save_button_output = Button(self.can_frame7, text="Save", command=lambda:self.save("output"))
+        self.save_button_output.grid(row=0, column=0, sticky='w', padx=(10,0), pady=5)
 
-        self.clear_button_output = Button(self.can_frame6, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
+        self.clear_button_output = Button(self.can_frame7, text="Clear", command = lambda: self.delete_function(self.can_bus_listbox))
         self.clear_button_output.grid(row=0, column=1, sticky='w')
         
-        self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame6, self.see_only_dropdown_var, *self.see_only_dropdown_list)
+        self.can_bus_seeonly_optionemnu = OptionMenu(self.can_frame7, self.see_only_dropdown_var, *self.see_only_dropdown_list)
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        self.start_test_button = Button(self.can_frame6, text="Start Test", command = self.test_starter)
-        self.start_test_button.grid(row=0, column=3, sticky='w')
+        self.start_test_button = Button(self.can_frame7, text="Check Test", command = self.test_starter)
+        self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
+
+        self.start_thread_btn = Button(self.can_frame7, text='Start Thread', state='disabled')
+        self.start_thread_btn.grid(row=0, column=4, sticky='e', padx=(335,0))
+
+        self.start_thread_ckbt = Checkbutton(self.can_frame7, command = self.bus_thread, variable=self.thread_var)
+        self.start_thread_ckbt.grid(row=0, column=5, padx=(0,10))
         
+        # frame 8_1
+        self.info_listbox_label = Label(self.can_frame8_1, text='Info list')
+        self.info_listbox_label.grid(row=0, column=0, sticky='w', pady=(5,0))
+        self.info_listbox_label.config(font=('Helvetica bold', 13))
 
-        # frame 7
-        self.error_listbox_label = Label(self.can_frame7, text='Info list')
-        self.error_listbox_label.grid(row=0, column=0, sticky='w', padx=(20,0), pady=(10,0))
-        self.error_listbox_label.config(font=('Helvetica bold', 13))
+        self.info_listbox =Listbox(self.can_frame8_1, width = 50, height=7, selectmode=EXTENDED)
+        self.info_listbox.grid(row=1, column= 0, pady=5)
 
-        self.error_listbox =Listbox(self.can_frame7, width = 50, height=7, selectmode=EXTENDED)
-        self.error_listbox.grid(row=1, column= 0, padx=(20,0), pady=5)
-
-        # frame 7_2
-        self.loop_section_label = Label(self.can_frame7_2, text='RANDOM LOOP SECTION')
-        self.loop_section_label.grid(row=0, column=0,padx=(80,0), pady=(10,0))
+        self.ep_label = Label(self.can_frame8_1, text='  ')
+        self.ep_label.grid(row=0, column=1, padx=(20,0))
+        
+        # frame 8_2
+        self.loop_section_label = Label(self.can_frame8_2, text='RANDOM LOOP SECTION')
+        self.loop_section_label.grid(row=0, column=0, pady=(10,0))
         self.loop_section_label.config(font=('Helvetica bold', 13))
+        
+        self.delay_label = Label(self.can_frame8_2, text="DELAY (ms)")
+        self.delay_label.grid(row=1, column=0, padx=(25,0), sticky='w')
 
-        # frame 8
-        self.delay_label = Label(self.can_frame8, text="DELAY (ms)")
-        self.delay_label.grid(row=0, column=0, padx=(110,0))
+        self.loop_msg_label = Label(self.can_frame8_2, text="MESSAGES")
+        self.loop_msg_label.grid(row=1, column=0, padx=(0,25), sticky='e')
 
-        self.delay_entry = Entry(self.can_frame8, textvariable=self.delay_entry_var)
+        self.delay_entry = Entry(self.can_frame8_2, textvariable=self.delay_entry_var)
         self.delay_entry.config(width=6)
-        self.delay_entry.grid(row=1, column=0, padx=(110,0))
+        self.delay_entry.grid(row=2, column=0, padx=(30,0), sticky='w')
 
-        self.loop_msg_label = Label(self.can_frame8, text="MESSAGES")
-        self.loop_msg_label.grid(row=0, column=1)
-
-        self.loop_messages_entry = Entry(self.can_frame8, textvariable=self.messages_loop_var)
+        self.loop_messages_entry = Entry(self.can_frame8_2, textvariable=self.messages_loop_var)
         self.loop_messages_entry.config(width=6)
-        self.loop_messages_entry.grid(row=1, column=1)
+        self.loop_messages_entry.grid(row=2, column=0, padx=(0,30), sticky='e')
 
-        self.loop_start_button = Button(self.can_frame8, text="START", command= self.random_loop_start_func, width=5)
-        self.loop_start_button.grid(row=2, column=0, padx=(110,0))
+        self.loop_start_button = Button(self.can_frame8_2, text="START", width=5, command=self.loop_section_button)
+        self.loop_start_button.grid(row=3, column=0, padx=(25,0), sticky='w')
 
+        self.loop_stop_button = Button(self.can_frame8_2, text="STOP", width=5, command=self.stop_ran_func)
+        self.loop_stop_button.grid(row=3, column=0, padx=(0,25), sticky='e')
+
+        self.emp = Label(self.can_frame8_2, text='  ')
+        self.emp.grid(row=0, column=1)
+        
+        #This widgets are not included in a frame
+        self.icsolution_label = Label(self.root, text='Powered by: ICSolution', font='Helvetica 11 bold')
+        self.icsolution_label.grid(row=8, column=0, sticky='w', padx=(10,0), pady=(60,0))
+        
+        self.mail_label = Label(self.root, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
+        self.mail_label.grid(row=9, column=0, sticky='w', padx=(10,0), pady=(7,0))
+        
         # frame 12
         try:
-            self.image_dimenion = PhotoImage(file="../images/Continental-Logo.png")
-            self.continental_logo_width, self.continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
-            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width+130, self.continental_logo_height+30), Image.ANTIALIAS)
+            self.image_dimenion = PhotoImage(file="/home/raspberry/CAN-Tester/images/Continental-Logo.png")
+            continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
+            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+220, continental_logo_height+50), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
-            self.label1 = Label(self.can_frame12, image= self.imagee)
-            self.label1.grid(row=0, column=0, padx=10, pady=(50,0))
+            self.label1 = Label(self.empty_can_frame1, image= self.imagee)
+            self.label1.grid(row=0, column=1)
         except:
-            self.label1 = Label(self.can_frame12, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
-            self.label1.grid(row=0, column=0, padx=10, pady=(50,0))
+            self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
+            self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
 
     def build2(self):
         self.dev_can_frame_1 = Frame(self.root_dev)
@@ -481,6 +574,105 @@ class CANGui():
         self.status_listbox = Listbox(self.dev_can_frame_3, width = 40)
         self.status_listbox.grid(row=4, column=0, padx=10)
 
+    def bus_thread(self):
+        if self.thread_var.get() == 1:
+            self.test_listbox = Listbox(self.can_frame6, bg='black', fg='white', activestyle='underline', height=15, width=25, selectmode = EXTENDED)
+            self.test_listbox.grid(row=1, column=1, sticky='e')
+            #self.test_listbox.bindtags((self.test_listbox, self.can_frame6, 'all'))
+            self.start_thread_btn.config(state='normal')
+            test_thread = threading.Thread(target=self.thread_1, daemon=True)
+            test_thread.start()
+            #test_thread = threading.Thread(target=self.thread_1_2, daemon=True)
+            #test_thread.start()
+            test_mode = self.see_only_dropdown_var.get()
+        else:
+            self.start_thread_btn.config(state='disabled')
+            self.test_listbox.destroy()
+
+    def thread_1(self):
+        log_file = open(self.module_sender.get_rasp_path() + 'can.log', 'r')
+        index = len(log_file.readlines())
+        log_file.seek(0)
+        str_1 = str(index) + ' messages already sent'
+        output_list = [str_1, 'This messages will not be verified']
+        self.test_listbox.insert(0, output_list[0])
+        time.sleep(0.2)
+        self.test_listbox.insert(1, output_list[1])
+        while self.thread_var.get() == 1:
+            log_file.seek(0)
+            if int(len(log_file.readlines())) != int(index):
+                log_file.seek(0)
+                if len(log_file.readlines()) > index:
+                    log_file.seek(0)
+                    x = self.module_sender.get_messages()
+                    if x != 0:
+                        self.test_listbox.insert('end', 'I sent a message')
+                        index = len(log_file.readlines())
+                        log_file.seek(0)
+                        self.module_sender.set_messages(0)
+                    else:
+                        self.test_listbox.insert('end', 'I received a message')
+                        index = len(log_file.readlines())
+                        log_file.seek(0)
+                else:
+                    index = 0
+
+    def thread_1_2(self):
+        while self.thread_var.get() == 1:
+            if self.module_sender.get_message_flag() == 1:
+                self.test_listbox.insert('end', 'I sent a message')
+                index = self.can_bus_listbox.size()
+                self.module_sender.set_message_flag(0)
+         
+
+    def stop_ran_func(self):
+        self.stop_ran_func_var = True
+
+    def destroy_app(self):
+        for item in self.mux_list:
+            self.module_sender.mux_led_control_off(self.mux_list.index(item))
+        self.root.destroy()
+
+    def minimize(self):
+        self.root.state(newstate='iconic')
+
+    def frame_disable(self):
+        self.can_frame1.config(highlightthickness=0)
+        self.can_frame2.config(highlightthickness=0)
+        self.can_frame3.config(highlightthickness=0)
+        self.can_frame4.config(highlightthickness=0)
+        self.can_frame5.config(highlightthickness=0)
+        self.can_frame6.config(highlightthickness=0)
+        self.can_frame7.config(highlightthickness=0)
+        self.can_frame8.config(highlightthickness=0)
+    
+    def frame_enable2(self):
+        self.can_frame1.config(highlightthickness=2)
+        self.can_frame2.config(highlightthickness=2)
+        self.can_frame3.config(highlightthickness=2)
+        self.can_frame4.config(highlightthickness=2)
+        self.can_frame5.config(highlightthickness=2)
+        self.can_frame6.config(highlightthickness=2)
+        self.can_frame7.config(highlightthickness=2)
+        self.can_frame8.config(highlightthickness=2)
+
+    def frame_enable3(self):
+        self.can_frame1.config(highlightthickness=3)
+        self.can_frame2.config(highlightthickness=3)
+        self.can_frame3.config(highlightthickness=3)
+        self.can_frame4.config(highlightthickness=3)
+        self.can_frame5.config(highlightthickness=3)
+        self.can_frame6.config(highlightthickness=3)
+        self.can_frame7.config(highlightthickness=3)
+        self.can_frame8.config(highlightthickness=3)
+
+    def mux_control(self):
+        for item in self.mux_list:
+            if item.get() == 1:
+                self.module_sender.mux_led_control_on(self.mux_list.index(item))
+            else:
+                self.module_sender.mux_led_control_off(self.mux_list.index(item))
+
     def find_bus_payload(self):
         simplified_id_list = []
         simplified_payload_list = []
@@ -492,19 +684,17 @@ class CANGui():
             sf_payload = item[right_sb_index+1:].strip()
             simplified_id_list.append(sf_id)
             simplified_payload_list.append(sf_payload)
-            #print(simplified_id_list)
-            #print(simplified_payload_list)
         return simplified_id_list, simplified_payload_list
 
     def info_listbox_testmode(self):
         test_number, x = self.find_bus_payload()
-        self.error_listbox.delete(0, END)
-        self.error_listbox.insert(END,'All messages ' + str(len(test_number)//2))
-        self.error_listbox.itemconfig(END, {'fg': 'black'})
-        self.error_listbox.insert(END,'Passed ' + str(len(self.pass_test_list)))
-        self.error_listbox.itemconfig(END, {'fg': 'green'})
-        self.error_listbox.insert(END,'Failed ' + str(len(self.error_test_list)))
-        self.error_listbox.itemconfig(END, {'fg': 'red'})
+        self.info_listbox.delete(0, END)
+        self.info_listbox.insert(END,'All messages ' + str(len(test_number)//2))
+        self.info_listbox.itemconfig(END, {'fg': 'black'})
+        self.info_listbox.insert(END,'Passed ' + str(len(self.pass_test_list)))
+        self.info_listbox.itemconfig(END, {'fg': 'green'})
+        self.info_listbox.insert(END,'Failed ' + str(len(self.error_test_list)))
+        self.info_listbox.itemconfig(END, {'fg': 'red'})
 
         for i in range(len(test_number)):
             self.can_bus_listbox.itemconfig(i, {'fg': 'black'})
@@ -549,8 +739,6 @@ class CANGui():
                                 bytes_list.append(payload_list[index][:i+1])
                             else:
                                 bytes_list.append(payload_list[index][i-1:i+1])
-                    print(can_test_mode.increment_payload(bytes_list))
-                    print((payload_list[index+1].lower()).replace(' ',''))
                     if payload_list[index+1][0] == '0':
                         payload_list[index+1] = payload_list[index+1][1:]
                     if can_test_mode.increment_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
@@ -571,11 +759,8 @@ class CANGui():
                                 bytes_list.append(payload_list[index][:i+1])
                             else:
                                 bytes_list.append(payload_list[index][i-1:i+1])
-                    print('bytes_list',can_test_mode.decrement_payload(bytes_list))
-                    print('next index',(payload_list[index+1].lower()).replace(' ',''))
                     time.sleep(2)
                     if payload_list[index+1][0] == '0':
-                        print("here")
                         payload_list[index+1] = payload_list[index+1][1:]
                     if can_test_mode.decrement_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
@@ -584,8 +769,6 @@ class CANGui():
                 index+=2
             if test_mode == 'Negate':
                 if id_list[index] == id_list[index+1]:
-                    #print('-', can_test_mode.negate_payload(payload_list[index].replace(' ','')) )
-                    #print('--', payload_list[index+1].lower())
                     if can_test_mode.negate_payload(payload_list[index].replace(' ','')) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
                     else:
@@ -597,31 +780,7 @@ class CANGui():
         webbrowser.open("https://github.com/timoothee/CAN-Tester")
 
     def open_release_url(self):
-        webbrowser.open("https://github.com/timoothee/CAN-Tester/releases", new=0)
-
-    def credential_offset(self):
-        time.sleep(3)
-        try:
-            screen_height = self.root.winfo_screenheight()
-            self.powered_offsety = (screen_height - self.error_listbox.winfo_rooty()) - 200
-            print(self.powered_offsety)
-            self.mail_offsety = (screen_height - self.save_button_output.winfo_rooty()) -310
-            print(self.mail_offsety)
-        except:
-            time.sleep(2)
-
-        self.can_frame10 = Frame(self.root, height=self.powered_offsety)
-        self.can_frame10.grid(row=5, column=0, sticky='w')
-        
-        self.can_frame11 = Frame(self.root)
-        self.can_frame11.grid(row=5, column=2, sticky='e')
-        
-        self.label = Label(self.can_frame10, text='Powered by: ICSolution', font='Helvetica 11 bold')
-        self.label.grid(row=0, column=0, padx=(10,0),pady=(self.powered_offsety,0))
-        
-        self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
-        self.label2.grid(row=0, column=0, padx =10 , pady=(self.mail_offsety,0), sticky='e')
-        
+        webbrowser.open("https://github.com/timoothee/CAN-Tester/releases")      
         
     def sensor_temp(self):
         slash_list = ['|','/','-','\\']
@@ -680,7 +839,7 @@ class CANGui():
         imagee = self.image.resize((800, 500), Image.ANTIALIAS)
         new_imagee = ImageTk.PhotoImage(imagee)
         self.label1 = Label(self.welcome_root, image= new_imagee)
-        self.label.image=new_imagee
+        self.label_image = new_imagee
         self.label1.grid(row=0, column=0)
         self.welcome_root.geometry("800x550")
         self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
@@ -694,7 +853,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             self.welcome_root.geometry("800x550")
         if self.case == 2:
@@ -702,7 +861,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 3:
@@ -710,14 +869,14 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
         if self.case == 4:
             self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/four.png')
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 5:
@@ -725,7 +884,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 6:
@@ -733,7 +892,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 7:
@@ -741,7 +900,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
            
             self.next_button.config(text='Close')
@@ -775,8 +934,8 @@ class CANGui():
         self.label.grid(row=2, column=0, sticky='w', padx=(20,0), pady=(30,0))
         self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width, self.continental_logo_height), Image.ANTIALIAS)
         self.imagee = ImageTk.PhotoImage(self.imagee)
-        self.label1 = Label(self.can_frame7, image= self.imagee)
-        self.label1.grid(row=2, column=1, padx=(10,0))
+        self.label1 = Label(self.can_frame7, image= self.imagee, highlightbackground='blue', highlightthickness=5)
+        self.label1.grid(row=2, column=2, padx=(100,0))
         #self.label2 = Label(self.can_frame8, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         #self.label2.grid(row=3, column=0, sticky='e')
         
@@ -794,7 +953,7 @@ class CANGui():
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
         self.can_frame3.grid(row=2, column=0, sticky="nsew")
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
-        self.empty_can_frame1.grid(row=1, column=1)
+        #self.empty_can_frame1.grid(row=1, column=1)
         self.can_frame5.grid(row=2, column=1, sticky="nsew")
         self.can_frame6.grid(row=3, column=1, sticky="nsew")
         self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
@@ -825,16 +984,24 @@ class CANGui():
         self.label.grid(row=0, column=0, padx=(10,0),pady=(self.powered_offsety,0))
         self.label2 = Label(self.can_frame11, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         self.label2.grid(row=0, column=0, padx =10 , pady=(self.mail_offsety,0), sticky='e')
+        
     def que_loop(self):
         time.sleep(10)
         while True:
             while self.que_loop_var.get() == 1 and self.active_loop_var == True:
-                for item in list(self.que_listbox.get(0, 'end')):
-                    self.module_sender.random_message(str(item[10:]))
                 time.sleep(1)
+                for item in self.mux_list:
+                    if item.get() == 1:
+                        self.set_mux_sel(self.mux_list.index(item))
+                        self.info_listbox.delete(0, END)
+                        self.backend_frame()
+                        for i in range(len(self.frame.id_list)):
+                            self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
+                        self.module_sender.default_led(self.mux_list.index(item))                
+                #for item in list(self.que_listbox.get(0, 'end')):
+                    #self.module_sender.random_message(str(item[10:]), 4)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
-            self.module_sender.default_led()
 
     def splash(self):
         root = Tk()
@@ -847,11 +1014,6 @@ class CANGui():
             time.sleep(0.01)
         splash.destroy()
         root.mainloop()
-
-    def random_loop_start_func(self):
-        self.check_random_loop()
-        self.random_loop_error_list()
-        self.loop_active = True
 
     def check_random_loop(self):
         self.delay_entry_incomplete = False
@@ -870,27 +1032,35 @@ class CANGui():
 
     def random_loop_error_list(self):
         if self.delay_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Delay field uncompleted")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Delay field uncompleted")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_incomplete == True:
-            self.error_listbox.insert(END,"Error: Messages field uncompleted")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Messages field uncompleted")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.delay_entry_wrong == True:
-            self.error_listbox.insert(END,"Error: Delay field")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Delay field")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
         if self.messages_entry_wrong == True:
-            self.error_listbox.insert(END,"Error: Messages field")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: Messages field")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
             self.frame_id_entry.config(fg= 'red')
 
     def loop_section_button(self):
-        while True:
-            if self.loop_active == True:
-                if self.default_status_label.cget("text") == "UP":
-                    for i in range(self.messages_loop_var.get()):
+        self.check_random_loop()
+        self.random_loop_error_list()
+        self.stop_ran_func_var = False
+        self.random_thread = threading.Thread(target=self.ranfun)
+        self.random_thread.start()
+
+    def ranfun(self):
+        for item in self.mux_list:
+            if self.default_status_label.cget("text") == "UP" and item.get() == 1:
+                for i in range(self.messages_loop_var.get()):
+                    if self.stop_ran_func_var != True:
+                        self.set_mux_sel(self.mux_list.index(item))
                         random_message = ""
                         bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
 
@@ -905,14 +1075,12 @@ class CANGui():
                         for i in range(random.randrange(1,11,2)+1):
                             random_message = random_message + random.choice(bits_list)
 
-                        self.module_sender.random_message(random_message)
+                        self.module_sender.random_message(random_message, self.mux_list.index(item))
                         time.sleep(self.delay_entry_var.get()/1000)
-                    self.loop_active = False
-                else:
-                    self.error_listbox.insert(END,"Error: CAN is DOWN")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
-                    self.loop_active = False
-            self.module_sender.default_led()
+                self.module_sender.default_led(self.mux_list.index(item))
+            elif self.default_status_label.cget("text") != "UP":
+                self.info_listbox.insert(END,"Error: CAN is DOWN")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
     
     def default_module_settings(self):
         self.can_sender_var.set("can0")
@@ -1058,8 +1226,6 @@ class CANGui():
                 for i in range(len(self.list_mem) ,len(self.list_read)):
                     self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
                     self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
-                    #print("---", self.list_read)
-                    #print("++",self.list_read[i].strip())
                     self.can_bus_listbox.insert('end', self.list_read[i])
                     self.can_bus_listbox.see(END) 
                 self.list_mem = self.list_read
@@ -1195,49 +1361,49 @@ class CANGui():
         self.debugging(" checking finished! ...", 0)
 
     def fields_uncompleted_error(self):
-        self.error_listbox.delete(0,END)
+        self.info_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color)
         if self.check_all_fields_completed_retVal:
             self.debugging("... Not all fields were completed !", 1)
             if self.id_entry_error == True:
                 self.frame_id_Label.config(fg='red')
-                self.error_listbox.insert(END,"Error: Id uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Id uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_size_error == True:
-                self.error_listbox.insert(END,"Error: Payload size uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload size uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
             if self.payload_entry_error == True:
                 self.payload_Label.config(fg='red')
-                self.error_listbox.insert(END,"Error: Payload uncompleted")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload uncompleted")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
     
     def fields_completed_wrong_error(self):
         if self.check_all_fields_retVal == True:
             self.debugging("... Some fields were completed wrong ! ", 1)
-            self.error_listbox.delete(0,END)
+            self.info_listbox.delete(0,END)
             self.frame_id_entry.config(fg=self.default_entry_color)
             self.payload_Entry.config(fg=self.default_entry_color)
             if self.id_entry_error == True or self.id_entry_over_error == True:
                 if self.ext_box.get() == 1 and self.id_entry_over_error == False:
-                    self.error_listbox.insert(END,"Error: Ext selected, Id not ext")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Ext selected, Id not ext")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
                 elif self.ext_box.get() == 1 and self.id_entry_over_error == True:
-                    self.error_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Ext selected, Id exceeds limit")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
                 if self.ext_box.get() == 0:
-                    self.error_listbox.insert(END,"Error: Id ext")
-                    self.error_listbox.itemconfig(END, {'fg': 'red'})
+                    self.info_listbox.insert(END,"Error: Id ext")
+                    self.info_listbox.itemconfig(END, {'fg': 'red'})
                     self.frame_id_entry.config(fg= 'red')
             if self.payload_size_error == True or self.payload_entry_error == True:
-                self.error_listbox.insert(END,"Error: Payload not equal to payload size")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload not equal to payload size")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_Entry.config(fg= 'red')
             if self.payload_entry_odd:
-                self.error_listbox.insert(END,"Error: Payload odd")
-                self.error_listbox.itemconfig(END, {'fg': 'red'})
+                self.info_listbox.insert(END,"Error: Payload odd")
+                self.info_listbox.itemconfig(END, {'fg': 'red'})
                 self.payload_Entry.config(fg= 'red')
                 
 
@@ -1325,7 +1491,7 @@ class CANGui():
         self.ext_box.set(0)   
         self.frame_id_entry.delete(0, 'end')
         self.payload_Entry.delete(0, 'end')
-        self.error_listbox.delete(0,END)
+        self.info_listbox.delete(0,END)
         self.frame_id_Label.config(fg=self.default_label_color)
         self.payload_Label.config(fg=self.default_label_color, state="normal")
         self.frame_id_entry.config(fg=self.default_entry_color)
@@ -1407,20 +1573,32 @@ class CANGui():
                 self.frame.set_payload(message[index+1:])
                 self.frame.set_fd_flag("0")
             
-            
+    def set_mux_sel(self, can_channel: int):
+        selection = bin(can_channel).replace('0b', '').zfill(3)
+        self.module_sender.set_mux_sel(selection)
 
     def send_que(self):
         if self.default_status_label.cget("text") == "UP":
-            self.error_listbox.delete(0, END)
-            self.backend_frame()
-            self.module_sender.send_q(self.frame.id_list, self.frame.brs_list, self.frame.payload_list, self.frame.fd_list)
-            if self.que_loop_var.get() == 1:
-                self.active_loop_var = True
-                    
+            chkb = 0
+            for item in self.mux_list:
+                if item.get() == 1:
+                    chkb += 1
+                    self.set_mux_sel(self.mux_list.index(item))
+                    self.info_listbox.delete(0, END)
+                    self.backend_frame()
+                    for i in range(len(self.frame.id_list)):
+                        self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
+                    self.module_sender.default_led(self.mux_list.index(item))
+                    if self.que_loop_var.get() == 1:
+                        self.active_loop_var = True
+            if chkb == 0:
+                self.info_listbox.insert(END,"INFO: No checkbox selected")
+                self.info_listbox.itemconfig(END, {'fg': '#ffd700'})
+
         else:
             self.initial_interface_state()
-            self.error_listbox.insert(END,"Error: CAN is DOWN")
-            self.error_listbox.itemconfig(END, {'fg': 'red'})
+            self.info_listbox.insert(END,"Error: CAN is DOWN")
+            self.info_listbox.itemconfig(END, {'fg': 'red'})
 
 
 class SplashScreen:
