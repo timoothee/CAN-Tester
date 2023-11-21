@@ -573,6 +573,7 @@ class CANGui():
         df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
         red_flag = 0
         blue_flag = 0
+        ct = 0
         while self.thread_var.get() == 1:
             tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
             rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
@@ -580,38 +581,43 @@ class CANGui():
             time.sleep(0.5)
             if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:
                 print('Message was sent')
-                self.info_listbox.insert(0, tx_bytes)
-                self.info_listbox.insert(1, rx_bytes)
-                if self.can_bus_listbox.size() > index:
-                    print('Listbox incremented')
+                self.info_listbox.insert('end', tx_bytes)
+                self.info_listbox.insert('end', rx_bytes)
+                while self.can_bus_listbox.size() <= index:
+                    ct+=1
+                    if ct == 100000:
+                        print("ERROR!!!!")
+                        break
+                    print('ct->', ct)
+                print('Listbox incremented')
+                index = self.can_bus_listbox.size()
+                print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
+                if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes:
+                    print('First case')
+                    self.info_listbox.insert('end', 'I sent a message')
                     index = self.can_bus_listbox.size()
-                    print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
-                    if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag != 1:
-                        print('First case')
-                        self.info_listbox.insert(3, 'I sent a message')
-                        index = self.can_bus_listbox.size()
-                        #self.module_sender.set_messages(0)
-                        red_flag = 1
-                        self.info_listbox.insert(4, str(red_flag))
-                    else:
-                        print('Second case')
-                        self.info_listbox.insert(3, 'I received a message')
-                        if red_flag == 0:
-                            os.popen(f"cansend can0 123#11223344", 'w', 128)
-                            #blue_flag = 1
-                        else:
-                            red_flag = 0
-                        tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
-                        rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+                    #self.module_sender.set_messages(0)
+                    red_flag = 1
+                    self.info_listbox.insert('end', str(red_flag))
+                else:
+                    print('Second case')
+                    self.info_listbox.insert('end', 'I received a message')
+                    if red_flag == 0:
+                        os.popen(f"cansend can0 123#11223344", 'w', 128)
+                        print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
                         df_tx_bytes = tx_bytes 
                         df_rx_bytes = rx_bytes
-                        index = self.can_bus_listbox.size()
-                        self.info_listbox.insert(4, str(red_flag))
+                        print("Update?",'tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
+                        #blue_flag = 1
+                    else:
+                        red_flag = 0
+                    #tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+                    #rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+                    #index = self.can_bus_listbox.size()
+                    #self.info_listbox.insert('end', str(red_flag))
+                df_tx_bytes = tx_bytes 
+                df_rx_bytes = rx_bytes
                     
-                else:
-                    print('ERROR')
-                    index = 0
-
     def thread_1_2(self):
         while self.thread_var.get() == 1:
             if self.module_sender.get_message_flag() == 1:
