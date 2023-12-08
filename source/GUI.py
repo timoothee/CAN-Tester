@@ -362,10 +362,9 @@ class CANGui():
         self.mux_label.grid(row=5, column=0, padx=(22,0), pady=(5,0), sticky='w')
         
         # frame 5
-        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, state='disable')
+        self.can0_ckBox = Checkbutton(self.can_frame5, variable = self.can0_ckBox_var, command=self.mux_control)
         self.can0_ckBox.grid(row=1, column=0, padx=(15,0))
         self.can0_ckBox.select()
-        self.can0_ckBox.config(command=self.mux_control())
 
         self.can0_label = Label(self.can_frame5, text='CAN 0')
         self.can0_label.grid(row=2, column=0, padx=(15,0))
@@ -561,96 +560,93 @@ class CANGui():
             test_mode = self.see_only_dropdown_var.get()
         else:
             self.start_thread_btn.config(state='disabled')
-
     def thread_1(self):
         index = self.can_bus_listbox.size()
-        str_1 = str(index) + ' messages already sent'
+        str_1 = str(self.can_bus_listbox.size()) + ' messages already sent'
         output_list = [str_1, 'This messages will not be verified']
         self.info_listbox.insert(0, output_list[0])
-        time.sleep(0.2)
+        self.info_listbox.insert(1, output_list[1])
+        self.module_sender.set_message_flag(0)
+        while self.thread_var.get() == 1:
+            while index != self.can_bus_listbox.size():
+                index = self.can_bus_listbox.size()
+                if index > 1: 
+                    if self.module_sender.get_message_flag() == 1 and self.module_sender.get_response() == 0: # Response
+                        self.module_sender.set_message_flag(0)
+                        print("Response", self.module_sender.get_message_flag(), index)
+                        self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
+                        self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
+                        self.module_sender.set_response(1)
+                    elif self.module_sender.get_message_flag() == 2: # Error
+                        self.module_sender.set_message_flag(1)
+                        print("Error", self.module_sender.get_message_flag(), index)
+                        self.can_bus_listbox.itemconfig(index-2, {'fg': 'red'})
+                    else:
+                        self.module_sender.set_response(0)
+                        print("Reset response flag, index")
+
+    '''
+    def thread_1(self):
+        str_1 = str(self.can_bus_listbox.size()) + ' messages already sent'
+        output_list = [str_1, 'This messages will not be verified']
+        self.info_listbox.insert(0, output_list[0])
+        time.sleep(0.3)
         self.info_listbox.insert(1, output_list[1])
         df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
         df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+        df_bus_size = self.can_bus_listbox.size()
         red_flag = 0
-        blue_flag = 0
-        ct = 0
         while self.thread_var.get() == 1:
             tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
             rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
             print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
-            time.sleep(0.5)
-            if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:
+            #time.sleep(0.1)
+            if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:   # New message on the bus.
+                index = self.can_bus_listbox.size()
                 ct = 0
                 print('New message on bus')
                 self.info_listbox.insert('end', tx_bytes)
                 self.info_listbox.insert('end', rx_bytes)
-                while self.can_bus_listbox.size() <= index:
-                    if self.can_bus_listbox.size() == 0 or self.can_bus_listbox.size() == 1:
-                        index = self.can_bus_listbox.size()
-                        break
+                
+                while index == df_bus_size:
+                    index = self.can_bus_listbox.size()
                     ct+=1
-                    if ct == 10000:
+                    if ct == 5000:
                         print("ERROR!!!!")
                         break
                     print('ct->', ct)
-                index = self.can_bus_listbox.size()
+                df_bus_size = index
+                
                 print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
-                if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 0 and red_flag == 0:
+                if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and red_flag == 0:                                  # Message sent
                     print('First case')  
                     self.info_listbox.insert('end', 'I sent a message')
-                    index = self.can_bus_listbox.size()
+                    #index = self.can_bus_listbox.size()
                     #self.module_sender.set_messages(0)
                     red_flag = 1
                     self.info_listbox.insert('end', str(red_flag))
-                elif tx_bytes - df_tx_bytes != rx_bytes - df_rx_bytes:
+                elif tx_bytes - df_tx_bytes != rx_bytes - df_rx_bytes:                                                  # Message received
                     print('Second case')
-                    print('red', red_flag)
                     self.info_listbox.insert('end', 'I received a message')
-                    if red_flag == 0 and blue_flag == 0:
-                        os.popen(f"cansend can0 123#11223344", 'w', 128)
-                        print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
-                        df_tx_bytes = tx_bytes
-                        df_rx_bytes = rx_bytes
-                        print("Update?",'tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
-                        blue_flag = 1
-                    elif blue_flag == 1:
-                        print("Why am i here?, error")
-                        #red_flag = 0
-                        #blue_flag = 0 
-
-                    elif red_flag == 1:
+                    if red_flag == 1:
                         red_flag = 0
-                        print("Hereeee")
                         self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
                         self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
-                    #tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
-                    #rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and red_flag == 1:                                # Message sent again without ak from repeater
                     #index = self.can_bus_listbox.size()
-                    #self.info_listbox.insert('end', str(red_flag))
-                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 0 and red_flag == 1:
-                    index = self.can_bus_listbox.size()
                     self.can_bus_listbox.itemconfig(index-2, {'fg': 'red'})
                     print('Third case')
                     self.info_listbox.insert('end', 'I sent a message')
-                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 1 and red_flag == 0:
-                    index = self.can_bus_listbox.size()
-                    self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
-                    self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
-                    print('Fourth case')
-                    self.info_listbox.insert('end', 'Cycle completed')
-                    blue_flag = 0
-                    
-                    
-
+                                   
                 df_tx_bytes = tx_bytes 
                 df_rx_bytes = rx_bytes
-        
+    '''
     def thread_1_2(self):
         while self.thread_var.get() == 1:
             if self.module_sender.get_message_flag() == 1:
                 self.test_listbox.insert('end', 'I sent a message')
                 index = self.can_bus_listbox.size()
-                self.module_sender.set_message_flag(0)
+                #self.module_sender.set_message_flag(0)
          
 
     def stop_ran_func(self):
@@ -1037,8 +1033,8 @@ class CANGui():
                         self.info_listbox.delete(0, END)
                         self.backend_frame()
                         for i in range(len(self.frame.id_list)):
-                            print('InSiDe joke')
                             self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
+                            #self.module_sender.get_
                         self.module_sender.default_led(self.mux_list.index(item))                
                 #for item in list(self.que_listbox.get(0, 'end')):
                     #self.module_sender.random_message(str(item[10:]), 4)
@@ -1119,7 +1115,7 @@ class CANGui():
                         for i in range(random.randrange(1,11,2)+1):
                             random_message = random_message + random.choice(bits_list)
 
-                        self.module_sender.random_message(random_message, self.mux_list.index(item))
+                        self.module_sender.random_message(random_message, self.mux_list.index(item)) # Module sender function
                         time.sleep(self.delay_entry_var.get()/1000)
                         print('Outside')
                 self.module_sender.default_led(self.mux_list.index(item))
@@ -1635,8 +1631,10 @@ class CANGui():
                     self.info_listbox.delete(0, END)
                     self.backend_frame()
                     for i in range(len(self.frame.id_list)):
-                        print('InSiDe')
+                        print('-+-+-+-+ Inside send_que -+-+-+-+')
                         self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
+                        print('GUI', self.module_sender.get_message_flag())
+                        print('-+-+-+-+                 -+-+-+-+')
                     self.module_sender.default_led(self.mux_list.index(item))
                     if self.que_loop_var.get() == 1:
                         self.active_loop_var = True
