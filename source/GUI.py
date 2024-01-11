@@ -585,6 +585,89 @@ class CANGui():
                         self.module_sender.set_response(0)
                         print("Reset response flag, index")
 
+    def other(self):
+        index = self.can_bus_listbox.size()
+        str_1 = str(index) + ' messages already sent'
+        output_list = [str_1, 'This messages will not be verified']
+        self.info_listbox.insert(0, output_list[0])
+        time.sleep(0.2)
+        self.info_listbox.insert(1, output_list[1])
+        df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+        df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+        red_flag = 0
+        blue_flag = 0
+        ct = 0
+        while self.thread_var.get() == 1:
+            tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+            rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+            print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
+            #time.sleep(0.5)
+            if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:
+                ct = 0
+                print('New message on bus')
+                self.info_listbox.insert('end', tx_bytes)
+                self.info_listbox.insert('end', rx_bytes)
+                while self.can_bus_listbox.size() <= index:
+                    if self.can_bus_listbox.size() == 0 or self.can_bus_listbox.size() == 1:
+                        index = self.can_bus_listbox.size()
+                        break
+                    ct+=1
+                    if ct == 10000:
+                        print("ERROR!!!!")
+                        break
+                    print('ct->', ct)
+                index = self.can_bus_listbox.size()
+                print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
+                if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 0 and red_flag == 0:
+                    print('First case')  
+                    self.info_listbox.insert('end', 'I sent a message')
+                    index = self.can_bus_listbox.size()
+                    #self.module_sender.set_messages(0)
+                    red_flag = 1
+                    self.info_listbox.insert('end', str(red_flag))
+                elif tx_bytes - df_tx_bytes != rx_bytes - df_rx_bytes:
+                    print('Second case')
+                    print('red', red_flag)
+                    self.info_listbox.insert('end', 'I received a message')
+                    if red_flag == 0 and blue_flag == 0:
+                        os.popen(f"cansend can0 123#11223344", 'w', 128)
+                        print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
+                        df_tx_bytes = tx_bytes
+                        df_rx_bytes = rx_bytes
+                        print("Update?",'tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
+                        blue_flag = 1
+                    elif blue_flag == 1:
+                        print("Why am i here?, error")
+                        #red_flag = 0
+                        #blue_flag = 0 
+
+                    elif red_flag == 1:
+                        red_flag = 0
+                        print("Hereeee")
+                        self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
+                        self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
+                    #tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
+                    #rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
+                    #index = self.can_bus_listbox.size()
+                    #self.info_listbox.insert('end', str(red_flag))
+                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 0 and red_flag == 1:
+                    index = self.can_bus_listbox.size()
+                    self.can_bus_listbox.itemconfig(index-2, {'fg': 'red'})
+                    print('Third case')
+                    self.info_listbox.insert('end', 'I sent a message')
+                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and blue_flag == 1 and red_flag == 0:
+                    index = self.can_bus_listbox.size()
+                    self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
+                    self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
+                    print('Fourth case')
+                    self.info_listbox.insert('end', 'Cycle completed')
+                    blue_flag = 0
+                    
+                    
+
+                df_tx_bytes = tx_bytes 
+                df_rx_bytes = rx_bytes
+
     '''
     def thread_1(self):
         str_1 = str(self.can_bus_listbox.size()) + ' messages already sent'
