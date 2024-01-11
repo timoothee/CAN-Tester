@@ -21,12 +21,20 @@ class CANGui():
         self.canrasp = Menu(self.menu_bar, tearoff=0)
 
         self.ico = PhotoImage(file="/home/raspberry/CAN-Tester/images/button.png")
+        self.xvar = IntVar(self.root)
+        self.xvar.set(1)
+        self.yvar = IntVar(self.root)
 
         self.general.add_command(label="About CANrasp", command=self.open_git_url)
         self.general.add_command(label="Check for Updates...", command=self.open_release_url)
         self.general.add_separator()
         self.cpu_sensor = Menu(self.general, tearoff=0)
+        self.mode = Menu(self.general, tearoff=0)
         self.general.add_cascade(label="Sensors", menu=self.cpu_sensor)
+        self.general.add_cascade(label="Mode", menu=self.mode)
+        self.mode.add_radiobutton(label ='Master',command=lambda: self.set_mode_option(1), var=self.xvar, value=1)
+        #self.set_mode_option(1)
+        self.mode.add_radiobutton(label ='Slave', command=lambda: self.set_mode_option(2), var=self.yvar, value=1)
         self.general.add_separator()
         self.general.add_command(label="Quit", command=self.root.destroy)
         self.enable_menu = Menu(self.canrasp, tearoff=0)
@@ -553,19 +561,25 @@ class CANGui():
         if self.thread_var.get() == 1:
             #self.test_listbox.bindtags((self.test_listbox, self.can_frame6, 'all'))
             self.start_thread_btn.config(state='normal')
-            test_thread = threading.Thread(target=self.thread_1, daemon=True)
-            test_thread.start()
-            #test_thread = threading.Thread(target=self.thread_1_2, daemon=True)
+            if self.get_mode_option() == 1:
+                test_thread = threading.Thread(target=self.thread_1, daemon=True)
+                test_thread.start()
+            if self.get_mode_option() == 2:
+                test_thread = threading.Thread(target=self.other, daemon=True)
+                test_thread.start()
             #test_thread.start()
             test_mode = self.see_only_dropdown_var.get()
         else:
             self.start_thread_btn.config(state='disabled')
+
     def thread_1(self):
         index = self.can_bus_listbox.size()
         str_1 = str(self.can_bus_listbox.size()) + ' messages already sent'
-        output_list = [str_1, 'This messages will not be verified']
+        output_list = ["Master mode" ,str_1, 'This messages will not be verified']
+        self.info_listbox.delete(0, 'end')
         self.info_listbox.insert(0, output_list[0])
         self.info_listbox.insert(1, output_list[1])
+        self.info_listbox.insert(2, output_list[2])
         self.module_sender.set_message_flag(0)
         while self.thread_var.get() == 1:
             while index != self.can_bus_listbox.size():
@@ -588,10 +602,12 @@ class CANGui():
     def other(self):
         index = self.can_bus_listbox.size()
         str_1 = str(index) + ' messages already sent'
-        output_list = [str_1, 'This messages will not be verified']
+        output_list = ["Slave mode", str_1, 'This messages will not be verified']
+        self.info_listbox.delete(0, 'end')
         self.info_listbox.insert(0, output_list[0])
-        time.sleep(0.2)
         self.info_listbox.insert(1, output_list[1])
+        time.sleep(0.2)
+        self.info_listbox.insert(2, output_list[2])
         df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
         df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
         red_flag = 0
@@ -663,74 +679,20 @@ class CANGui():
                     self.info_listbox.insert('end', 'Cycle completed')
                     blue_flag = 0
                     
-                    
-
                 df_tx_bytes = tx_bytes 
                 df_rx_bytes = rx_bytes
 
-    '''
-    def thread_1(self):
-        str_1 = str(self.can_bus_listbox.size()) + ' messages already sent'
-        output_list = [str_1, 'This messages will not be verified']
-        self.info_listbox.insert(0, output_list[0])
-        time.sleep(0.3)
-        self.info_listbox.insert(1, output_list[1])
-        df_tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
-        df_rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
-        df_bus_size = self.can_bus_listbox.size()
-        red_flag = 0
-        while self.thread_var.get() == 1:
-            tx_bytes = int(os.popen(f"cat /sys/class/net/can0/statistics/tx_packets").read().strip())
-            rx_bytes = int(os.popen(f"cat /sys/class/net/can1/statistics/rx_packets").read().strip())
-            print('tx = ', tx_bytes, ' rx=', rx_bytes, ' df_tx =', df_tx_bytes, 'df_rx =', df_rx_bytes)
-            #time.sleep(0.1)
-            if tx_bytes != df_tx_bytes or rx_bytes != df_rx_bytes:   # New message on the bus.
-                index = self.can_bus_listbox.size()
-                ct = 0
-                print('New message on bus')
-                self.info_listbox.insert('end', tx_bytes)
-                self.info_listbox.insert('end', rx_bytes)
-                
-                while index == df_bus_size:
-                    index = self.can_bus_listbox.size()
-                    ct+=1
-                    if ct == 5000:
-                        print("ERROR!!!!")
-                        break
-                    print('ct->', ct)
-                df_bus_size = index
-                
-                print('tx diff= ', tx_bytes - df_tx_bytes, ' rx diff= ', rx_bytes - df_rx_bytes, ' index= ', index)
-                if tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and red_flag == 0:                                  # Message sent
-                    print('First case')  
-                    self.info_listbox.insert('end', 'I sent a message')
-                    #index = self.can_bus_listbox.size()
-                    #self.module_sender.set_messages(0)
-                    red_flag = 1
-                    self.info_listbox.insert('end', str(red_flag))
-                elif tx_bytes - df_tx_bytes != rx_bytes - df_rx_bytes:                                                  # Message received
-                    print('Second case')
-                    self.info_listbox.insert('end', 'I received a message')
-                    if red_flag == 1:
-                        red_flag = 0
-                        self.can_bus_listbox.itemconfig(index-2, {'fg': 'green'})
-                        self.can_bus_listbox.itemconfig(index-1, {'fg': 'green'})
-                elif tx_bytes - df_tx_bytes == rx_bytes - df_rx_bytes and red_flag == 1:                                # Message sent again without ak from repeater
-                    #index = self.can_bus_listbox.size()
-                    self.can_bus_listbox.itemconfig(index-2, {'fg': 'red'})
-                    print('Third case')
-                    self.info_listbox.insert('end', 'I sent a message')
-                                   
-                df_tx_bytes = tx_bytes 
-                df_rx_bytes = rx_bytes
-    '''
-    def thread_1_2(self):
-        while self.thread_var.get() == 1:
-            if self.module_sender.get_message_flag() == 1:
-                self.test_listbox.insert('end', 'I sent a message')
-                index = self.can_bus_listbox.size()
-                #self.module_sender.set_message_flag(0)
-         
+    def set_mode_option(self, var_option: int):
+        self.device_mode=var_option
+        if self.device_mode == 1:
+            self.xvar.set(1)
+            self.yvar.set(0)
+        else:
+            self.yvar.set(1)
+            self.xvar.set(0)
+
+    def get_mode_option(self):
+        return self.device_mode
 
     def stop_ran_func(self):
         self.stop_ran_func_var = True
