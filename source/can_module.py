@@ -26,7 +26,6 @@ class CanModule():
             GPIO.setup(item, GPIO.OUT)
 
     def set_mux_sel(self, selection: str):
-        print(selection, type(selection))
         for i in range(2, -1, -1):
             GPIO.setup(self.sel_pins[i], GPIO.OUT)
             GPIO.output(self.sel_pins[i], int(selection[0]))
@@ -34,17 +33,14 @@ class CanModule():
 
     def set_messages(self, mesg: int):
         self.msg = mesg
-        print('<---', self.msg)
 
     def get_messages(self):
-        print('--->', self.msg)
         return self.msg
 
     def set_message_flag(self, msg: int):
         self.flag_msg = msg
         
     def get_message_flag(self):
-        #print(self.flag_msg)
         return self.flag_msg
 
     def set_response(self, rsp):
@@ -101,9 +97,7 @@ class CanModule():
     def set_dsample_point(self, dsample_point):
         if dsample_point == '':
             dsample_point = '0.750'
-        print(type(dsample_point))
         self.dsample_point = dsample_point
-        print("here", self.dsample_point)
 
     def get_dsample_point(self):
         response = os.popen(f"ip -d -s link show {self.module_name}", 'r', 128)
@@ -128,7 +122,6 @@ class CanModule():
         os.popen(f"sudo ip link set {self.module_name} down",'w', 128)
 
     def send_q(self, id_list: str, brs_list, payload_list, fd_list, led_pin: int):
-        
         print(f"module name {type(self.module_name)}, id list {type(id_list)}, brs {type(brs_list)}, payload {type(payload_list)}")
         if payload_list == "R":
             #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
@@ -141,10 +134,6 @@ class CanModule():
         else:
             #GPIO.output(self.mux_led_pos[led_pin],GPIO.HIGH)
             GPIO.output(self.mux_led_pos[led_pin],GPIO.LOW)
-            print(self.module_name)
-            print(id_list)
-            print(brs_list)
-            print(payload_list)
             os.popen(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}", 'w', 128)
             print(f"cansend {self.module_name} {id_list}##{brs_list}{payload_list}")
         

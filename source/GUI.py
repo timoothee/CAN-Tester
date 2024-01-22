@@ -8,7 +8,6 @@ class CANGui():
         self.root = Tk()
         self.root.wm_attributes('-type', 'splash')
         self.root.geometry("{0}x{1}+0+0".format(self.root.winfo_screenwidth(), self.root.winfo_screenheight()))
-        print('-', self.root.winfo_screenwidth(),'--', self.root.winfo_screenheight())
         self.root.title(f"CanInterfaceGUI {self.gui_revision}")
         #self.root.iconbitmap("./Raspberry icon/Raspberry.ico")
         
@@ -183,7 +182,7 @@ class CANGui():
         self.can_frame5.grid(row=6, column=0, sticky="nsew", pady=5, padx=5)
 
         self.can_frame6= Frame(self.root, highlightbackground='light grey', highlightthickness=3)
-        self.can_frame6.grid(row=2, column=1, padx=5, pady=5)
+        self.can_frame6.grid(row=2, column=1, padx=(25,0), pady=5, sticky="w")
         
         self.can_frame7 = Frame(self.root, highlightbackground='grey', highlightthickness=3)
         self.can_frame7.grid(row=3, column=1, sticky="w", padx=5, pady=5)
@@ -197,8 +196,11 @@ class CANGui():
         self.can_frame8_2 = Frame(self.can_frame8)
         self.can_frame8_2.grid(row=0, column=1, sticky='n')
 
-        self.empty_can_frame1 = Frame(self.root)
-        self.empty_can_frame1.grid(row=0, column=1, padx=20, sticky='e')
+        self.emp = Frame(self.root)
+        self.emp.grid(row=0, column=1)
+
+        self.empty_can_frame1 = Frame(self.emp)
+        self.empty_can_frame1.grid(row=1, column=0, padx=(600,0), pady=(50,0), sticky='nsew')
         
         # frame 1
         self.can_interface_sender_label = Label(self.can_frame1, text = "CAN SENDER")
@@ -438,7 +440,7 @@ class CANGui():
         self.can_bus_seeonly_optionemnu.config(width = 6, state='normal')
         self.can_bus_seeonly_optionemnu.grid(row=0, column=2, sticky='w')
 
-        self.start_test_button = Button(self.can_frame7, text="Start Test", command = self.test_starter)
+        self.start_test_button = Button(self.can_frame7, text="Check Test", command = self.test_starter)
         self.start_test_button.grid(row=0, column=3, sticky='w', padx=(0,10))
 
         self.start_thread_btn = Button(self.can_frame7, text='Start Thread', state='disabled')
@@ -497,10 +499,10 @@ class CANGui():
         try:
             self.image_dimenion = PhotoImage(file="/home/raspberry/CAN-Tester/images/Continental-Logo.png")
             continental_logo_width, continental_logo_height = self.image_dimenion.width(), self.image_dimenion.height()
-            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+130, continental_logo_height+30), Image.ANTIALIAS)
+            self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((continental_logo_width+220, continental_logo_height+50), Image.ANTIALIAS)
             self.imagee = ImageTk.PhotoImage(self.imagee)
             self.label1 = Label(self.empty_can_frame1, image= self.imagee)
-            self.label1.grid(row=0, column=0)
+            self.label1.grid(row=0, column=1)
         except:
             self.label1 = Label(self.empty_can_frame1, text= 'Missing Continental Logo Image\nPlease contact developer,git\nbelow you can find e-mail address')
             self.label1.grid(row=0, column=0, padx=50, pady=(50,0))
@@ -737,12 +739,8 @@ class CANGui():
 
     def mux_control(self):
         for item in self.mux_list:
-            print('item val',item.get())
             if item.get() == 1:
-                print("-")
-                print(self.mux_list.index(item))
                 self.module_sender.mux_led_control_on(self.mux_list.index(item))
-                print(self.mux_list.index(item))
             else:
                 self.module_sender.mux_led_control_off(self.mux_list.index(item))
 
@@ -757,8 +755,6 @@ class CANGui():
             sf_payload = item[right_sb_index+1:].strip()
             simplified_id_list.append(sf_id)
             simplified_payload_list.append(sf_payload)
-            #print(simplified_id_list)
-            #print(simplified_payload_list)
         return simplified_id_list, simplified_payload_list
 
     def info_listbox_testmode(self):
@@ -814,8 +810,6 @@ class CANGui():
                                 bytes_list.append(payload_list[index][:i+1])
                             else:
                                 bytes_list.append(payload_list[index][i-1:i+1])
-                    print(can_test_mode.increment_payload(bytes_list))
-                    print((payload_list[index+1].lower()).replace(' ',''))
                     if payload_list[index+1][0] == '0':
                         payload_list[index+1] = payload_list[index+1][1:]
                     if can_test_mode.increment_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
@@ -836,11 +830,8 @@ class CANGui():
                                 bytes_list.append(payload_list[index][:i+1])
                             else:
                                 bytes_list.append(payload_list[index][i-1:i+1])
-                    print('bytes_list',can_test_mode.decrement_payload(bytes_list))
-                    print('next index',(payload_list[index+1].lower()).replace(' ',''))
                     time.sleep(2)
                     if payload_list[index+1][0] == '0':
-                        print("here")
                         payload_list[index+1] = payload_list[index+1][1:]
                     if can_test_mode.decrement_payload(bytes_list) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
@@ -849,8 +840,6 @@ class CANGui():
                 index+=2
             if test_mode == 'Negate':
                 if id_list[index] == id_list[index+1]:
-                    #print('-', can_test_mode.negate_payload(payload_list[index].replace(' ','')) )
-                    #print('--', payload_list[index+1].lower())
                     if can_test_mode.negate_payload(payload_list[index].replace(' ','')) == (payload_list[index+1].lower()).replace(' ',''):
                         self.pass_test_list.append(index)
                     else:
@@ -921,7 +910,7 @@ class CANGui():
         imagee = self.image.resize((800, 500), Image.ANTIALIAS)
         new_imagee = ImageTk.PhotoImage(imagee)
         self.label1 = Label(self.welcome_root, image= new_imagee)
-        self.label.image=new_imagee
+        self.label_image = new_imagee
         self.label1.grid(row=0, column=0)
         self.welcome_root.geometry("800x550")
         self.next_button = Button(self.welcome_fr2, text="Next", command= self.case_scenario)
@@ -935,7 +924,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             self.welcome_root.geometry("800x550")
         if self.case == 2:
@@ -943,7 +932,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 3:
@@ -951,14 +940,14 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
         if self.case == 4:
             self.image = Image.open('/home/raspberry/CAN-Tester/images/welcome/four.png')
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 5:
@@ -966,7 +955,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 6:
@@ -974,7 +963,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
             
         if self.case == 7:
@@ -982,7 +971,7 @@ class CANGui():
             imagee = self.image.resize((800, 500), Image.ANTIALIAS)
             new_imagee = ImageTk.PhotoImage(imagee)
             self.label1 = Label(self.welcome_root, image= new_imagee)
-            self.label.image=new_imagee
+            self.label_image=new_imagee
             self.label1.grid(row=0, column=0)
            
             self.next_button.config(text='Close')
@@ -1016,8 +1005,8 @@ class CANGui():
         self.label.grid(row=2, column=0, sticky='w', padx=(20,0), pady=(30,0))
         self.imagee = Image.open(r"/home/raspberry/CAN-Tester/images/Continental-Logo.png").resize((self.continental_logo_width, self.continental_logo_height), Image.ANTIALIAS)
         self.imagee = ImageTk.PhotoImage(self.imagee)
-        self.label1 = Label(self.can_frame7, image= self.imagee)
-        self.label1.grid(row=2, column=1, padx=(10,0))
+        self.label1 = Label(self.can_frame7, image= self.imagee, highlightbackground='blue', highlightthickness=5)
+        self.label1.grid(row=2, column=2, padx=(100,0))
         #self.label2 = Label(self.can_frame8, text='timotei.sandru@continental-corporation.com', font='Helvetica 11 bold')
         #self.label2.grid(row=3, column=0, sticky='e')
         
@@ -1035,7 +1024,7 @@ class CANGui():
         self.can_frame2.grid(row=1, column=0, pady=15, sticky="nsew")
         self.can_frame3.grid(row=2, column=0, sticky="nsew")
         self.can_frame4.grid(row=3, column=0, sticky="nsew")
-        self.empty_can_frame1.grid(row=1, column=1)
+        #self.empty_can_frame1.grid(row=1, column=1)
         self.can_frame5.grid(row=2, column=1, sticky="nsew")
         self.can_frame6.grid(row=3, column=1, sticky="nsew")
         self.can_frame7.grid(row=4, column=0, sticky="nsew", pady=(30))
@@ -1083,7 +1072,6 @@ class CANGui():
                         self.module_sender.default_led(self.mux_list.index(item))                
                 #for item in list(self.que_listbox.get(0, 'end')):
                     #self.module_sender.random_message(str(item[10:]), 4)
-                time.sleep(1)
                 if self.que_loop_var.get() != 1:
                     self.active_loop_var = False
 
@@ -1144,7 +1132,6 @@ class CANGui():
             if self.default_status_label.cget("text") == "UP" and item.get() == 1:
                 for i in range(self.messages_loop_var.get()):
                     if self.stop_ran_func_var != True:
-                        print('inside')
                         self.set_mux_sel(self.mux_list.index(item))
                         random_message = ""
                         bits_list = ['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
@@ -1162,7 +1149,6 @@ class CANGui():
 
                         self.module_sender.random_message(random_message, self.mux_list.index(item)) # Module sender function
                         time.sleep(self.delay_entry_var.get()/1000)
-                        print('Outside')
                 self.module_sender.default_led(self.mux_list.index(item))
             elif self.default_status_label.cget("text") != "UP":
                 self.info_listbox.insert(END,"Error: CAN is DOWN")
@@ -1312,8 +1298,6 @@ class CANGui():
                 for i in range(len(self.list_mem) ,len(self.list_read)):
                     self.list_read[i] = self.list_read[i].replace(b'\x00'.decode(),'')
                     self.list_read[i] = self.list_read[i].replace(b'\n'.decode(),'')
-                    #print("---", self.list_read)
-                    #print("++",self.list_read[i].strip())
                     self.can_bus_listbox.insert('end', self.list_read[i])
                     self.can_bus_listbox.see(END) 
                 self.list_mem = self.list_read
@@ -1671,12 +1655,13 @@ class CANGui():
             for item in self.mux_list:
                 if item.get() == 1:
                     chkb += 1
-                    print(self.mux_list.index(item))
                     self.set_mux_sel(self.mux_list.index(item))
                     self.info_listbox.delete(0, END)
                     self.backend_frame()
                     for i in range(len(self.frame.id_list)):
+
                         print('-+-+-+-+ Inside send_que -+-+-+-+')
+
                         self.module_sender.send_q(str(self.frame.id_list[i]), str(self.frame.brs_list[i]), str(self.frame.payload_list[i]), str(self.frame.fd_list[i]), self.mux_list.index(item))
                         print('GUI', self.module_sender.get_message_flag())
                         print('-+-+-+-+                 -+-+-+-+')
