@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 # my ignore
-*.txt
 *.log
 test.py
 
