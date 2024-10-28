@@ -10,7 +10,7 @@ The objective of this documentation is to provide a clear understanding of the f
 3. Basic Configurations
 4. General Capabilities
 
-## 1. Configuration
+## Set-Up
 1. After power up, you ll be able to access the equipment interface. 
 The interface should look like this.
 
